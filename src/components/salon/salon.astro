@@ -1,0 +1,106 @@
+---
+import Card from "../card/card.astro";
+import salon1 from "../../assets/salon/salon01.jpg";
+import salon2 from "../../assets/salon/salon02.jpg";
+import salon3 from "../../assets/salon/salon03.jpg";
+import salon4 from "../../assets/salon/salon04.jpg";
+import salon5 from "../../assets/salon/salon05.jpg";
+import salon6 from "../../assets/salon/salon06.jpg";
+import salon7 from "../../assets/salon/salon07.jpg";
+import salon8 from "../../assets/salon/salon08.jpg";
+import { Image } from "astro:assets";
+
+const images = [salon1, salon2, salon3, salon4, salon5, salon6, salon7, salon8];
+---
+
+<Card title="Salon" id="salon">
+  <div id="default-carousel" class="relative w-full" data-carousel="slide">
+    <div class="relative h-56 overflow-hidden rounded-lg md:h-96">
+      {
+        images.map((image) => (
+          <div class="hidden duration-1000 ease-in-out" data-carousel-item>
+            <div class="absolute flex justify-center w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+              <Image
+                src={image}
+                alt={image.src.split("/").pop()?.substring(0, 7) ?? null}
+                class="rounded h-56 md:h-96"
+              />
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <div
+      class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3"
+    >
+      {
+        images.map((_, i) => (
+          <button
+            type="button"
+            class="w-3 h-3 rounded-full !bg-sax-tan border border-sax-dark opacity-50"
+            aria-label={"Salon " + (i + 1)}
+            data-carousel-slide-to={i.toString()}
+          />
+        ))
+      }
+    </div>
+
+    <button
+      type="button"
+      class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+      data-carousel-prev
+    >
+      <span
+        class="inline-flex items-center justify-center w-10 h-10 rounded-full dark:group-hover:bg-gray-800/60"
+      >
+        <svg
+          class="w-4 h-4 text-sax-tan"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 6 10"
+        >
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 1 1 5l4 4"></path>
+        </svg>
+        <span class="sr-only">Vorheriges Bild</span>
+      </span>
+    </button>
+    <button
+      type="button"
+      class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+      data-carousel-next
+    >
+      <span
+        class="inline-flex items-center justify-center w-10 h-10 rounded-full dark:group-hover:bg-gray-800/60"
+      >
+        <svg
+          class="w-4 h-4 text-sax-tan"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 6 10"
+        >
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="m1 9 4-4-4-4"></path>
+        </svg>
+        <span class="sr-only">Nächstes Bild</span>
+      </span>
+    </button>
+  </div>
+</Card>
+<style>
+  [aria-current="true"] {
+    background-color: #d9be91 !important;
+    opacity: 1;
+  }
+</style>

@@ -1,17 +1,14 @@
 ---
-import { Image } from "astro:assets";
-import Layout from "../layouts/Layout.astro";
-import teaser from "../assets/teaser.jpg";
-import Card from "../components/card/card.astro";
-import OpeningHours from "../components/openingHours/openingHours.astro";
 import Contact from "../components/contact/contact.astro";
+import Offers from "../components/offers/offers.astro";
+import OpeningHours from "../components/openingHours/openingHours.astro";
 import Prices from "../components/prices/prices.astro";
+import Salon from "../components/salon/salon.astro";
+import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="SAX Cut + Colour">
-  <h1
-    class="font-cormorant text-sax-tan text-8xl uppercase relative z-10 tracking-wide [text-shadow:-5px_0_26px_black,5px_0_26px_black,0_5px_26px_black,0_-5px_26px_black]"
-  >
+  <h1 class="font-cormorant text-sax-tan text-8xl uppercase tracking-wide">
     Schönheit beginnt<br />bei den Haaren
   </h1>
 
@@ -20,6 +17,8 @@ import Prices from "../components/prices/prices.astro";
   <Contact />
 
   <Prices />
-</Layout>
 
-<style></style>
+  <Offers />
+
+  <Salon />
+</Layout>
