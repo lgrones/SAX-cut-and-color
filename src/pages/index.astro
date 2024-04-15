@@ -4,23 +4,19 @@ import Layout from "../layouts/Layout.astro";
 import teaser from "../assets/teaser.jpg";
 import Card from "../components/card/card.astro";
 import OpeningHours from "../components/openingHours/openingHours.astro";
+import Contact from "../components/contact/contact.astro";
 ---
 
 <Layout title="SAX Cut + Colour">
-  <div class="relative">
-    <h1
-      class="font-cormorant text-sax-tan text-8xl uppercase w-[800px] relative z-10 tracking-wide [text-shadow:-5px_0_26px_black,5px_0_26px_black,0_5px_26px_black,0_-5px_26px_black]"
-    >
-      Schönheit beginnt bei den Haaren
-    </h1>
+  <h1
+    class="font-cormorant text-sax-tan text-8xl uppercase relative z-10 tracking-wide [text-shadow:-5px_0_26px_black,5px_0_26px_black,0_5px_26px_black,0_-5px_26px_black]"
+  >
+    Schönheit beginnt<br />bei den Haaren
+  </h1>
 
-    <Image
-      src={teaser}
-      alt="Teaser"
-      class="absolute end-0 top-0 w-2/3 rounded sepia-[.4] opacity-50 z-0"
-    />
-  </div>
   <OpeningHours />
+
+  <Contact />
 </Layout>
 
 <style></style>

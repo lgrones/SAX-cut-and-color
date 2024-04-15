@@ -1,0 +1,52 @@
+---
+import { Image } from "astro:assets";
+import Card from "../card/card.astro";
+import map from "../../assets/map.png";
+---
+
+<Card title="Kontakt" id="contact">
+  <div class="flex flex-wrap gap-x-20 gap-y-6">
+    <div class="mb-6">
+      <div class="text-xl mb-1">Telefon</div>
+      <a
+        href="tel:+436644213849"
+        class="text-lg text-justify w-auto underline underline-offset-4"
+      >
+        +43 664 421 384 9
+      </a>
+    </div>
+
+    <div>
+      <div class="text-xl mb-1">E-Mail</div>
+      <a
+        href="mailto:petra.zangerl@chello.at"
+        class="text-lg text-justify w-auto underline underline-offset-4"
+      >
+        petra.zangerl@chello.at
+      </a>
+    </div>
+
+    <div>
+      <div class="text-xl mb-1">Adresse</div>
+      <div class="text-lg text-justify w-auto">
+        <a
+          href="https://maps.app.goo.gl/xGp8EXpDn3pVrubA6"
+          target="_blank"
+          class="text-lg text-justify w-auto underline underline-offset-4"
+          >Landstraße 46, 6911 Lochau, Österreich</a
+        >
+      </div>
+    </div>
+  </div>
+  <a
+    href="https://maps.app.goo.gl/xGp8EXpDn3pVrubA6"
+    target="_blank"
+    slot="image"
+  >
+    <Image
+      src={map}
+      alt="Karte"
+      class="rounded opacity-80 sepia w-auto h-[220px]"
+    />
+  </a>
+</Card>

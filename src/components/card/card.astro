@@ -1,17 +1,23 @@
 ---
 interface Props {
   title: string;
+  id: string;
 }
 
-const { title } = Astro.props;
+const { title, id } = Astro.props;
 ---
 
-<div>
+<div id={id} class="relative">
   <div class="w-28 h-[1px] bg-sax-tan"></div>
   <h2 class="mb-3 mt-2 text-6xl font-cormorant text-sax-tan">
     {title}
   </h2>
+
   <div class="text-sax-tan">
     <slot />
+  </div>
+
+  <div class="absolute end-0 top-0">
+    <slot name="image" />
   </div>
 </div>
