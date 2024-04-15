@@ -59,7 +59,12 @@ import Link from "./link.astro";
         href="https://www.sax-cut-and-colour.at"
         class="flex items-center space-x-3"
       >
-        <Image src={logo} alt="SAX Logo" class="w-[120px] md:w-[150px]" />
+        <Image
+          src={logo}
+          alt="SAX Logo"
+          loading="eager"
+          class="w-[120px] md:w-[150px]"
+        />
       </a>
     </div>
   </nav>

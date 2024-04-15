@@ -13,7 +13,7 @@ const price = Intl.NumberFormat("de-DE", {
   currencyDisplay: "code",
 })
   .formatRange(priceMin, priceMax)
-  .replace("–", " – ");
+  .replace("–", " - ");
 ---
 
 <div class="flex justify-between gap-x-10 text-lg text-nowrap">

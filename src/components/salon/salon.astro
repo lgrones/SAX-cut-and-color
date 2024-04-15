@@ -17,13 +17,14 @@ const images = [salon1, salon2, salon3, salon4, salon5, salon6, salon7, salon8];
   <div id="default-carousel" class="relative w-full" data-carousel="slide">
     <div class="relative h-56 overflow-hidden rounded-lg md:h-96">
       {
-        images.map((image) => (
+        images.map((image, i, arr) => (
           <div class="hidden duration-1000 ease-in-out" data-carousel-item>
             <div class="absolute flex justify-center w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
               <Image
                 src={image}
                 alt={image.src.split("/").pop()?.substring(0, 7) ?? null}
                 class="rounded h-56 md:h-96"
+                loading={i < 2 || i === arr.length - 1 ? "eager" : "lazy"}
               />
             </div>
           </div>

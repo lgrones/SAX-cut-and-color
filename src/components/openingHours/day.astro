@@ -1,16 +1,26 @@
 ---
 interface Props {
   day: string;
-  timesAm: string;
-  timesPm?: string;
+  timeAmStart: string;
+  timeAmEnd: string;
+  timePmStart?: string;
+  timePmEnd?: string;
 }
 
-const { day, timesAm, timesPm } = Astro.props;
+const { day, timeAmStart, timeAmEnd, timePmStart, timePmEnd } = Astro.props;
+const hasEndTimes = !!timePmStart && !!timePmEnd;
 ---
 
 <div>
   <div class="text-xl mb-1">{day}</div>
   <div class="text-lg text-justify w-auto">
-    {timesAm}<br />{timesPm}
+    {timeAmStart} - {timeAmEnd}{
+      hasEndTimes && (
+        <>
+          <br />
+          {timePmStart} - {timePmEnd}
+        </>
+      )
+    }
   </div>
 </div>
