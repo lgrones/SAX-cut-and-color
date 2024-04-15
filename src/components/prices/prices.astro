@@ -1,0 +1,28 @@
+---
+import Card from "../card/card.astro";
+import PriceRow from "./priceRow.astro";
+---
+
+<div
+  id="prices"
+  class="grid grid-cols-4 gap-20 [grid-template-areas:'women_women_._men_men_.''._color_color_._other_other']"
+>
+  <div class="[grid-area:women]">
+    <Card title="Damen" id="women">
+      <PriceRow title="Damenschnitt trocken" priceMin={36} priceMax={48} />
+      <PriceRow title="Damenschnitt nass" priceMin={36} priceMax={48} />
+    </Card>
+  </div>
+
+  <div class="[grid-area:men]">
+    <Card title="Herren" id="men" />
+  </div>
+
+  <div class="[grid-area:color]">
+    <Card title="Styling & Färben" id="color" />
+  </div>
+
+  <div class="[grid-area:other]">
+    <Card title="Sonstiges" id="other" />
+  </div>
+</div>

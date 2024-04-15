@@ -1,0 +1,24 @@
+---
+interface Props {
+  title: string;
+  priceMin: number;
+  priceMax: number;
+}
+
+const { title, priceMin, priceMax } = Astro.props;
+
+const price = Intl.NumberFormat("de-DE", {
+  style: "currency",
+  currency: "EUR",
+  currencyDisplay: "code",
+})
+  .formatRange(priceMin, priceMax)
+  .replace("–", " – ");
+---
+
+<div class="flex justify-between gap-x-10 text-lg text-nowrap">
+  <div>
+    {title}
+  </div>
+  <div class="self-end">{price}</div>
+</div>
