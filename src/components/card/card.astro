@@ -6,9 +6,12 @@ interface Props {
 const { title } = Astro.props;
 ---
 
-<div class="block border border-tan-300 rounded-lg pt-4 p-5 bg-zinc-900">
-  <h1 class="mb-2 text-2xl font-bold text-tan-300">
+<div>
+  <div class="w-28 h-[1px] bg-sax-tan"></div>
+  <h2 class="mb-3 mt-2 text-6xl font-cormorant text-sax-tan">
     {title}
-  </h1>
-  <slot />
+  </h2>
+  <div class="text-sax-tan">
+    <slot />
+  </div>
 </div>

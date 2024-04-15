@@ -1,0 +1,16 @@
+---
+interface Props {
+  day: string;
+  timesAm: string;
+  timesPm?: string;
+}
+
+const { day, timesAm, timesPm } = Astro.props;
+---
+
+<div>
+  <div class="text-xl mb-1">{day}</div>
+  <div class="text-lg text-justify w-auto">
+    {timesAm}<br />{timesPm}
+  </div>
+</div>

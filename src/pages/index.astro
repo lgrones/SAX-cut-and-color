@@ -3,35 +3,24 @@ import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import teaser from "../assets/teaser.jpg";
 import Card from "../components/card/card.astro";
+import OpeningHours from "../components/openingHours/openingHours.astro";
 ---
 
 <Layout title="SAX Cut + Colour">
-  <Image
-    src={teaser}
-    alt="Teaser"
-    class="w-full rounded-lg sepia-[.4] border border-tan-300"
-  />
+  <div class="relative">
+    <h1
+      class="font-cormorant text-sax-tan text-8xl uppercase w-[800px] relative z-10 tracking-wide [text-shadow:-5px_0_26px_black,5px_0_26px_black,0_5px_26px_black,0_-5px_26px_black]"
+    >
+      Schönheit beginnt bei den Haaren
+    </h1>
 
-  <Card title="Zeiten">
-    <div class="flex gap-x-10 gap-y-6 flex-wrap">
-      <div>
-        <div class="text-lg mb-1">Montag</div>
-        <div>Geschlossen</div>
-      </div><div>
-        <div class="text-lg mb-1">Dienstag</div>
-        <div>Geschlossen</div>
-      </div><div>
-        <div class="text-lg mb-1">Mittwoch</div>
-        <div>Geschlossen</div>
-      </div><div>
-        <div class="text-lg mb-1">Donnerstag</div>
-        <div>Geschlossen</div>
-      </div><div>
-        <div class="text-lg mb-1">Freitag</div>
-        <div>Geschlossen</div>
-      </div>
-    </div>
-  </Card>
+    <Image
+      src={teaser}
+      alt="Teaser"
+      class="absolute end-0 top-0 w-2/3 rounded sepia-[.4] opacity-50 z-0"
+    />
+  </div>
+  <OpeningHours />
 </Layout>
 
 <style></style>

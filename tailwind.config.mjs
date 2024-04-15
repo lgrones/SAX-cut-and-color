@@ -1,3 +1,5 @@
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -8,19 +10,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        tan: {
-          50: "#fbf8f1",
-          100: "#f5eddf",
-          200: "#ead9be",
-          300: "#d5b181",
-          400: "#cd9d6a",
-          500: "#c2844d",
-          600: "#b47042",
-          700: "#965938",
-          800: "#794933",
-          900: "#623d2c",
-          950: "#341e16",
+        sax: {
+          dark: "#161516",
+          tan: "#D9BE91",
         },
+      },
+      fontFamily: {
+        cormorant: ['"Cormorant Garamond"', ...defaultTheme.fontFamily.serif],
       },
     },
   },
