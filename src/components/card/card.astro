@@ -7,9 +7,11 @@ interface Props {
 const { title, id } = Astro.props;
 ---
 
-<div id={id} class="relative">
+<div id={id} class="relative pt-[100px] md:pt-[120px]">
   <div class="w-28 h-[1px] bg-sax-tan"></div>
-  <h2 class="mb-3 mt-2 text-6xl font-cormorant text-sax-tan whitespace-nowrap">
+  <h2
+    class="mb-6 mt-2 text-2xl xs:text-4xl md:text-6xl font-cormorant text-sax-tan whitespace-nowrap"
+  >
     {title}
   </h2>
 
@@ -17,7 +19,7 @@ const { title, id } = Astro.props;
     <slot />
   </div>
 
-  <div class="absolute end-0 top-0">
+  <div class="absolute end-0 top-[100px] md:top-[120px]">
     <slot name="image" />
   </div>
 </div>

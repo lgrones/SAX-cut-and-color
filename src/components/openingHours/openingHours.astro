@@ -3,30 +3,18 @@ import { getFirestore } from "firebase-admin/firestore";
 import { app } from "../../firebase/server";
 import Card from "../card/card.astro";
 import Day from "./day.astro";
-
-interface OpeningHours {
-  day: string;
-  timeAmStart: string;
-  timeAmEnd: string;
-  timePmStart?: string;
-  timePmEnd?: string;
-}
+import type { OpeningHours } from "../../types/openingHours";
 
 const db = getFirestore(app);
 const ref = db.collection("openingHours");
 const snapshot = await ref.get();
-const openingHours = snapshot.docs.map((doc) => doc.data()) as OpeningHours[];
+const openingHours = snapshot.docs
+  .map((doc) => doc.data())
+  .toSorted((a, b) => a.index - b.index) as OpeningHours[];
 ---
 
 <Card title="Zeiten" id="opening-hours">
   <div class="flex flex-wrap gap-x-20 gap-y-6">
     {openingHours.map((openingHour) => <Day {...openingHour} />)}
-    <!-- <Day day="Montag" timesAm="Geschlossen" />
-    <Day day="Dienstag" timesAm="09:00 - 12:00" timesPm="14:00 - 19:00" />
-    <Day day="Mittwoch" timesAm="09:00 - 12:00" timesPm="14:00 - 19:00" />
-    <Day day="Donnerstag" timesAm="09:00 - 12:00" timesPm="14:00 - 19:00" />
-    <Day day="Freitag" timesAm="09:00 - 15:00" />
-    <Day day="Samstag" timesAm="Geschlossen" />
-    <Day day="Sonntag" timesAm="Geschlossen" /> -->
   </div>
 </Card>

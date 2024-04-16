@@ -1,24 +1,35 @@
 ---
 interface Props {
   day: string;
-  timeAmStart: string;
-  timeAmEnd: string;
+  timeAmStart?: string;
+  timeAmEnd?: string;
   timePmStart?: string;
   timePmEnd?: string;
 }
 
 const { day, timeAmStart, timeAmEnd, timePmStart, timePmEnd } = Astro.props;
-const hasEndTimes = !!timePmStart && !!timePmEnd;
+const hasAmTimes = !!timeAmStart && !!timeAmEnd;
+const hasPmTimes = !!timePmStart && !!timePmEnd;
+const isClosed = !hasAmTimes && !hasPmTimes;
 ---
 
 <div>
   <div class="text-xl mb-1">{day}</div>
   <div class="text-lg text-justify w-auto">
-    {timeAmStart} - {timeAmEnd}{
-      hasEndTimes && (
+    {
+      isClosed ? (
+        "Geschlossen"
+      ) : (
         <>
-          <br />
-          {timePmStart} - {timePmEnd}
+          {timeAmStart}
+          {timeAmEnd && ` - ${timeAmEnd}`}
+          {hasPmTimes && (
+            <>
+              {hasAmTimes && <br />}
+              {timePmStart}
+              {timePmEnd && ` - ${timePmEnd}`}
+            </>
+          )}
         </>
       )
     }

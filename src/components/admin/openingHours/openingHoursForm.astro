@@ -1,0 +1,88 @@
+---
+import { getFirestore } from "firebase-admin/firestore";
+import { app } from "../../../firebase/server";
+import Card from "../../card/card.astro";
+import type { OpeningHours } from "../../../types/openingHours";
+
+interface OpeningHoursWithId extends OpeningHours {
+  id: string;
+}
+
+const db = getFirestore(app);
+const ref = db.collection("openingHours");
+const snapshot = await ref.get();
+const openingHours = snapshot.docs
+  .map((doc) => ({ id: doc.id, ...doc.data() }) as OpeningHoursWithId)
+  .toSorted((a, b) => a.index - b.index);
+---
+
+<Card title="Zeiten" id="times">
+  <form method="post" action="/api/openingHours">
+    <div class="flex flex-wrap gap-x-20 gap-y-6">
+      {
+        openingHours.map((openingHour) => (
+          <div class="flex flex-col gap-y-2">
+            <p class="block text-xl text-sax-tan">{openingHour.day}</p>
+
+            <label
+              for={openingHour.day + "timeAmStart"}
+              class="block  text-sax-tan"
+            >
+              Vormittag
+            </label>
+
+            <div class="flex gap-4 items-center text-white">
+              <input
+                type="time"
+                name={openingHour.id + "-timeAmStart"}
+                id={openingHour.id + "-timeAmStart"}
+                value={openingHour.timeAmStart}
+                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-2.5"
+              />
+              -
+              <input
+                type="time"
+                name={openingHour.id + "-timeAmEnd"}
+                id={openingHour.id + "-timeAmEnd"}
+                value={openingHour.timeAmEnd}
+                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-2.5"
+              />
+            </div>
+
+            <label
+              for={openingHour.id + "timePmStart"}
+              class="block  text-sax-tan"
+            >
+              Nachmittag
+            </label>
+
+            <div class="flex gap-4 items-center text-white">
+              <input
+                type="time"
+                name={openingHour.id + "-timePmStart"}
+                id={openingHour.id + "-timePmStart"}
+                value={openingHour.timePmStart}
+                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-2.5"
+              />
+              -
+              <input
+                type="time"
+                name={openingHour.id + "-timePmEnd"}
+                id={openingHour.id + "-timePmEnd"}
+                value={openingHour.timePmEnd}
+                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-2.5"
+              />
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <button
+      type="submit"
+      class="mt-8 text-sax-dark bg-sax-tan hover:bg-sax-tan/90 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+    >
+      Speichern
+    </button>
+  </form>
+</Card>
