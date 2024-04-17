@@ -7,13 +7,13 @@ interface Props {
 const { title, id } = Astro.props;
 ---
 
-<div id={id} class="pt-[100px] md:pt-[120px] text-sax-tan">
+<div id={id} class="pt-[100px] md:pt-[120px] text-sax-tan flex-1 sm:flex-none">
   <div class="relative">
     <div>
       <div class="w-28 h-[1px] bg-sax-tan"></div>
 
       <h2
-        class="mb-6 mt-4 text-4xl md:text-6xl font-cormorant whitespace-nowrap"
+        class="mb-6 mt-4 text-4xl md:text-5xl font-cormorant whitespace-nowrap"
       >
         {title}
       </h2>

@@ -8,13 +8,27 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="SAX Cut + Colour">
-  <h1
-    class="font-cormorant text-sax-tan text-5xl md:text-7xl lg:text-8xl uppercase tracking-wide pt-[100px] md:pt-[120px] max-w-[400px] sm:max-w-[550px] md:max-w-[800px] lg:max-w-[1100px]"
-  >
-    Schönheit beginnt bei den Haaren
-  </h1>
+  <div class="pt-[100px] md:pt-[120px] text-sax-tan">
+    <h1
+      class="font-cormorant text-5xl md:text-7xl lg:text-8xl uppercase tracking-wide max-w-[400px] sm:max-w-[550px] md:max-w-[800px] lg:max-w-[1100px]"
+    >
+      Schönheit beginnt bei den Haaren
+    </h1>
+    <p class="pt-14 leading-7">
+      Herzlich willkommen in meinem Salon, SAX, wo Ihre Haare meine Leidenschaft
+      sind. Seit vielen Jahren bin ich als erfahrene Friseurin tätig und freue
+      mich darauf, Sie persönlich zu betreuen und Ihre individuellen Haarträume
+      zu verwirklichen. Bei SAX dreht sich alles um Sie und Ihre Bedürfnisse.
+      Egal, ob Sie nach einem neuen Look, einer perfekten Haarfarbe oder einer
+      besonderen Frisur für einen besonderen Anlass suchen - ich stehe Ihnen mit
+      meinem Fachwissen und meiner Kreativität zur Seite, um Ihren perfekten
+      Stil zu finden. Ich lege großen Wert auf Qualität und persönlichen
+      Service. Deshalb verwende ich ausschließlich hochwertige Produkte und
+      nehme mir Zeit, um Ihre Wünsche genau zu verstehen und umzusetzen.
+    </p>
+  </div>
 
-  <div class="flex justify-between flex-wrap gap-x-24 gap-y-14">
+  <div class="flex justify-between flex-wrap gap-x-24 gap-y-12 md:gap-y-20">
     <OpeningHours />
 
     <Contact />

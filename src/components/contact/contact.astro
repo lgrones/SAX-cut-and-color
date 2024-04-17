@@ -6,7 +6,7 @@ import ContactRow from "./contactRow.astro";
 ---
 
 <Card title="Kontakt" id="contact">
-  <div class="flex flex-col gap-y-6 relative pr-72">
+  <div class="flex flex-col gap-y-6 relative xl:pr-72 pb-[240px] xl:pb-0 z-20">
     <ContactRow
       title="Telefon"
       href="tel:+436644213849"
@@ -27,17 +27,18 @@ import ContactRow from "./contactRow.astro";
     />
   </div>
 
-  <a
-    slot="image"
-    class="absolute top-0 right-0"
-    href="https://maps.app.goo.gl/xGp8EXpDn3pVrubA6"
-    target="_blank"
-  >
+  <div slot="image" class="absolute bottom-0 xl:bottom-auto xl:top-0 right-0">
     <Image
       src={map}
       alt="Karte"
       loading="eager"
-      class="rounded w-auto h-[220px]"
+      class="rounded w-auto h-[208px]"
     />
-  </a>
+
+    <a
+      class="absolute right-3 bottom-3 z-20 underline underline-offset-4 decoration-1 [text-shadow:black_0.1em_0.1em_0.2em]"
+      href="https://maps.app.goo.gl/xGp8EXpDn3pVrubA6"
+      target="_blank">Zur Karte</a
+    >
+  </div>
 </Card>

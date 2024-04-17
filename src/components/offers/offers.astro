@@ -1,33 +1,26 @@
 ---
 import Card from "../card/card.astro";
-import PriceRow from "./priceRow.astro";
-import prices from "./prices.json";
+import offers from "./offers.json";
 
 const getGridPos = (index: number) => {
-  if (index % 4 === 0) return "col-end-7";
+  if (index % 4 === 0) return "col-start-1 sm:col-start-2 lg:col-end-7";
 
-  if (index % 3 == 0) return "col-start-2";
+  if (index % 3 == 0) return "col-start-1 lg:col-start-2";
 
-  if (index % 2 == 0) return "col-end-6";
+  if (index % 2 == 0) return "col-start-1 sm:col-start-2 lg:col-end-6";
 
   return "col-start-1";
 };
 ---
 
-<div id="prices" class="grid grid-cols-6 gap-16">
+<div id="offers" class="grid grid-cols-6 gap-x-16">
   {
-    prices.map(({ title, prices }, i) => (
-      <div class={`col-span-2 ${getGridPos(i + 1)}`}>
+    offers.map(({ title, text }, i) => (
+      <div
+        class={`col-span-6 sm:col-span-5 md:col-span-3 lg:col-span-2 ${getGridPos(i + 1)}`}
+      >
         <Card title={title} id={title}>
-          <div class="flex flex-col gap-y-2">
-            {prices.map(({ title: priceTitle, priceMin, priceMax }) => (
-              <PriceRow
-                title={priceTitle}
-                priceMin={priceMin}
-                priceMax={priceMax}
-              />
-            ))}
-          </div>
+          <div class="text-justify md:text-left">{text}</div>
         </Card>
       </div>
     ))

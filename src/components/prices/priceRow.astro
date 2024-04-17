@@ -17,10 +17,10 @@ const price = Intl.NumberFormat("de-DE", {
   .replace("–", " - ");
 ---
 
-<div class="flex justify-between gap-x-24 text-nowrap">
-  <div class="font-medium tracking-wide">
-    {title}
-  </div>
+<div class="font-medium tracking-wide whitespace-nowrap">
+  {title}
+</div>
 
+<div class="whitespace-nowrap justify-self-end sm:justify-self-auto">
   {price}
 </div>
