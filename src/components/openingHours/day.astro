@@ -13,25 +13,21 @@ const hasPmTimes = !!timePmStart && !!timePmEnd;
 const isClosed = !hasAmTimes && !hasPmTimes;
 ---
 
-<div>
-  <div class="text-xl mb-1">{day}</div>
-  <div class="text-lg text-justify w-auto">
-    {
-      isClosed ? (
-        "Geschlossen"
-      ) : (
-        <>
-          {timeAmStart}
-          {timeAmEnd && ` - ${timeAmEnd}`}
-          {hasPmTimes && (
-            <>
-              {hasAmTimes && <br />}
-              {timePmStart}
-              {timePmEnd && ` - ${timePmEnd}`}
-            </>
-          )}
-        </>
-      )
-    }
-  </div>
-</div>
+{
+  isClosed ? null : (
+    <div class="flex justify-between gap-x-24 text-nowrap">
+      <div class="font-medium tracking-wide">{day}</div>
+      <div>
+        {timeAmStart}
+        {timeAmEnd && ` - ${timeAmEnd}`} Uhr
+        {hasPmTimes && (
+          <>
+            {hasAmTimes && <br />}
+            {timePmStart}
+            {timePmEnd && ` - ${timePmEnd}`} Uhr
+          </>
+        )}
+      </div>
+    </div>
+  )
+}

@@ -1,28 +1,35 @@
 ---
 import Card from "../card/card.astro";
 import PriceRow from "./priceRow.astro";
+import prices from "./prices.json";
+
+const getGridPos = (index: number) => {
+  if (index % 4 === 0) return "col-end-7";
+
+  if (index % 3 == 0) return "col-start-2";
+
+  if (index % 2 == 0) return "col-end-6";
+
+  return "col-start-1";
+};
 ---
 
-<div
-  id="prices"
-  class="grid grid-cols-4 gap-x-20 gap-y-28 [grid-template-areas:'women_women_._men_men_.''._color_color_._other_other']"
->
-  <div class="[grid-area:women]">
-    <Card title="Damen" id="women">
-      <PriceRow title="Damenschnitt trocken" priceMin={36} priceMax={48} />
-      <PriceRow title="Damenschnitt nass" priceMin={36} priceMax={48} />
-    </Card>
-  </div>
-
-  <div class="[grid-area:men]">
-    <Card title="Herren" id="men" />
-  </div>
-
-  <div class="[grid-area:color]">
-    <Card title="Styling & Färben" id="color" />
-  </div>
-
-  <div class="[grid-area:other]">
-    <Card title="Sonstiges" id="other" />
-  </div>
+<div id="prices" class="grid grid-cols-6 gap-16">
+  {
+    prices.map(({ title, prices }, i) => (
+      <div class={`col-span-2 ${getGridPos(i + 1)}`}>
+        <Card title={title} id={title}>
+          <div class="flex flex-col gap-y-2">
+            {prices.map(({ title: priceTitle, priceMin, priceMax }) => (
+              <PriceRow
+                title={priceTitle}
+                priceMin={priceMin}
+                priceMax={priceMax}
+              />
+            ))}
+          </div>
+        </Card>
+      </div>
+    ))
+  }
 </div>

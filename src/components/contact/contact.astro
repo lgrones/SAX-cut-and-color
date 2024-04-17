@@ -2,46 +2,36 @@
 import { Image } from "astro:assets";
 import Card from "../card/card.astro";
 import map from "../../assets/map.png";
+import ContactRow from "./contactRow.astro";
 ---
 
 <Card title="Kontakt" id="contact">
-  <div class="flex flex-wrap gap-x-20 gap-y-6">
-    <div class="mb-6">
-      <div class="text-xl mb-1">Telefon</div>
-      <a
-        href="tel:+436644213849"
-        class="text-lg text-justify w-auto underline underline-offset-4"
-      >
-        +43 664 421 384 9
-      </a>
-    </div>
+  <div class="flex flex-col gap-y-6 relative pr-72">
+    <ContactRow
+      title="Telefon"
+      href="tel:+436644213849"
+      value="+43 664 421 384 9"
+    />
 
-    <div>
-      <div class="text-xl mb-1">E-Mail</div>
-      <a
-        href="mailto:petra.zangerl@chello.at"
-        class="text-lg text-justify w-auto underline underline-offset-4"
-      >
-        petra.zangerl@chello.at
-      </a>
-    </div>
+    <ContactRow
+      title="E-Mail"
+      href="mailto:petra.zangerl@chello.at"
+      value="petra.zangerl@chello.at"
+    />
 
-    <div>
-      <div class="text-xl mb-1">Adresse</div>
-      <div class="text-lg text-justify w-auto">
-        <a
-          href="https://maps.app.goo.gl/xGp8EXpDn3pVrubA6"
-          target="_blank"
-          class="text-lg text-justify w-auto underline underline-offset-4"
-          >Landstraße 46, 6911 Lochau, Österreich</a
-        >
-      </div>
-    </div>
+    <ContactRow
+      title="Adresse"
+      href="https://maps.app.goo.gl/xGp8EXpDn3pVrubA6"
+      external
+      value="Landstraße 46, 6911 Lochau, Österreich"
+    />
   </div>
+
   <a
+    slot="image"
+    class="absolute top-0 right-0"
     href="https://maps.app.goo.gl/xGp8EXpDn3pVrubA6"
     target="_blank"
-    slot="image"
   >
     <Image
       src={map}

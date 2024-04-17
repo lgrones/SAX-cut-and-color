@@ -9,14 +9,16 @@ import Layout from "../layouts/Layout.astro";
 
 <Layout title="SAX Cut + Colour">
   <h1
-    class="font-cormorant text-sax-tan text-8xl uppercase tracking-wide pt-[100px] md:pt-[120px]"
+    class="font-cormorant text-sax-tan text-5xl md:text-7xl lg:text-8xl uppercase tracking-wide pt-[100px] md:pt-[120px] max-w-[400px] sm:max-w-[550px] md:max-w-[800px] lg:max-w-[1100px]"
   >
-    Schönheit beginnt<br />bei den Haaren
+    Schönheit beginnt bei den Haaren
   </h1>
 
-  <OpeningHours />
+  <div class="flex justify-between flex-wrap gap-x-24 gap-y-14">
+    <OpeningHours />
 
-  <Contact />
+    <Contact />
+  </div>
 
   <Prices />
 

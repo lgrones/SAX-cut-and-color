@@ -39,6 +39,7 @@ const images = [salon1, salon2, salon3, salon4, salon5, salon6, salon7, salon8];
         images.map((_, i) => (
           <button
             type="button"
+            disabled
             class="w-3 h-3 rounded-full !bg-sax-tan border border-sax-dark opacity-50"
             aria-label={"Salon " + (i + 1)}
             data-carousel-slide-to={i.toString()}

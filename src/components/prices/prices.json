@@ -1,0 +1,62 @@
+[
+  {
+    "title": "Damen",
+    "prices": [
+      {
+        "title": "Damenschnitt trocken",
+        "priceMin": 36,
+        "priceMax": 48
+      },
+      {
+        "title": "Damenschnitt nass",
+        "priceMin": 36,
+        "priceMax": 48
+      }
+    ]
+  },
+  {
+    "title": "Herren",
+    "prices": [
+      {
+        "title": "Herrenschnitt trocken",
+        "priceMin": 36,
+        "priceMax": 48
+      },
+      {
+        "title": "Herrenschnitt nass",
+        "priceMin": 36,
+        "priceMax": 48
+      }
+    ]
+  },
+  {
+    "title": "Styling & Färben",
+    "prices": [
+      {
+        "title": "Färben",
+        "priceMin": 36,
+        "priceMax": 48
+      },
+      {
+        "title": "Styling",
+        "priceMin": 36,
+        "priceMax": 48
+      }
+    ]
+  },
+  {
+    "title": "Sonstiges",
+    "prices": [
+      {
+        "title": "Kinder",
+        "priceMin": 36,
+        "priceMax": 48
+      },
+      {
+        "title": "Lehrlinge",
+        "priceMin": 36,
+        "priceMax": 48
+      }
+    ]
+  }
+]

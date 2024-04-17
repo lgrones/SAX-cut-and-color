@@ -11,14 +11,16 @@ const price = Intl.NumberFormat("de-DE", {
   style: "currency",
   currency: "EUR",
   currencyDisplay: "code",
+  minimumFractionDigits: 0,
 })
   .formatRange(priceMin, priceMax)
   .replace("–", " - ");
 ---
 
-<div class="flex justify-between gap-x-10 text-lg text-nowrap">
-  <div>
+<div class="flex justify-between gap-x-24 text-nowrap">
+  <div class="font-medium tracking-wide">
     {title}
   </div>
-  <div class="self-end">{price}</div>
+
+  {price}
 </div>
