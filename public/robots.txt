@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.sax-cut-and-colour.at/sitemap-index.xml

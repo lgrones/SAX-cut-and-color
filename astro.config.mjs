@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 import node from "@astrojs/node";
+import sitemap from "@astrojs/sitemap";
 
 import tailwind from "@astrojs/tailwind";
 
@@ -7,7 +8,8 @@ import tailwind from "@astrojs/tailwind";
 export default defineConfig({
   output: "server",
   adapter: node({
-    mode: "standalone"
+    mode: "standalone",
   }),
-  integrations: [tailwind()]
+  site: "https://www.sax-cut-and-colour.at",
+  integrations: [tailwind(), sitemap()],
 });
