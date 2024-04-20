@@ -1,16 +1,13 @@
 ---
-interface Props {
-  day: string;
-  timeAmStart?: string;
-  timeAmEnd?: string;
-  timePmStart?: string;
-  timePmEnd?: string;
-}
+import type { OpeningHours } from "../../types/openingHours";
 
-const { day, timeAmStart, timeAmEnd, timePmStart, timePmEnd } = Astro.props;
+type Props = OpeningHours;
+
+const { day, timeAmStart, timeAmEnd, timePmStart, timePmEnd, closed } =
+  Astro.props;
 const hasAmTimes = !!timeAmStart && !!timeAmEnd;
 const hasPmTimes = !!timePmStart && !!timePmEnd;
-const isClosed = !hasAmTimes && !hasPmTimes;
+const isClosed = closed || (!hasAmTimes && !hasPmTimes);
 ---
 
 {

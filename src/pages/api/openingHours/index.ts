@@ -14,10 +14,17 @@ export const POST: APIRoute = async ({ redirect, request }) => {
     const keyParts = key.split("-");
     const id = keyParts[0];
     const field = keyParts[1];
-    days.set(id, { ...days.get(id), [field]: value.toString() });
+
+    days.set(id, {
+      ...days.get(id),
+      [field]:
+        field === "closed" ? value.toString() === "on" : value.toString(),
+    });
   }
 
   for (const [id, data] of days) {
+    if (!Object.keys(data).includes("closed")) data.closed = false;
+
     try {
       await ref.doc(id).update(data);
     } catch (error) {

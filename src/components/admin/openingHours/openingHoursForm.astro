@@ -18,7 +18,7 @@ const openingHours = snapshot.docs
 
 <Card title="Zeiten" id="times">
   <form method="post" action="/api/openingHours">
-    <div class="flex flex-wrap gap-x-20 gap-y-6">
+    <div class="flex flex-wrap gap-x-10 gap-y-6">
       {
         openingHours.map((openingHour) => (
           <div class="flex flex-col gap-y-2">
@@ -31,13 +31,13 @@ const openingHours = snapshot.docs
               Vormittag
             </label>
 
-            <div class="flex gap-4 items-center text-white">
+            <div class="flex gap-2 items-center text-white">
               <input
                 type="time"
                 name={openingHour.id + "-timeAmStart"}
                 id={openingHour.id + "-timeAmStart"}
                 value={openingHour.timeAmStart}
-                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-2.5"
+                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5"
               />
               -
               <input
@@ -45,7 +45,7 @@ const openingHours = snapshot.docs
                 name={openingHour.id + "-timeAmEnd"}
                 id={openingHour.id + "-timeAmEnd"}
                 value={openingHour.timeAmEnd}
-                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-2.5"
+                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5"
               />
             </div>
 
@@ -56,13 +56,13 @@ const openingHours = snapshot.docs
               Nachmittag
             </label>
 
-            <div class="flex gap-4 items-center text-white">
+            <div class="flex gap-2 items-center text-white">
               <input
                 type="time"
                 name={openingHour.id + "-timePmStart"}
                 id={openingHour.id + "-timePmStart"}
                 value={openingHour.timePmStart}
-                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-2.5"
+                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5"
               />
               -
               <input
@@ -70,8 +70,21 @@ const openingHours = snapshot.docs
                 name={openingHour.id + "-timePmEnd"}
                 id={openingHour.id + "-timePmEnd"}
                 value={openingHour.timePmEnd}
-                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-2.5"
+                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5"
               />
+            </div>
+
+            <div class="flex items-center mb-4">
+              <input
+                name={openingHour.id + "-closed"}
+                id={openingHour.id + "-closed"}
+                type="checkbox"
+                checked={openingHour.closed}
+                class="w-4 h-4 text-sax-tan rounded bg-gray-700 border-gray-600 focus:border-sax-tan focus:ring-0 focus:ring-offset-0"
+              />
+              <label for={openingHour.id + "-closed"} class="ms-2">
+                Geschlossen
+              </label>
             </div>
           </div>
         ))
