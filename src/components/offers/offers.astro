@@ -19,8 +19,8 @@ const getGridPos = (index: number) => {
       <div
         class={`col-span-6 sm:col-span-5 md:col-span-3 lg:col-span-2 ${getGridPos(i + 1)}`}
       >
-        <Card title={title} id={title}>
-          <div class="text-justify md:text-left">{text}</div>
+        <Card title={title} subTitle="Angebot" id={title}>
+          <p>{text}</p>
         </Card>
       </div>
     ))

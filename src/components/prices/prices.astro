@@ -20,8 +20,8 @@ const getGridPos = (index: number) => {
       <div
         class={`col-span-6 sm:col-span-5 md:col-span-3 lg:col-span-2 ${getGridPos(i + 1)}`}
       >
-        <Card title={title} id={title}>
-          <div class="grid grid-cols-2 gap-x-10 md:gap-x-24 gap-y-2">
+        <Card title={title} subTitle="Preise" id={title}>
+          <div class="grid grid-cols-2 gap-x-14 md:gap-x-24 gap-y-2">
             {prices.map(({ title: priceTitle, priceMin, priceMax }) => (
               <PriceRow
                 title={priceTitle}

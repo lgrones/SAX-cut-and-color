@@ -1,20 +1,22 @@
 ---
 interface Props {
   title: string;
+  subTitle?: string;
   id: string;
 }
 
-const { title, id } = Astro.props;
+const { title, subTitle, id } = Astro.props;
 ---
 
-<div id={id} class="pt-[100px] md:pt-[120px] text-sax-tan flex-1 sm:flex-none">
+<div id={id} class="pt-[103px] md:pt-[120px] text-sax-tan">
   <div class="relative">
     <div>
-      <div class="w-28 h-[1px] bg-sax-tan"></div>
+      <div class="w-28">
+        <p class="text-right font-cormorant pb-1">{subTitle}</p>
+        <div class="h-[1px] bg-sax-tan"></div>
+      </div>
 
-      <h2
-        class="mb-6 mt-4 text-4xl md:text-5xl font-cormorant whitespace-nowrap"
-      >
+      <h2 class="mb-5 mt-3 text-4xl md:text-5xl font-cormorant">
         {title}
       </h2>
 
