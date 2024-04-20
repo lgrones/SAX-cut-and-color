@@ -3,6 +3,7 @@ import { app } from "../firebase/server";
 import { getAuth } from "firebase-admin/auth";
 import Layout from "../layouts/Layout.astro";
 import OpeningHoursForm from "../components/admin/openingHours/openingHoursForm.astro";
+import PricesForm from "../components/admin/prices/pricesForm.astro";
 
 const auth = getAuth(app);
 
@@ -21,6 +22,8 @@ if (!decodedCookie) {
 
 <Layout title="Admin Bereich">
   <OpeningHoursForm />
+
+  <PricesForm />
 
   <form action="/api/auth/signout">
     <button

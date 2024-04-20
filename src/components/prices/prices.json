@@ -3,14 +3,33 @@
     "title": "Damen",
     "prices": [
       {
-        "title": "Damenschnitt trocken",
+        "title": "Haarschnitt trocken",
         "priceMin": 36,
         "priceMax": 48
       },
       {
-        "title": "Damenschnitt nass",
-        "priceMin": 36,
-        "priceMax": 48
+        "title": "Haarschnitt nass",
+        "priceMin": 54,
+        "priceMax": 75
+      },
+      {
+        "title": "Hochsteckfrisuren",
+        "priceMin": 38,
+        "priceMax": 65
+      },
+      {
+        "title": "Flechtfrisuren",
+        "priceMin": 15,
+        "priceMax": 45
+      },
+      {
+        "title": "Augenbrauen wachsen",
+        "priceMin": 9.5
+      },
+      {
+        "title": "Makeup",
+        "priceMin": 25,
+        "priceMax": 75
       }
     ]
   },
@@ -18,29 +37,47 @@
     "title": "Herren",
     "prices": [
       {
-        "title": "Herrenschnitt trocken",
+        "title": "Haarschnitt trocken",
+        "priceMin": 28,
+        "priceMax": 34
+      },
+      {
+        "title": "Haarschnitt nass",
         "priceMin": 36,
         "priceMax": 48
       },
       {
-        "title": "Herrenschnitt nass",
-        "priceMin": 36,
-        "priceMax": 48
+        "title": "Maschinenschnitt",
+        "priceMin": 10,
+        "priceMax": 25
+      },
+      {
+        "title": "Bartrasur",
+        "priceMin": 12,
+        "priceMax": 18
       }
     ]
   },
   {
-    "title": "Styling & Färben",
+    "title": "Färben",
     "prices": [
       {
-        "title": "Färben",
-        "priceMin": 36,
-        "priceMax": 48
+        "title": "Färben/Strähnen",
+        "priceMin": 48,
+        "priceMax": 140
       },
       {
-        "title": "Styling",
-        "priceMin": 36,
-        "priceMax": 48
+        "title": "Tönen",
+        "priceMin": 38,
+        "priceMax": 95
+      },
+      {
+        "title": "Augenbrauen färben",
+        "priceMin": 8.5
+      },
+      {
+        "title": "Wimpern färben",
+        "priceMin": 9.5
       }
     ]
   },
@@ -48,14 +85,28 @@
     "title": "Sonstiges",
     "prices": [
       {
-        "title": "Kinder",
-        "priceMin": 36,
-        "priceMax": 48
+        "title": "Haarverlängerung/-verdichtung",
+        "salon": true
       },
       {
-        "title": "Lehrlinge",
-        "priceMin": 36,
-        "priceMax": 48
+        "title": "Haarbotoxbehandlung",
+        "priceMin": 100,
+        "priceMax": 220
+      },
+      {
+        "title": "Keratin-Haarglättung",
+        "priceMin": 120,
+        "priceMax": 260
+      },
+      {
+        "title": "Schüler, Lehrlinge und Zivi",
+        "priceMin": 23,
+        "priceMax": 47
+      },
+      {
+        "title": "Kleinkinder",
+        "priceMin": 12,
+        "priceMax": 20
       }
     ]
   }

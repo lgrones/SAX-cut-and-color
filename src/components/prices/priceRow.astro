@@ -1,26 +1,31 @@
 ---
 interface Props {
   title: string;
-  priceMin: number;
-  priceMax: number;
+  salon?: boolean;
+  priceMin?: number;
+  priceMax?: number;
 }
 
-const { title, priceMin, priceMax } = Astro.props;
+const { title, priceMin, priceMax, salon } = Astro.props;
 
-const price = Intl.NumberFormat("de-DE", {
-  style: "currency",
-  currency: "EUR",
-  currencyDisplay: "code",
-  minimumFractionDigits: 0,
-})
-  .formatRange(priceMin, priceMax)
-  .replace("–", " - ");
+const price =
+  salon || !priceMin
+    ? "Absprache im Salon"
+    : Intl.NumberFormat("de-DE", {
+        style: "currency",
+        currency: "EUR",
+        currencyDisplay: "code",
+      })
+        .formatRange(priceMin, priceMax ?? priceMin)
+        .replace("–", " - ")
+        .replace("≈", "")
+        .replaceAll(",00", "");
 ---
 
 <div class="font-medium tracking-wide whitespace-nowrap">
   {title}
 </div>
 
-<div class="whitespace-nowrap justify-self-center sm:justify-self-auto">
+<div class="text-right justify-self-end">
   {price}
 </div>
