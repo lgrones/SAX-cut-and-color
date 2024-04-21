@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { app } from "../../../firebase/server";
 import { getFirestore } from "firebase-admin/firestore";
-import type { OpeningHours } from "../../../types/openingHours";
+import type { OpeningHours } from "../../../types";
 
 const db = getFirestore(app);
 const ref = db.collection("openingHours");

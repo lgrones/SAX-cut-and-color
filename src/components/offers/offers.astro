@@ -1,6 +1,8 @@
 ---
 import Card from "../card/card.astro";
-import offers from "./offers.json";
+import { getFirestore } from "firebase-admin/firestore";
+import { app } from "../../firebase/server";
+import type { Offer } from "../../types";
 
 const getGridPos = (index: number) => {
   if (index % 4 === 0) return "col-start-1 sm:col-start-2 lg:col-end-7";
@@ -11,6 +13,13 @@ const getGridPos = (index: number) => {
 
   return "col-start-1";
 };
+
+const db = getFirestore(app);
+const ref = db.collection("offers");
+const snapshot = await ref.get();
+const offers = snapshot.docs
+  .map((doc) => doc.data())
+  .toSorted((a, b) => a.title.localeCompare(b.title)) as Offer[];
 ---
 
 <div id="offers" class="grid grid-cols-6 gap-x-16">

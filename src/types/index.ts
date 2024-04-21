@@ -7,3 +7,8 @@ export interface OpeningHours {
   timePmStart?: string;
   timePmEnd?: string;
 }
+
+export interface Offer {
+  title: string;
+  text: string;
+}

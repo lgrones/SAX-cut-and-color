@@ -2,7 +2,7 @@
 import { getFirestore } from "firebase-admin/firestore";
 import { app } from "../../../firebase/server";
 import Card from "../../card/card.astro";
-import type { OpeningHours } from "../../../types/openingHours";
+import type { OpeningHours } from "../../../types";
 
 interface OpeningHoursWithId extends OpeningHours {
   id: string;

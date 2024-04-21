@@ -4,10 +4,10 @@ import { getAuth } from "firebase-admin/auth";
 import Layout from "../layouts/Layout.astro";
 import OpeningHoursForm from "../components/admin/openingHours/openingHoursForm.astro";
 import PricesForm from "../components/admin/prices/pricesForm.astro";
+import OffersForm from "../components/admin/offers/offersForm.astro";
 
 const auth = getAuth(app);
 
-/* Check current session */
 if (!Astro.cookies.has("session")) {
   return Astro.redirect("/signin");
 }
@@ -24,6 +24,8 @@ if (!decodedCookie) {
   <OpeningHoursForm />
 
   <PricesForm />
+
+  <OffersForm />
 
   <form action="/api/auth/signout">
     <button

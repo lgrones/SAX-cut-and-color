@@ -3,7 +3,7 @@ import { getFirestore } from "firebase-admin/firestore";
 import { app } from "../../firebase/server";
 import Card from "../card/card.astro";
 import Day from "./day.astro";
-import type { OpeningHours } from "../../types/openingHours";
+import type { OpeningHours } from "../../types";
 
 const db = getFirestore(app);
 const ref = db.collection("openingHours");
@@ -18,3 +18,4 @@ const openingHours = snapshot.docs
     {openingHours.map((openingHour) => <Day {...openingHour} />)}
   </div>
 </Card>
+../../types
