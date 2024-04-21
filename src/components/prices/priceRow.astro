@@ -22,10 +22,10 @@ const price =
         .replaceAll(",00", "");
 ---
 
-<div class="font-medium tracking-wide whitespace-nowrap">
+<div
+  class={`font-medium tracking-wide ${title.length < 25 ? "whitespace-nowrap" : ""}`}
+>
   {title}
 </div>
 
-<div class="text-right justify-self-end">
-  {price}
-</div>
+<div class="text-right justify-self-end">{price}</div>

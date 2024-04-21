@@ -17,11 +17,11 @@ const openingHours = snapshot.docs
 ---
 
 <Card title="Zeiten" id="times">
-  <form method="post" action="/api/openingHours">
+  <form method="post" action="/api/openingHours" autocomplete="off">
     <div class="flex flex-wrap gap-x-10 gap-y-6">
       {
         openingHours.map((openingHour) => (
-          <div class="flex flex-col gap-y-2">
+          <div class="flex flex-col gap-y-2" id={openingHour.id}>
             <p class="block text-xl text-sax-tan">{openingHour.day}</p>
 
             <label
@@ -37,7 +37,9 @@ const openingHours = snapshot.docs
                 name={openingHour.id + "-timeAmStart"}
                 id={openingHour.id + "-timeAmStart"}
                 value={openingHour.timeAmStart}
-                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5"
+                disabled={openingHour.closed}
+                required={!openingHour.closed}
+                class="bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40"
               />
               -
               <input
@@ -45,7 +47,9 @@ const openingHours = snapshot.docs
                 name={openingHour.id + "-timeAmEnd"}
                 id={openingHour.id + "-timeAmEnd"}
                 value={openingHour.timeAmEnd}
-                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5"
+                disabled={openingHour.closed}
+                required={!openingHour.closed}
+                class="bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40"
               />
             </div>
 
@@ -62,7 +66,8 @@ const openingHours = snapshot.docs
                 name={openingHour.id + "-timePmStart"}
                 id={openingHour.id + "-timePmStart"}
                 value={openingHour.timePmStart}
-                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5"
+                disabled={openingHour.closed}
+                class="bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40"
               />
               -
               <input
@@ -70,7 +75,8 @@ const openingHours = snapshot.docs
                 name={openingHour.id + "-timePmEnd"}
                 id={openingHour.id + "-timePmEnd"}
                 value={openingHour.timePmEnd}
-                class=" bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5"
+                disabled={openingHour.closed}
+                class="bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40"
               />
             </div>
 
@@ -80,7 +86,7 @@ const openingHours = snapshot.docs
                 id={openingHour.id + "-closed"}
                 type="checkbox"
                 checked={openingHour.closed}
-                class="w-4 h-4 text-sax-tan rounded bg-gray-700 border-gray-600 focus:border-sax-tan focus:ring-0 focus:ring-offset-0"
+                class="w-4 h-4 text-sax-tan rounded bg-stone-800 border-stone-600 focus:border-sax-tan focus:ring-0 focus:ring-offset-0"
               />
               <label for={openingHour.id + "-closed"} class="ms-2">
                 Geschlossen
@@ -99,3 +105,31 @@ const openingHours = snapshot.docs
     </button>
   </form>
 </Card>
+<script>
+  const inputs = document.querySelectorAll(
+    "#times input"
+  ) as NodeListOf<HTMLInputElement>;
+  const textInputs = [...inputs].filter((x) => x.type !== "checkbox");
+  const checkboxes = [...inputs].filter((x) => x.type === "checkbox");
+
+  checkboxes.forEach((x) =>
+    x.addEventListener("change", (e) => {
+      if (!e.target) return;
+
+      // @ts-ignore
+      if (e.target.checked)
+        textInputs
+          // @ts-ignore
+          .filter((y) => y.id.startsWith(e.target.id.split("-")[0]))
+          .forEach((y) => (y.disabled = true));
+      else
+        textInputs
+          // @ts-ignore
+          .filter((y) => y.id.startsWith(e.target.id.split("-")[0]))
+          .forEach((y) => {
+            y.disabled = false;
+            y.required = y.id.includes("timeAm");
+          });
+    })
+  );
+</script>
