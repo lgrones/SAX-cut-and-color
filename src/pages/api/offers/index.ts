@@ -43,5 +43,5 @@ export const POST: APIRoute = async ({ redirect, request }) => {
     }
   }
 
-  return redirect("/admin");
+  return redirect("/admin#offers");
 };

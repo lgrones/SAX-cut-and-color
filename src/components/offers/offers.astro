@@ -26,7 +26,7 @@ const offers = snapshot.docs
   {
     offers.map(({ title, text }, i) => (
       <div
-        class={`col-span-6 sm:col-span-5 md:col-span-3 lg:col-span-2 ${getGridPos(i + 1)}`}
+        class={`col-span-6 sm:col-span-5 md:col-span-3 lg:col-span-2 ${getGridPos(i + 1 > 4 ? i - 3 : i + 1)}`}
       >
         <Card title={title} subTitle="Angebot" id={title}>
           <p>{text}</p>

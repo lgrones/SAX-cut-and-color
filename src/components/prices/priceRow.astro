@@ -1,10 +1,7 @@
 ---
-interface Props {
-  title: string;
-  salon?: boolean;
-  priceMin?: number;
-  priceMax?: number;
-}
+import type { Price } from "../../types";
+
+type Props = Price["prices"][0];
 
 const { title, priceMin, priceMax, salon } = Astro.props;
 

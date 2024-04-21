@@ -9,10 +9,19 @@ export const OffersInput = ({
   const [index, setIndex] = useState(0);
   const [currOffers, setCurrOffers] = useState(offers);
 
+  const removeItem = (index: number) => {
+    setCurrOffers((prev) => prev.toSpliced(index, 1));
+  };
+
   return (
     <div className="flex flex-wrap gap-x-10 gap-y-6">
-      {currOffers.map((props) => (
-        <InputElement {...props} key={props.id} />
+      {currOffers.map((props, i) => (
+        <InputElement
+          {...props}
+          index={i}
+          removeItem={removeItem}
+          key={props.id}
+        />
       ))}
 
       <div className="flex items-center">
@@ -34,7 +43,17 @@ export const OffersInput = ({
   );
 };
 
-export const InputElement = ({ id, text, title }: { id: string } & Offer) => {
+export const InputElement = ({
+  id,
+  text,
+  title,
+  index,
+  removeItem,
+}: {
+  id: string;
+  index: number;
+  removeItem: (index: number) => void;
+} & Offer) => {
   const [checked, setChecked] = useState(false);
 
   return (
@@ -71,7 +90,11 @@ export const InputElement = ({ id, text, title }: { id: string } & Offer) => {
           id={id + "-delete"}
           type="checkbox"
           checked={checked}
-          onChange={(e) => setChecked(e.currentTarget.checked)}
+          onChange={(e) =>
+            id.includes("new")
+              ? removeItem(index)
+              : setChecked(e.currentTarget.checked)
+          }
           className="w-4 h-4 text-sax-tan rounded bg-stone-800 border-stone-600 focus:border-sax-tan focus:ring-0 focus:ring-offset-0"
         />
         <label htmlFor={id + "-delete"} className="ms-2">

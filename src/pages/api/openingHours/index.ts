@@ -22,6 +22,8 @@ export const POST: APIRoute = async ({ redirect, request }) => {
     });
   }
 
+  console.log(days);
+
   for (const [id, data] of days) {
     if (!Object.keys(data).includes("closed")) data.closed = false;
 
@@ -34,5 +36,5 @@ export const POST: APIRoute = async ({ redirect, request }) => {
     }
   }
 
-  return redirect("/admin");
+  return redirect("/admin#times");
 };

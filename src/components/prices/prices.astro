@@ -1,7 +1,9 @@
 ---
 import Card from "../card/card.astro";
+import { getFirestore } from "firebase-admin/firestore";
+import { app } from "../../firebase/server";
 import PriceRow from "./priceRow.astro";
-import prices from "./prices.json";
+import type { Price } from "../../types";
 
 const getGridPos = (index: number) => {
   if (index % 4 === 0) return "col-start-1 sm:col-start-2 lg:col-end-7";
@@ -12,16 +14,21 @@ const getGridPos = (index: number) => {
 
   return "col-start-1";
 };
+
+const db = getFirestore(app);
+const ref = db.collection("prices");
+const snapshot = await ref.get();
+const prices = snapshot.docs.map((doc) => doc.data()) as Price[];
 ---
 
 <div>
   <div id="prices" class="grid grid-cols-6 gap-x-16">
     {
-      prices.map(({ title, prices }, i) => (
+      prices.map(({ mainTitle, prices }, i) => (
         <div
-          class={`col-span-6 sm:col-span-5 md:col-span-3 lg:col-span-2 ${getGridPos(i + 1)}`}
+          class={`col-span-6 sm:col-span-5 md:col-span-3 lg:col-span-2 ${getGridPos(i + 1 > 4 ? i - 3 : i + 1)}`}
         >
-          <Card title={title} subTitle="Preise" id={title}>
+          <Card title={mainTitle} subTitle="Preise" id={mainTitle}>
             <div class="grid grid-cols-2 gap-x-14 md:gap-x-24 gap-y-2">
               {prices.map(({ title: priceTitle, priceMin, priceMax }) => (
                 <PriceRow
