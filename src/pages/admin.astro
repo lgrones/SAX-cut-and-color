@@ -2,27 +2,41 @@
 import { app } from "../firebase/server";
 import { getAuth } from "firebase-admin/auth";
 import Layout from "../layouts/Layout.astro";
+import OpeningHoursForm from "../components/admin/openingHours/openingHoursForm.astro";
+import PricesForm from "../components/admin/prices/pricesForm.astro";
+import OffersForm from "../components/admin/offers/offersForm.astro";
 
-const auth = getAuth(app);
-
-/* Check current session */
 if (!Astro.cookies.has("session")) {
   return Astro.redirect("/signin");
 }
 
-const sessionCookie = Astro.cookies.get("session")!.value;
-const decodedCookie = await auth.verifySessionCookie(sessionCookie);
-const user = await auth.getUser(decodedCookie.uid);
+try {
+  const auth = getAuth(app);
 
-if (!user) {
+  const sessionCookie = Astro.cookies.get("session")!.value;
+  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+
+  if (!decodedCookie) {
+    return Astro.redirect("/signin");
+  }
+} catch (error) {
+  console.error(error);
   return Astro.redirect("/signin");
 }
 ---
 
-<Layout title="dashboard">
-  <h1>Welcome {user.displayName}</h1>
-  <p>We are happy to see you here</p>
+<Layout title="Admin Bereich" disableScrollSmooth>
+  <OpeningHoursForm />
+
+  <PricesForm />
+
+  <OffersForm />
+
   <form action="/api/auth/signout">
-    <button type="submit">Sign out</button>
+    <button
+      type="submit"
+      class="mt-8 text-sax-dark bg-sax-tan hover:bg-sax-tan/90 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+      >Ausloggen</button
+    >
   </form>
 </Layout>

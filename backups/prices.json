@@ -1,0 +1,117 @@
+[
+  {
+    "mainTitle": "Damen",
+    "index": 1,
+    "prices": [
+      {
+        "title": "Haarschnitt trocken",
+        "priceMin": 36,
+        "priceMax": 48
+      },
+      {
+        "title": "Haarschnitt nass",
+        "priceMin": 54,
+        "priceMax": 75
+      },
+      {
+        "title": "Hochsteckfrisuren",
+        "priceMin": 38,
+        "priceMax": 65
+      },
+      {
+        "title": "Flechtfrisuren",
+        "priceMin": 15,
+        "priceMax": 45
+      },
+      {
+        "title": "Augenbrauen wachsen",
+        "priceMin": 9.5
+      },
+      {
+        "title": "Makeup",
+        "priceMin": 25,
+        "priceMax": 75
+      }
+    ]
+  },
+  {
+    "mainTitle": "Herren",
+    "index": 2,
+    "prices": [
+      {
+        "title": "Haarschnitt trocken",
+        "priceMin": 28,
+        "priceMax": 34
+      },
+      {
+        "title": "Haarschnitt nass",
+        "priceMin": 36,
+        "priceMax": 48
+      },
+      {
+        "title": "Maschinenschnitt",
+        "priceMin": 10,
+        "priceMax": 25
+      },
+      {
+        "title": "Bartrasur",
+        "priceMin": 12,
+        "priceMax": 18
+      }
+    ]
+  },
+  {
+    "mainTitle": "Färben",
+    "index": 3,
+    "prices": [
+      {
+        "title": "Färben/Strähnen",
+        "priceMin": 48,
+        "priceMax": 140
+      },
+      {
+        "title": "Tönen",
+        "priceMin": 38,
+        "priceMax": 95
+      },
+      {
+        "title": "Augenbrauen färben",
+        "priceMin": 8.5
+      },
+      {
+        "title": "Wimpern färben",
+        "priceMin": 9.5
+      }
+    ]
+  },
+  {
+    "mainTitle": "Sonstiges",
+    "index": 4,
+    "prices": [
+      {
+        "title": "Haarverlängerung/-verdichtung",
+        "salon": true
+      },
+      {
+        "title": "Haarbotoxbehandlung",
+        "priceMin": 100,
+        "priceMax": 220
+      },
+      {
+        "title": "Keratin-Haarglättung",
+        "priceMin": 120,
+        "priceMax": 260
+      },
+      {
+        "title": "Schüler, Lehrlinge und Zivi",
+        "priceMin": 23,
+        "priceMax": 47
+      },
+      {
+        "title": "Kleinkinder",
+        "priceMin": 12,
+        "priceMax": 20
+      }
+    ]
+  }
+]

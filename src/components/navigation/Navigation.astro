@@ -1,0 +1,102 @@
+---
+import { Image } from "astro:assets";
+import logo from "../../assets/logo.png";
+import Link from "./link.astro";
+---
+
+<header>
+  <nav
+    class="dark:bg-sax-dark fixed w-full z-20 top-0 start-0 h-[100px] md:h-[120px]"
+  >
+    <div
+      class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto py-4 px-6 bg-sax-dark"
+    >
+      <a href="/" class="md:hidden flex items-center space-x-3">
+        <Image
+          src={logo}
+          alt="SAX Logo"
+          loading="eager"
+          class="w-[120px] md:w-[150px]"
+        />
+      </a>
+
+      <button
+        id="burger"
+        type="button"
+        class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden text-sax-tan dark:hover:text-sax-dark dark:hover:bg-sax-tan scale-125"
+        aria-controls="navbar-default"
+        aria-expanded="false"
+      >
+        <span class="sr-only">Navigation öffnen</span>
+        <svg
+          class="w-5 h-5"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 17 14"
+        >
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M1 1h15M1 7h15M1 13h15"></path>
+        </svg>
+      </button>
+
+      <div
+        class="hidden relative w-full md:block md:w-auto"
+        id="navbar-default"
+      >
+        <ul
+          class="text-lg flex flex-col p-0 mt-4 md:flex-row gap-y-2 md:space-x-12 md:mt-0"
+        >
+          <li>
+            <Link name="Zeiten" link="opening-hours" />
+          </li>
+          <li>
+            <Link name="Kontakt" link="contact" />
+          </li>
+          <li>
+            <Link name="Preise" link="prices" />
+          </li>
+          <li>
+            <Link name="Angebote" link="offers" />
+          </li>
+          <li>
+            <Link name="Salon" link="salon" />
+          </li>
+        </ul>
+
+        <div
+          id="overlay"
+          class="absolute md:hidden w-full h-dvh bg-sax-dark/60"
+        >
+        </div>
+      </div>
+
+      <a href="/" class="hidden md:flex items-center space-x-3">
+        <Image
+          src={logo}
+          alt="SAX Logo"
+          loading="eager"
+          class="w-[120px] md:w-[150px]"
+        />
+      </a>
+    </div>
+  </nav>
+</header>
+<script>
+  import { Collapse } from "flowbite";
+
+  const targetEl = document.getElementById("navbar-default");
+  const triggerEl = document.getElementById("burger");
+  const overlayEl = document.getElementById("overlay");
+
+  const collapse = new Collapse(targetEl, triggerEl);
+
+  const links = document.querySelectorAll("header a");
+
+  links.forEach((x) => x.addEventListener("click", () => collapse.collapse()));
+  overlayEl?.addEventListener("click", () => collapse.collapse());
+</script>

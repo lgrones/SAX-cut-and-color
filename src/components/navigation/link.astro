@@ -1,0 +1,16 @@
+---
+interface Props {
+  name: string;
+  link: string;
+}
+
+const { name, link } = Astro.props;
+---
+
+<a
+  href={`/#${link}`}
+  class={`block py-2 px-3 rounded md:p-0 text-xl text-sax-tan md:hover:text-sax-tan 
+  hover:bg-sax-tan hover:text-sax-dark md:hover:bg-transparent 
+  decoration-transparent md:hover:decoration-sax-tan underline underline-offset-4 decoration-1 transition-colors duration-300`}
+  >{name}</a
+>

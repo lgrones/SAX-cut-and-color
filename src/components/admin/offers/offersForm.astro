@@ -1,0 +1,47 @@
+---
+import { getFirestore } from "firebase-admin/firestore";
+import { app } from "../../../firebase/server";
+import Card from "../../card/card.astro";
+import type { Offer } from "../../../types";
+import { OffersInput } from "./offersInput";
+
+interface OffersWithId extends Offer {
+  id: string;
+}
+
+const db = getFirestore(app);
+const ref = db.collection("offers");
+const snapshot = await ref.get();
+const offers = snapshot.docs
+  .map((doc) => ({ id: doc.id, ...doc.data() }) as OffersWithId)
+  .toSorted((a, b) => a.index - b.index);
+---
+
+<Card title="Angebote" id="offers">
+  <form method="post" action="/api/offers" autocomplete="off" id="offersForm">
+    <OffersInput offers={offers} client:load />
+    <button
+      type="submit"
+      class="mt-8 text-sax-dark bg-sax-tan hover:bg-sax-tan/90 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+      >Speichern</button
+    >
+  </form>
+</Card>
+<script>
+  const form = document.getElementById("offersForm") as HTMLFormElement;
+
+  form.addEventListener("submit", (e) => {
+    const formData = new FormData(form);
+
+    const hasDelete = Object.keys(Object.fromEntries(formData)).some((x) =>
+      x.includes("delete")
+    );
+
+    if (
+      hasDelete &&
+      !confirm("Sollen die gewählten Einträge wirklich gelöscht werden?")
+    ) {
+      e.preventDefault();
+    }
+  });
+</script>

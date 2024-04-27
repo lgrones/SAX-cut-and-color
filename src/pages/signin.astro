@@ -2,31 +2,113 @@
 import { app } from "../firebase/server";
 import { getAuth } from "firebase-admin/auth";
 import Layout from "../layouts/Layout.astro";
+import Card from "../components/card/card.astro";
 
-/* Check if the user is authenticated */
 const auth = getAuth(app);
 
 if (Astro.cookies.has("session")) {
-  const sessionCookie = Astro.cookies.get("session")!.value;
-  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+  try {
+    const sessionCookie = Astro.cookies.get("session")!.value;
+    const decodedCookie = await auth.verifySessionCookie(sessionCookie);
 
-  if (decodedCookie) {
-    return Astro.redirect("/admin");
+    if (decodedCookie) {
+      return Astro.redirect("/admin");
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 ---
 
-<Layout title="Sign in">
-  <h1>Sign in</h1>
-  <p>New here? <a href="/register">Create an account</a></p>
-  <form action="/api/auth/signin" method="post">
-    <label for="email" for="email">Email</label>
-    <input type="email" name="email" id="email" />
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" />
-    <button type="submit">Login</button>
-  </form>
+<Layout title="Admin Bereich Login">
+  <Card title="Admin Bereich Login" id="login">
+    <form action="/api/auth/signin" method="post">
+      <div class="grid gap-6 mb-6 md:grid-cols-2 mt-10">
+        <div>
+          <label for="email" class="block mb-2 text-sax-tan">E-Mail</label>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            class="text-white bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-2.5"
+            required
+          />
+        </div>
+
+        <div class="relative">
+          <label for="password" class="block mb-2 text-sax-tan">Passwort</label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            class="text-white bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-2.5"
+            required
+          />
+          <span class="text-sax-tan">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="currentColor"
+              class="absolute top-[2.85rem] right-4 cursor-pointer"
+              id="show"
+            >
+              <path
+                d="m0,10a15,28 0 0,0 20,0 15,28 0 0,0-20,0m14.4 0a4.5,4.5 0 1,1 0-.1zm-2,0a2.4,2.4 0 1,0 0 .1z"
+              ></path>
+            </svg>
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="currentColor"
+              viewBox="0 0 17 15"
+              class="absolute top-[2.85rem] right-4 cursor-pointer hidden"
+              id="hide"
+            >
+              <path
+                d="M1.99 1.99a1 1 0 00-.697 1.717l11 11a1 1 0 101.414-1.414l-.912-.912a8 8 0 002.943-4.391A8 8 0 008 2a8 8 0 00-4.303 1.283l-.99-.99a1 1 0 00-.717-.303zM8 4a4 4 0 014 4 4 4 0 01-.977 2.61L5.39 4.973A4 4 0 018 4zM1.273 5.687A8 8 0 00.262 8.01 8 8 0 008 14a8 8 0 001.445-.14l-1.884-1.885a4 4 0 01-3.532-3.531z"
+                style="marker:none"></path><path
+                d="M10 8a2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 012 2z"
+              ></path>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <div class="flex gap-x-6 items-center">
+        <button
+          type="submit"
+          class="text-sax-dark bg-sax-tan hover:bg-sax-tan/90 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+        >
+          Login
+        </button>
+
+        <div role="status" class="hidden" id="loader">
+          <svg
+            aria-hidden="true"
+            class="w-8 h-8 text-stone-600 animate-spin fill-sax-tan"
+            viewBox="0 0 100 101"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            ><path
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="currentColor"></path><path
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentFill"></path></svg
+          >
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+
+      <p id="validation" class="mt-2 text-red-500 invisible">
+        Falsches Passwort oder E-Mail Adresse
+      </p>
+    </form>
+  </Card>
 </Layout>
+
 <script>
   import {
     getAuth,
@@ -35,6 +117,33 @@ if (Astro.cookies.has("session")) {
   } from "firebase/auth";
   import { app } from "../firebase/client";
 
+  const inputs = document.querySelectorAll("input");
+
+  inputs.forEach((input) => {
+    input.addEventListener("keydown", () =>
+      document.getElementById("validation")?.classList.add("invisible")
+    );
+  });
+
+  const show = document.getElementById("show");
+  const hide = document.getElementById("hide");
+
+  show?.addEventListener("click", () => {
+    show.classList.add("hidden");
+    hide?.classList.remove("hidden");
+
+    [...inputs].find((x) => x.id === "password")!.type = "text";
+  });
+
+  hide?.addEventListener("click", () => {
+    hide.classList.add("hidden");
+    show?.classList.remove("hidden");
+
+    [...inputs].find((x) => x.id === "password")!.type = "password";
+  });
+
+  const loader = document.getElementById("loader");
+
   const auth = getAuth(app);
   // This will prevent the browser from storing session data
   auth.setPersistence(inMemoryPersistence);
@@ -42,6 +151,9 @@ if (Astro.cookies.has("session")) {
   const form = document.querySelector("form") as HTMLFormElement;
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    loader?.classList.remove("hidden");
+
     const formData = new FormData(form);
     const email = formData.get("email")?.toString();
     const password = formData.get("password")?.toString();
@@ -49,21 +161,29 @@ if (Astro.cookies.has("session")) {
     if (!email || !password) {
       return;
     }
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    const idToken = await userCredential.user.getIdToken();
-    const response = await fetch("/api/auth/signin", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-      },
-    });
 
-    if (response.redirected) {
-      window.location.assign(response.url);
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      const idToken = await userCredential.user.getIdToken();
+
+      const response = await fetch("/api/auth/signin", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      if (response.redirected) {
+        window.location.assign(response.url);
+      }
+    } catch (error) {
+      loader?.classList.add("hidden");
+      document.getElementById("validation")?.classList.remove("invisible");
     }
   });
 </script>
