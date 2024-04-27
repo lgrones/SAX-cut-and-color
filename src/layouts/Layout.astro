@@ -5,13 +5,14 @@ import { SEOMetadata } from "astro-seo-metadata";
 
 interface Props {
   title: string;
+  disableScrollSmooth?: boolean;
 }
 
-const { title } = Astro.props;
+const { title, disableScrollSmooth } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="en" class={`dark ${!disableScrollSmooth ? "scroll-smooth" : ""}`}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />

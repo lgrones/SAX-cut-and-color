@@ -14,11 +14,11 @@ const ref = db.collection("offers");
 const snapshot = await ref.get();
 const offers = snapshot.docs
   .map((doc) => ({ id: doc.id, ...doc.data() }) as OffersWithId)
-  .toSorted((a, b) => a.title.localeCompare(b.title));
+  .toSorted((a, b) => a.index - b.index);
 ---
 
 <Card title="Angebote" id="offers">
-  <form method="post" action="/api/offers" autocomplete="off">
+  <form method="post" action="/api/offers" autocomplete="off" id="offersForm">
     <OffersInput offers={offers} client:load />
     <button
       type="submit"
@@ -27,3 +27,21 @@ const offers = snapshot.docs
     >
   </form>
 </Card>
+<script>
+  const form = document.getElementById("offersForm") as HTMLFormElement;
+
+  form.addEventListener("submit", (e) => {
+    const formData = new FormData(form);
+
+    const hasDelete = Object.keys(Object.fromEntries(formData)).some((x) =>
+      x.includes("delete")
+    );
+
+    if (
+      hasDelete &&
+      !confirm("Sollen die gewählten Einträge wirklich gelöscht werden?")
+    ) {
+      e.preventDefault();
+    }
+  });
+</script>

@@ -2,11 +2,21 @@ import type { APIRoute } from "astro";
 import { app } from "../../../firebase/server";
 import { getFirestore } from "firebase-admin/firestore";
 import type { OpeningHours } from "../../../types";
+// import data from "../../../../backups/openingHours.json";
 
 const db = getFirestore(app);
 const ref = db.collection("openingHours");
 
+// const populate = () => {
+//   for (const d of data) {
+//     ref.add(d);
+//   }
+// };
+
 export const POST: APIRoute = async ({ redirect, request }) => {
+  // populate();
+  // return redirect("/admin#times");
+
   const formData = await request.formData();
   const days = new Map<string, Partial<Omit<OpeningHours, "index">>>();
 
@@ -21,8 +31,6 @@ export const POST: APIRoute = async ({ redirect, request }) => {
         field === "closed" ? value.toString() === "on" : value.toString(),
     });
   }
-
-  console.log(days);
 
   for (const [id, data] of days) {
     if (!Object.keys(data).includes("closed")) data.closed = false;

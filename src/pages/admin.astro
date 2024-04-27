@@ -6,21 +6,26 @@ import OpeningHoursForm from "../components/admin/openingHours/openingHoursForm.
 import PricesForm from "../components/admin/prices/pricesForm.astro";
 import OffersForm from "../components/admin/offers/offersForm.astro";
 
-const auth = getAuth(app);
-
 if (!Astro.cookies.has("session")) {
   return Astro.redirect("/signin");
 }
 
-const sessionCookie = Astro.cookies.get("session")!.value;
-const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+try {
+  const auth = getAuth(app);
 
-if (!decodedCookie) {
+  const sessionCookie = Astro.cookies.get("session")!.value;
+  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+
+  if (!decodedCookie) {
+    return Astro.redirect("/signin");
+  }
+} catch (error) {
+  console.error(error);
   return Astro.redirect("/signin");
 }
 ---
 
-<Layout title="Admin Bereich">
+<Layout title="Admin Bereich" disableScrollSmooth>
   <OpeningHoursForm />
 
   <PricesForm />

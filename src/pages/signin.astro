@@ -7,11 +7,15 @@ import Card from "../components/card/card.astro";
 const auth = getAuth(app);
 
 if (Astro.cookies.has("session")) {
-  const sessionCookie = Astro.cookies.get("session")!.value;
-  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+  try {
+    const sessionCookie = Astro.cookies.get("session")!.value;
+    const decodedCookie = await auth.verifySessionCookie(sessionCookie);
 
-  if (decodedCookie) {
-    return Astro.redirect("/admin");
+    if (decodedCookie) {
+      return Astro.redirect("/admin");
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 ---

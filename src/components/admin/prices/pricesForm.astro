@@ -12,13 +12,13 @@ interface PricesWithId extends Price {
 const db = getFirestore(app);
 const ref = db.collection("prices");
 const snapshot = await ref.get();
-const prices = snapshot.docs.map(
-  (doc) => ({ id: doc.id, ...doc.data() }) as PricesWithId
-);
+const prices = snapshot.docs
+  .map((doc) => ({ id: doc.id, ...doc.data() }) as PricesWithId)
+  .toSorted((a, b) => a.index - b.index);
 ---
 
 <Card title="Preise" id="prices">
-  <form method="post" action="/api/prices">
+  <form method="post" action="/api/prices" autocomplete="off" id="pricesForm">
     <PricesInput prices={prices} client:load />
 
     <button
@@ -29,3 +29,21 @@ const prices = snapshot.docs.map(
     </button>
   </form>
 </Card>
+<script>
+  const form = document.getElementById("pricesForm") as HTMLFormElement;
+
+  form.addEventListener("submit", (e) => {
+    const formData = new FormData(form);
+
+    const hasDelete = Object.keys(Object.fromEntries(formData)).some((x) =>
+      x.includes("delete")
+    );
+
+    if (
+      hasDelete &&
+      !confirm("Sollen die gewählten Einträge wirklich gelöscht werden?")
+    ) {
+      e.preventDefault();
+    }
+  });
+</script>

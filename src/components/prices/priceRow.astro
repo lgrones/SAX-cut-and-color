@@ -5,15 +5,19 @@ type Props = Price["prices"][0];
 
 const { title, priceMin, priceMax, salon } = Astro.props;
 
+const formatter = Intl.NumberFormat("de-DE", {
+  style: "currency",
+  currency: "EUR",
+  currencyDisplay: "code",
+});
+
 const price =
   salon || !priceMin
     ? "Absprache im Salon"
-    : Intl.NumberFormat("de-DE", {
-        style: "currency",
-        currency: "EUR",
-        currencyDisplay: "code",
-      })
-        .formatRange(priceMin, priceMax ?? priceMin)
+    : (priceMax
+        ? formatter.formatRange(priceMin, priceMax)
+        : formatter.format(priceMin)
+      )
         .replace("–", " - ")
         .replace("≈", "")
         .replaceAll(",00", "");

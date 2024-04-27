@@ -1,0 +1,65 @@
+[
+  {
+    "closed": true,
+    "day": "Montag",
+    "index": 0,
+    "timeAmStart": "",
+    "timeAmEnd": "",
+    "timePmStart": "",
+    "timePmEnd": ""
+  },
+  {
+    "closed": false,
+    "day": "Dienstag",
+    "index": 1,
+    "timeAmStart": "09:00",
+    "timeAmEnd": "12:00",
+    "timePmStart": "14:00",
+    "timePmEnd": "19:00"
+  },
+  {
+    "closed": false,
+    "day": "Mittwoch",
+    "index": 2,
+    "timeAmStart": "09:00",
+    "timeAmEnd": "12:00",
+    "timePmStart": "14:00",
+    "timePmEnd": "19:00"
+  },
+  {
+    "closed": false,
+    "day": "Donnerstag",
+    "index": 3,
+    "timeAmStart": "09:00",
+    "timeAmEnd": "12:00",
+    "timePmStart": "14:00",
+    "timePmEnd": "19:00"
+  },
+  {
+    "closed": false,
+    "day": "Freitag",
+    "index": 4,
+    "timeAmStart": "09:00",
+    "timeAmEnd": "15:00",
+    "timePmStart": "",
+    "timePmEnd": ""
+  },
+  {
+    "closed": true,
+    "day": "Samstag",
+    "index": 5,
+    "timeAmStart": "",
+    "timeAmEnd": "",
+    "timePmStart": "",
+    "timePmEnd": ""
+  },
+  {
+    "closed": true,
+    "day": "Sonntag",
+    "index": 6,
+    "timeAmStart": "",
+    "timeAmEnd": "",
+    "timePmStart": "",
+    "timePmEnd": ""
+  }
+]

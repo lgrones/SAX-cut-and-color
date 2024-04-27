@@ -1,6 +1,7 @@
 [
   {
-    "title": "Damen",
+    "mainTitle": "Damen",
+    "index": 1,
     "prices": [
       {
         "title": "Haarschnitt trocken",
@@ -34,7 +35,8 @@
     ]
   },
   {
-    "title": "Herren",
+    "mainTitle": "Herren",
+    "index": 2,
     "prices": [
       {
         "title": "Haarschnitt trocken",
@@ -59,7 +61,8 @@
     ]
   },
   {
-    "title": "Färben",
+    "mainTitle": "Färben",
+    "index": 3,
     "prices": [
       {
         "title": "Färben/Strähnen",
@@ -82,7 +85,8 @@
     ]
   },
   {
-    "title": "Sonstiges",
+    "mainTitle": "Sonstiges",
+    "index": 4,
     "prices": [
       {
         "title": "Haarverlängerung/-verdichtung",

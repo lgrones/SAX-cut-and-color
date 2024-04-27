@@ -2,11 +2,21 @@ import type { APIRoute } from "astro";
 import { app } from "../../../firebase/server";
 import { getFirestore } from "firebase-admin/firestore";
 import type { Offer } from "../../../types";
+// import data from "../../../../backups/offers.json";
 
 const db = getFirestore(app);
 const ref = db.collection("offers");
 
+// const populate = () => {
+//   for (const d of data) {
+//     ref.add(d);
+//   }
+// };
+
 export const POST: APIRoute = async ({ redirect, request }) => {
+  // populate();
+  // return redirect("/admin#offers");
+
   const formData = await request.formData();
   const offers = new Map<string, Partial<Offer>>();
 

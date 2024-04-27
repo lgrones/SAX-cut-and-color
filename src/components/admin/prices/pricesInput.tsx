@@ -15,23 +15,21 @@ export const PricesInput = ({ prices }: { prices: PricesWithId[] }) => {
 
   return (
     <div className="flex flex-wrap gap-x-10 gap-y-16">
-      {currPrices.map((prices, index) => (
-        <InputElements
-          prices={{ ...prices, index, removePrice }}
-          key={prices.id}
-        />
+      {currPrices.map((prices, i) => (
+        <InputElements prices={{ ...prices, i, removePrice }} key={prices.id} />
       ))}
 
       <div className="flex items-center">
         <button
           type="button"
-          className="text-sax-tan text-6xl bg-stone-800 hover:bg-stone-900 border-2 border-stone-600 rounded-full px-4 pb-2.5"
+          className="text-sax-tan text-6xl bg-stone-800 hover:bg-stone-900 border-2 border-stone-600 rounded-full px-4 pb-2.5 aspect-square"
           onClick={() => {
             setCurrPrices((prev) => [
               ...prev,
               {
                 id: "new" + index.toString(),
                 mainTitle: "",
+                index: Math.max(...prev.map((x) => x.index)) + 1,
                 prices: [{ title: "" }],
               },
             ]);
@@ -46,10 +44,10 @@ export const PricesInput = ({ prices }: { prices: PricesWithId[] }) => {
 };
 
 export const InputElements = ({
-  prices: { id, prices, mainTitle, removePrice, index },
+  prices: { id, prices, mainTitle, removePrice, i, index },
 }: {
   prices: PricesWithId & {
-    index: number;
+    i: number;
     removePrice: (index: number) => void;
   };
 }) => {
@@ -66,8 +64,8 @@ export const InputElements = ({
 
   return (
     <div className="flex flex-col gap-y-4 w-full lg:w-[48%]">
-      <div className="grid grid-cols-2 gap-x-4 items-center">
-        <div>
+      <div className="grid grid-cols-6 gap-x-4 items-center">
+        <div className="col-span-3">
           <label htmlFor={id + "-mainTitle"} className="block text-sax-tan">
             Haupttitel
           </label>
@@ -82,7 +80,24 @@ export const InputElements = ({
           />
         </div>
 
-        <div className="flex items-center mt-6">
+        <div>
+          <label htmlFor={id + "-index"} className="block text-sax-tan">
+            Position
+          </label>
+
+          <input
+            name={id + "-index"}
+            id={id + "-index"}
+            defaultValue={index}
+            type="number"
+            min={0}
+            required
+            disabled={checked}
+            className="text-white bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
+        </div>
+
+        <div className="flex items-center mt-6 col-span-2">
           <input
             name={id + "-delete"}
             id={id + "-delete"}
@@ -90,13 +105,13 @@ export const InputElements = ({
             checked={checked}
             onChange={(e) =>
               id.includes("new")
-                ? removePrice(index)
+                ? removePrice(i)
                 : setChecked(e.currentTarget.checked)
             }
             className="w-4 h-4 text-sax-tan rounded bg-stone-800 border-stone-600 focus:border-sax-tan focus:ring-0 focus:ring-offset-0"
           />
           <label htmlFor={id + "-delete"} className="ms-2">
-            Block Löschen
+            Preisblock Löschen
           </label>
         </div>
       </div>
@@ -141,7 +156,7 @@ export const InputElements = ({
 
         <button
           type="button"
-          className=" text-sax-tan bg-stone-800 hover:bg-stone-800/70  border-2 border-stone-600 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center disabled:opacity-40"
+          className=" text-sax-tan bg-stone-800 hover:bg-stone-800/70 border-2 border-stone-600 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center disabled:opacity-40"
           disabled={checked}
           onClick={() => {
             setCurrPrices((prev) => [

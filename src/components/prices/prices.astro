@@ -18,7 +18,9 @@ const getGridPos = (index: number) => {
 const db = getFirestore(app);
 const ref = db.collection("prices");
 const snapshot = await ref.get();
-const prices = snapshot.docs.map((doc) => doc.data()) as Price[];
+const prices = (snapshot.docs.map((doc) => doc.data()) as Price[]).toSorted(
+  (a, b) => a.index - b.index
+);
 ---
 
 <div>

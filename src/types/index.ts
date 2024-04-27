@@ -11,10 +11,12 @@ export interface OpeningHours {
 export interface Offer {
   title: string;
   text: string;
+  index: number;
 }
 
 export interface Price {
   mainTitle: string;
+  index: number;
   prices: {
     title: string;
     priceMin?: number;
