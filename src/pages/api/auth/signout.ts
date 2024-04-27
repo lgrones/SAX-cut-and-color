@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async ({ redirect, cookies }) => {
   cookies.delete(
-    "session",
+    "__session",
     // @ts-ignore
     {
       path: "/",

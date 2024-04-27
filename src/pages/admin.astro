@@ -6,14 +6,14 @@ import OpeningHoursForm from "../components/admin/openingHours/openingHoursForm.
 import PricesForm from "../components/admin/prices/pricesForm.astro";
 import OffersForm from "../components/admin/offers/offersForm.astro";
 
-if (!Astro.cookies.has("session")) {
+if (!Astro.cookies.has("__session")) {
   return Astro.redirect("/signin");
 }
 
 try {
   const auth = getAuth(app);
 
-  const sessionCookie = Astro.cookies.get("session")!.value;
+  const sessionCookie = Astro.cookies.get("__session")!.value;
   const decodedCookie = await auth.verifySessionCookie(sessionCookie);
 
   if (!decodedCookie) {

@@ -25,11 +25,13 @@ export const GET: APIRoute = async ({ request, cookies, redirect }) => {
   });
 
   cookies.set(
-    "session",
+    "__session",
     sessionCookie,
-    //@ts-ignore
+    // @ts-ignore
     {
       path: "/",
+      httpOnly: true,
+      secure: true,
     }
   );
 
