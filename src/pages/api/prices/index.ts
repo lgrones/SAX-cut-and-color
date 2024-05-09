@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { app } from "../../../firebase/server";
 import { getFirestore } from "firebase-admin/firestore";
 import type { Price } from "../../../types";
+import { error as logError } from "firebase-functions/logger";
 // import data from "../../../../backups/prices.json";
 
 const db = getFirestore(app);
@@ -75,7 +76,7 @@ export const POST: APIRoute = async ({ redirect, request }) => {
         await ref.doc(id).update(data);
       }
     } catch (error) {
-      console.log(error);
+      logError("prices", error);
 
       return new Response("Something went wrong", {
         status: 500,

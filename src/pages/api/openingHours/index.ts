@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { app } from "../../../firebase/server";
 import { getFirestore } from "firebase-admin/firestore";
 import type { OpeningHours } from "../../../types";
+import { error as logError } from "firebase-functions/logger";
 // import data from "../../../../backups/openingHours.json";
 
 const db = getFirestore(app);
@@ -38,6 +39,7 @@ export const POST: APIRoute = async ({ redirect, request }) => {
     try {
       await ref.doc(id).update(data);
     } catch (error) {
+      logError("times", error);
       return new Response("Something went wrong", {
         status: 500,
       });

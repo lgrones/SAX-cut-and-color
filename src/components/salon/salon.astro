@@ -1,108 +1,77 @@
 ---
 import Card from "../card/card.astro";
-import salon1 from "../../assets/salon/salon01.jpg";
-import salon2 from "../../assets/salon/salon02.jpg";
-import salon3 from "../../assets/salon/salon03.jpg";
-import salon4 from "../../assets/salon/salon04.jpg";
-import salon5 from "../../assets/salon/salon05.jpg";
-import salon6 from "../../assets/salon/salon06.jpg";
-import salon7 from "../../assets/salon/salon07.jpg";
-import salon8 from "../../assets/salon/salon08.jpg";
+import salon1 from "../../assets/salon/salon1.jpeg";
+import salon2 from "../../assets/salon/salon2.jpeg";
+import salon3 from "../../assets/salon/salon3.jpeg";
+import salon4 from "../../assets/salon/salon4.jpeg";
+import salon5 from "../../assets/salon/salon5.jpg";
+import salon6 from "../../assets/salon/salon6.jpeg";
+import salon7 from "../../assets/salon/salon7.jpeg";
+import salon8 from "../../assets/salon/salon8.jpeg";
 import { Image } from "astro:assets";
-
-const images = [salon1, salon2, salon3, salon4, salon5, salon6, salon7, salon8];
 ---
 
 <Card title="Salon" id="salon">
-  <div id="default-carousel" class="relative w-full" data-carousel="slide">
-    <div class="relative h-56 overflow-hidden rounded-lg md:h-96">
-      {
-        images.map((image, i, arr) => (
-          <div class="hidden duration-1000 ease-in-out" data-carousel-item>
-            <div class="absolute flex justify-center w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-              <Image
-                src={image}
-                alt={image.src.split("/").pop()?.substring(0, 7) ?? null}
-                class="rounded h-56 md:h-96"
-                loading={i < 2 || i === arr.length - 1 ? "eager" : "lazy"}
-              />
-            </div>
-          </div>
-        ))
-      }
-    </div>
-
+  <div class="flex flex-wrap gap-4">
     <div
-      class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3"
+      class="sm:flex-[calc(50%_-_2rem)] sm:max-w-[calc(50%_-_2rem)] flex-[100%] max-w-[100%]"
     >
-      {
-        images.map((_, i) => (
-          <button
-            type="button"
-            disabled
-            class="w-3 h-3 rounded-full !bg-sax-tan border border-sax-dark opacity-50"
-            aria-label={"Salon " + (i + 1)}
-            data-carousel-slide-to={i.toString()}
-          />
-        ))
-      }
+      <Image
+        src={salon2}
+        alt="Salon"
+        class="rounded w-100 align-middle"
+        loading="eager"
+      />
+      <Image
+        src={salon1}
+        alt="Logo"
+        class="rounded w-100 align-middle mt-4"
+        loading="eager"
+      />
     </div>
-
-    <button
-      type="button"
-      class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-      data-carousel-prev
+    <div
+      class="md:flex-[25%] md:max-w-[25%] sm:flex-[50%] sm:max-w-[50%] flex-[100%] max-w-[100%]"
     >
-      <span
-        class="inline-flex items-center justify-center w-10 h-10 rounded-full dark:group-hover:bg-gray-800/60"
-      >
-        <svg
-          class="w-4 h-4 text-sax-tan"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 6 10"
-        >
-          <path
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M5 1 1 5l4 4"></path>
-        </svg>
-        <span class="sr-only">Vorheriges Bild</span>
-      </span>
-    </button>
-    <button
-      type="button"
-      class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-      data-carousel-next
+      <Image
+        src={salon3}
+        alt="Salon"
+        class="rounded w-100 align-middle"
+        loading="eager"
+      />
+      <Image
+        src={salon5}
+        alt="Utensilien"
+        class="rounded w-100 align-middle mt-4"
+        loading="eager"
+      />
+      <Image
+        src={salon7}
+        alt="Produkte"
+        class="rounded w-100 align-middle mt-4"
+        loading="eager"
+      />
+    </div>
+    <div
+      class="md:flex-[25%] md:max-w-[25%] sm:flex-[calc(50%_-_2rem)] sm:max-w-[calc(50%_-_2rem)] sm:translate-y-[-95vw] md:translate-y-0 flex-[100%] max-w-[100%]"
     >
-      <span
-        class="inline-flex items-center justify-center w-10 h-10 rounded-full dark:group-hover:bg-gray-800/60"
-      >
-        <svg
-          class="w-4 h-4 text-sax-tan"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 6 10"
-        >
-          <path
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="m1 9 4-4-4-4"></path>
-        </svg>
-        <span class="sr-only">Nächstes Bild</span>
-      </span>
-    </button>
+      <Image
+        src={salon8}
+        alt="Friseurinnen"
+        class="rounded w-100 align-middle"
+        loading="eager"
+      />
+      <Image
+        src={salon6}
+        alt="Bild"
+        class="rounded w-100 align-middle mt-4"
+        loading="eager"
+      />
+      <Image
+        src={salon4}
+        alt="Büsten"
+        class="rounded w-100 align-middle mt-4"
+        loading="eager"
+      />
+    </div>
   </div>
 </Card>
-<style>
-  [aria-current="true"] {
-    background-color: #d9be91 !important;
-    opacity: 1;
-  }
-</style>
