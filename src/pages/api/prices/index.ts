@@ -18,7 +18,19 @@ export const POST: APIRoute = async ({ redirect, request }) => {
   // populate();
   // return redirect("/admin#prices");
 
-  const formData = await request.formData();
+  let formData: any;
+
+  if (process.env.NODE_ENV === "development") {
+    formData = await request.formData();
+  } else {
+    // firebase cloud functions parse the request to json before sending it to Astro
+    // so we need to use the json content here instead of formData
+    // took me an entire day to figure out, so fuck you firebase
+    const obj = await request.json();
+    delete obj.message;
+    formData = Object.entries(obj);
+  }
+
   const prices = new Map<string, Partial<Price>>();
 
   for (const [key, value] of formData) {
