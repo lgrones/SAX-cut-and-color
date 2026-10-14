@@ -3,38 +3,20 @@ import { Image } from 'astro:assets';
 import Card from '../card/card.astro';
 import map from '../../assets/map.png';
 import ContactRow from './contactRow.astro';
+import { contact } from '../../data/contact';
 ---
 
 <Card title="Kontakt" id="contact">
   <div class="rows">
-    <ContactRow
-      title="Telefon"
-      href="tel:+436644213849"
-      value="+43 664 421 384 9"
-    />
-
-    <ContactRow
-      title="E-Mail"
-      href="mailto:petra.zangerl@chello.at"
-      value="petra.zangerl@chello.at"
-    />
-
-    <ContactRow
-      title="Adresse"
-      href="https://maps.app.goo.gl/xGp8EXpDn3pVrubA6"
-      external
-      value="Landstraße 46, 6911 Lochau"
-    />
+    <ContactRow title="Telefon" {...contact.phone} />
+    <ContactRow title="E-Mail" {...contact.email} />
+    <ContactRow title="Adresse" {...contact.address} external />
   </div>
 
   <div slot="image" class="map">
     <Image src={map} alt="Karte" loading="eager" class="map-image" />
 
-    <a
-      class="map-link text-link"
-      href="https://maps.app.goo.gl/xGp8EXpDn3pVrubA6"
-      target="_blank"
-    >
+    <a class="map-link text-link" href={contact.address.href} target="_blank">
       Zur Karte
     </a>
   </div>

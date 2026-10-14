@@ -1,13 +1,20 @@
 ---
 import { Image } from 'astro:assets';
 import logo from '../../assets/logo.png';
-import Link from './link.astro';
+
+const links = [
+  { name: 'Zeiten', id: 'opening-hours' },
+  { name: 'Kontakt', id: 'contact' },
+  { name: 'Preise', id: 'prices' },
+  { name: 'Angebote', id: 'offers' },
+  { name: 'Salon', id: 'salon' },
+];
 ---
 
 <header>
   <nav>
     <div class="bar">
-      <a href="/" class="logo logo-mobile">
+      <a href="/" class="logo">
         <Image src={logo} alt="SAX Logo" loading="eager" class="logo-image" />
       </a>
 
@@ -37,29 +44,17 @@ import Link from './link.astro';
 
       <div class="menu" id="navbar-default">
         <ul>
-          <li>
-            <Link name="Zeiten" link="opening-hours" />
-          </li>
-          <li>
-            <Link name="Kontakt" link="contact" />
-          </li>
-          <li>
-            <Link name="Preise" link="prices" />
-          </li>
-          <li>
-            <Link name="Angebote" link="offers" />
-          </li>
-          <li>
-            <Link name="Salon" link="salon" />
-          </li>
+          {links.map(({ name, id }) => (
+            <li>
+              <a href={`/#${id}`} class="link">
+                {name}
+              </a>
+            </li>
+          ))}
         </ul>
 
         <div id="overlay" class="overlay"></div>
       </div>
-
-      <a href="/" class="logo logo-desktop">
-        <Image src={logo} alt="SAX Logo" loading="eager" class="logo-image" />
-      </a>
     </div>
   </nav>
 </header>
@@ -89,10 +84,6 @@ import Link from './link.astro';
   .logo {
     display: flex;
     align-items: center;
-  }
-
-  .logo-desktop {
-    display: none;
   }
 
   .logo-image {
@@ -142,6 +133,37 @@ import Link from './link.astro';
     line-height: 1.75rem;
   }
 
+  .link {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    color: var(--sax-tan);
+    border-radius: 0.25rem;
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    transition-property: color, background-color, text-decoration-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+
+    &:hover {
+      color: var(--sax-dark);
+      background-color: var(--sax-tan);
+    }
+
+    @media (min-width: 768px) {
+      padding: 0;
+
+      &:hover {
+        color: var(--sax-tan);
+        background-color: transparent;
+        text-decoration-color: var(--sax-tan);
+      }
+    }
+  }
+
   .overlay {
     position: absolute;
     width: 100%;
@@ -152,6 +174,37 @@ import Link from './link.astro';
   @media (min-width: 768px) {
     .logo-mobile,
     .burger,
+    .link {
+      display: block;
+      padding: 0.5rem 0.75rem;
+      font-size: 1.25rem;
+      line-height: 1.75rem;
+      color: var(--sax-tan);
+      border-radius: 0.25rem;
+      text-decoration-line: underline;
+      text-decoration-color: transparent;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+      transition-property: color, background-color, text-decoration-color;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 300ms;
+
+      &:hover {
+        color: var(--sax-dark);
+        background-color: var(--sax-tan);
+      }
+
+      @media (min-width: 768px) {
+        padding: 0;
+
+        &:hover {
+          color: var(--sax-tan);
+          background-color: transparent;
+          text-decoration-color: var(--sax-tan);
+        }
+      }
+    }
+
     .overlay {
       display: none;
     }

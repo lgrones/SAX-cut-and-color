@@ -2,17 +2,17 @@
 interface Props {
   title: string;
   href: string;
-  value: string;
+  label: string;
   external?: boolean;
 }
 
-const { title, href, value, external } = Astro.props;
+const { title, href, label, external } = Astro.props;
 ---
 
 <div class="row">
   <div class="title">{title}</div>
   <a href={href} target={external ? '_blank' : undefined} class="text-link">
-    {value}
+    {label}
   </a>
 </div>
 

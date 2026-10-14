@@ -5,24 +5,22 @@ type Props = OpeningHours;
 
 const { day, timeAmStart, timeAmEnd, timePmStart, timePmEnd, closed } =
   Astro.props;
-const hasAmTimes = !!timeAmStart && !!timeAmEnd;
-const hasPmTimes = !!timePmStart && !!timePmEnd;
-const isClosed = closed || (!hasAmTimes && !hasPmTimes);
+
+const ranges = [
+  [timeAmStart, timeAmEnd],
+  [timePmStart, timePmEnd],
+].filter(([start, end]) => start && end);
 ---
 
-{isClosed ? null : (
+{!closed && ranges.length > 0 && (
   <div class="day">
     <div class="name">{day}</div>
     <div>
-      {timeAmStart}
-      {timeAmEnd && ` - ${timeAmEnd}`} Uhr
-      {hasPmTimes && (
-        <>
-          {hasAmTimes && <br />}
-          {timePmStart}
-          {timePmEnd && ` - ${timePmEnd}`} Uhr
-        </>
-      )}
+      {ranges.map(([start, end]) => (
+        <div>
+          {start} - {end} Uhr
+        </div>
+      ))}
     </div>
   </div>
 )}

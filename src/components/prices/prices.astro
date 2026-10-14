@@ -1,31 +1,22 @@
 ---
 import Card from '../card/card.astro';
-import { getFirestore } from 'firebase-admin/firestore';
-import { app } from '../../firebase/server';
+import { getCollection } from '../../firebase/server';
 import PriceRow from './priceRow.astro';
 import type { Price } from '../../types';
-import { getGridPos } from '../../utils/gridPos';
 
-const db = getFirestore(app);
-const ref = db.collection('prices');
-const snapshot = await ref.get();
-const prices = (snapshot.docs.map(doc => doc.data()) as Price[]).toSorted(
-  (a, b) => a.index - b.index,
-);
+const categories = await getCollection<Price>('prices');
 ---
 
 <div>
   <div id="prices" class="staggered-grid">
-    {prices.map(({ mainTitle, prices }, i) => (
-      <div class={getGridPos(i)}>
-        <Card title={mainTitle} subTitle="Preise" id={mainTitle}>
-          <div class="rows">
-            {prices.map(price => (
-              <PriceRow {...price} />
-            ))}
-          </div>
-        </Card>
-      </div>
+    {categories.map(({ mainTitle, prices }) => (
+      <Card title={mainTitle} subTitle="Preise">
+        <div class="rows">
+          {prices.map(price => (
+            <PriceRow {...price} />
+          ))}
+        </div>
+      </Card>
     ))}
   </div>
 

@@ -7,23 +7,32 @@ import salon5 from '../../assets/salon/salon5.jpg';
 import salon7 from '../../assets/salon/salon7.jpeg';
 import salon8 from '../../assets/salon/salon8.jpeg';
 import { Image } from 'astro:assets';
+
+const columns = [
+  [
+    { src: salon2, alt: 'Salon' },
+    { src: salon5, alt: 'Utensilien' },
+  ],
+  [
+    { src: salon3, alt: 'Salon' },
+    { src: salon7, alt: 'Produkte' },
+  ],
+  [
+    { src: salon8, alt: 'Friseurinnen' },
+    { src: salon4, alt: 'Büsten' },
+  ],
+];
 ---
 
 <Card title="Salon" id="salon">
   <div class="gallery">
-    <div class="column column-1">
-      <Image src={salon2} alt="Salon" class="photo" loading="eager" />
-      <Image src={salon5} alt="Utensilien" class="photo" loading="eager" />
-    </div>
-    <div class="column column-2">
-      <Image src={salon3} alt="Salon" class="photo" loading="eager" />
-
-      <Image src={salon7} alt="Produkte" class="photo" loading="eager" />
-    </div>
-    <div class="column column-3">
-      <Image src={salon8} alt="Friseurinnen" class="photo" loading="eager" />
-      <Image src={salon4} alt="Büsten" class="photo" loading="eager" />
-    </div>
+    {columns.map((photos, i) => (
+      <div class={`column column-${i + 1}`}>
+        {photos.map(({ src, alt }) => (
+          <Image src={src} alt={alt} class="photo" />
+        ))}
+      </div>
+    ))}
   </div>
 </Card>
 

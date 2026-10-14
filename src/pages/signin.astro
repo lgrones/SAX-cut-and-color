@@ -9,14 +9,12 @@ import Card from '../components/card/card.astro';
 
 const auth = getAuth(app);
 
-if (Astro.cookies.has('__session')) {
-  try {
-    const sessionCookie = Astro.cookies.get('__session')?.value ?? '';
-    const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+const sessionCookie = Astro.cookies.get('__session')?.value;
 
-    if (decodedCookie) {
-      return Astro.redirect('/admin');
-    }
+if (sessionCookie) {
+  try {
+    await auth.verifySessionCookie(sessionCookie);
+    return Astro.redirect('/admin');
   } catch (error) {
     logError('signin', error);
   }
@@ -51,13 +49,19 @@ if (Astro.cookies.has('__session')) {
             class="input input-lg"
             required
           />
-          <span class="toggle">
+          <button
+            type="button"
+            id="toggle"
+            class="toggle"
+            aria-label="Passwort anzeigen"
+            aria-pressed="false"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
               height="20"
               fill="currentColor"
-              id="show"
+              class="show"
             >
               <path d="m0,10a15,28 0 0,0 20,0 15,28 0 0,0-20,0m14.4 0a4.5,4.5 0 1,1 0-.1zm-2,0a2.4,2.4 0 1,0 0 .1z"></path>
             </svg>
@@ -68,8 +72,7 @@ if (Astro.cookies.has('__session')) {
               height="20"
               fill="currentColor"
               viewBox="0 0 17 15"
-              id="hide"
-              class="hidden"
+              class="hide"
             >
               <path
                 d="M1.99 1.99a1 1 0 00-.697 1.717l11 11a1 1 0 101.414-1.414l-.912-.912a8 8 0 002.943-4.391A8 8 0 008 2a8 8 0 00-4.303 1.283l-.99-.99a1 1 0 00-.717-.303zM8 4a4 4 0 014 4 4 4 0 01-.977 2.61L5.39 4.973A4 4 0 018 4zM1.273 5.687A8 8 0 00.262 8.01 8 8 0 008 14a8 8 0 001.445-.14l-1.884-1.885a4 4 0 01-3.532-3.531z"
@@ -77,7 +80,7 @@ if (Astro.cookies.has('__session')) {
               ></path>
               <path d="M10 8a2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 012 2z"></path>
             </svg>
-          </span>
+          </button>
         </div>
       </div>
 
@@ -135,13 +138,14 @@ if (Astro.cookies.has('__session')) {
   }
 
   .toggle {
+    position: absolute;
+    top: 2.85rem;
+    right: 1rem;
     color: var(--sax-tan);
 
-    & svg {
-      position: absolute;
-      top: 2.85rem;
-      right: 1rem;
-      cursor: pointer;
+    &[aria-pressed='false'] .hide,
+    &[aria-pressed='true'] .show {
+      display: none;
     }
   }
 
@@ -173,10 +177,6 @@ if (Astro.cookies.has('__session')) {
   .invisible {
     visibility: hidden;
   }
-
-  .hidden {
-    display: none;
-  }
 </style>
 
 <script>
@@ -187,74 +187,53 @@ if (Astro.cookies.has('__session')) {
   } from 'firebase/auth';
   import { app } from '../firebase/client';
 
-  const inputs = document.querySelectorAll('input');
-
-  inputs.forEach(input => {
-    input.addEventListener('keydown', () =>
-      document.getElementById('validation')?.classList.add('invisible'),
-    );
-  });
-
-  const show = document.getElementById('show');
-  const hide = document.getElementById('hide');
-  const password = [...inputs].find(x => x.id === 'password');
-
-  show?.addEventListener('click', () => {
-    show.classList.add('hidden');
-    hide?.classList.remove('hidden');
-
-    if (password) password.type = 'text';
-  });
-
-  hide?.addEventListener('click', () => {
-    hide.classList.add('hidden');
-    show?.classList.remove('hidden');
-
-    if (password) password.type = 'password';
-  });
-
+  const form = document.querySelector('form');
+  const password = document.querySelector<HTMLInputElement>('#password');
+  const toggle = document.getElementById('toggle');
   const loader = document.getElementById('loader');
+  const validation = document.getElementById('validation');
+
+  const setLoading = (loading: boolean) => {
+    if (loader) loader.hidden = !loading;
+  };
+
+  form?.addEventListener('input', () => validation?.classList.add('invisible'));
+
+  toggle?.addEventListener('click', () => {
+    if (!password) return;
+
+    const show = password.type === 'password';
+    password.type = show ? 'text' : 'password';
+    toggle.setAttribute('aria-pressed', String(show));
+  });
 
   const auth = getAuth(app);
   // This will prevent the browser from storing session data
   auth.setPersistence(inMemoryPersistence);
 
-  const form = document.querySelector('form') as HTMLFormElement;
-  form.addEventListener('submit', async e => {
+  form?.addEventListener('submit', async e => {
     e.preventDefault();
-
-    if (loader) loader.hidden = false;
+    setLoading(true);
 
     const formData = new FormData(form);
-    const email = formData.get('email')?.toString();
-    const password = formData.get('password')?.toString();
-
-    if (!email || !password) {
-      return;
-    }
 
     try {
-      const userCredential = await signInWithEmailAndPassword(
+      const { user } = await signInWithEmailAndPassword(
         auth,
-        email,
-        password,
+        String(formData.get('email')),
+        String(formData.get('password')),
       );
 
-      const idToken = await userCredential.user.getIdToken();
-
       const response = await fetch('/api/auth/signin', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
+        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
       });
 
-      if (response.redirected) {
-        window.location.assign(response.url);
-      }
-    } catch (error) {
-      if (loader) loader.hidden = true;
-      document.getElementById('validation')?.classList.remove('invisible');
+      if (!response.redirected) throw new Error(await response.text());
+
+      window.location.assign(response.url);
+    } catch {
+      setLoading(false);
+      validation?.classList.remove('invisible');
     }
   });
 </script>

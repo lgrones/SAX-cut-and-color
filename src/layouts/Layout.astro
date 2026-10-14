@@ -10,25 +10,30 @@ interface Props {
 }
 
 const { title, disableScrollSmooth } = Astro.props;
+
+const description =
+  'Entdecken Sie bei SAX die Kunst der Haarpflege und des Stylings. ' +
+  'Unsere erfahrene Friseurin verwöhnt Sie mit maßgeschneiderten Schnitten, ' +
+  'trendigen Farben und professionellen Pflegebehandlungen. Vereinbaren Sie ' +
+  'noch heute einen Termin und erleben Sie Schönheit und Entspannung in ' +
+  'unserem gemütlichen Salon.';
 ---
 
 <!doctype html>
-<html lang="en" class:list={{ 'scroll-smooth': !disableScrollSmooth }}>
+<html lang="de" class:list={{ 'scroll-smooth': !disableScrollSmooth }}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <SEOMetadata
-      siteName={'Sax Cut + Colour'}
+      siteName="Sax Cut + Colour"
       title={title}
-      description={
-        'Entdecken Sie bei SAX die Kunst der Haarpflege und des Stylings. Unsere erfahrene Friseurin verwöhnt Sie mit maßgeschneiderten Schnitten, trendigen Farben und professionellen Pflegebehandlungen. Vereinbaren Sie noch heute einen Termin und erleben Sie Schönheit und Entspannung in unserem gemütlichen Salon.'
-      }
-      favicon={'/favicon.png'}
+      description={description}
+      favicon="/favicon.png"
       author="Petra Zangerl"
-      astroSitemap={true}
+      astroSitemap
       canonicalUrl={Astro.url.toString()}
-      type={'website'}
-      astroGenerator={true}
+      type="website"
+      astroGenerator
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

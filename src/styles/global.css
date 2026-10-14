@@ -136,7 +136,7 @@ textarea {
   }
 }
 
-/* staggered grid used by prices and offers */
+/* staggered grid used by prices and offers, pattern repeats every 4 cards */
 
 .staggered-grid {
   display: grid;
@@ -153,8 +153,7 @@ textarea {
       grid-column: span 5 / span 5;
     }
 
-    & > :where(.pos-a),
-    & > :where(.pos-c) {
+    & > :where(:nth-child(even)) {
       grid-column-start: 2;
     }
   }
@@ -170,15 +169,15 @@ textarea {
       grid-column: span 2 / span 2;
     }
 
-    & > :where(.pos-a) {
+    & > :where(:nth-child(4n)) {
       grid-column-end: 7;
     }
 
-    & > :where(.pos-b) {
+    & > :where(:nth-child(4n + 3)) {
       grid-column-start: 2;
     }
 
-    & > :where(.pos-c) {
+    & > :where(:nth-child(4n + 2)) {
       grid-column-end: 6;
     }
   }
