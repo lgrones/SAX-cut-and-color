@@ -3,7 +3,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { error as logError } from 'firebase-functions/logger';
 
 import { app } from '../../../firebase/server';
-import type { Price } from '../../../types';
+import { readFormEntries } from '../../../utils/formEntries';
 
 export const prerender = false;
 // import data from "../../../../backups/prices.json";
@@ -17,72 +17,53 @@ const ref = db.collection('prices');
 //   }
 // };
 
+type Fields = Record<string, string | number | boolean>;
+
+const hasDelete = (fields: Fields) =>
+  Object.keys(fields).some(x => x.includes('delete'));
+
+const parsePriceField = (field: string, value: string) => {
+  if (field === 'title') return value;
+  if (field.includes('price')) return parseFloat(value) || '';
+  return value === 'on';
+};
+
 export const POST: APIRoute = async ({ redirect, request }) => {
   // populate();
   // return redirect("/admin#prices");
 
-  let formData: any;
+  const blocks = new Map<string, { fields: Fields; prices?: Fields[] }>();
 
-  if (import.meta.env.DEV) {
-    formData = await request.formData();
-  } else {
-    // firebase cloud functions parse the request to json before sending it to Astro
-    // so we need to use the json content here instead of formData
-    // took me an entire day to figure out, so fuck you firebase
-    const obj = await request.json();
-    delete obj.message;
-    formData = Object.entries(obj);
-  }
+  for (const [key, value] of await readFormEntries(request)) {
+    const [id, field, index] = key.split('-');
+    if (!id || !field) continue;
 
-  const prices = new Map<string, Partial<Price>>();
+    const block = blocks.get(id) ?? { fields: {} };
+    blocks.set(id, block);
 
-  for (const [key, value] of formData) {
-    const keyParts = key.split('-');
-    const id = keyParts[0];
-    const field = keyParts[1];
-    const index = keyParts[2];
-    const isPrices = !!index;
-
-    if (isPrices) {
-      if (!prices.has(id)) prices.set(id, { prices: [] });
-
-      if (!prices.get(id)!.prices) prices.get(id)!.prices = [];
-
-      const pricesList = prices.get(id)!.prices!;
-
-      pricesList[parseInt(index)] = {
-        ...pricesList[parseInt(index)],
-        [field]:
-          field === 'title'
-            ? value.toString()
-            : field.includes('price')
-              ? parseFloat(value.toString()) || ''
-              : value.toString() === 'on',
+    if (index) {
+      const i = parseInt(index);
+      block.prices ??= [];
+      block.prices[i] = {
+        ...block.prices[i],
+        [field]: parsePriceField(field, value),
       };
-
-      continue;
+    } else {
+      block.fields[field] = value;
     }
-
-    prices.set(id, { ...prices.get(id), [field]: value.toString() });
   }
 
-  const validPrices = [...prices].filter(
-    ([id, data]) =>
-      !id.startsWith('new') ||
-      !Object.keys(data).find(x => x.includes('delete')),
-  );
+  for (const [id, { fields, prices }] of blocks) {
+    if (hasDelete(fields) && id.startsWith('new')) continue;
 
-  for (const validPrice of validPrices) {
-    validPrice[1].prices = validPrice[1].prices?.filter(
-      x => !Object.keys(x).find(y => y.includes('delete')),
-    );
-  }
+    const data = prices
+      ? { ...fields, prices: prices.filter(x => !hasDelete(x)) }
+      : fields;
 
-  for (const [id, data] of validPrices) {
     try {
       if (id.startsWith('new')) {
         await ref.add(data);
-      } else if (Object.keys(data).find(x => x.includes('delete'))) {
+      } else if (hasDelete(fields)) {
         await ref.doc(id).delete();
       } else {
         await ref.doc(id).update(data);

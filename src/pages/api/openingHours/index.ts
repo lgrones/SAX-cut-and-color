@@ -3,7 +3,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { error as logError } from 'firebase-functions/logger';
 
 import { app } from '../../../firebase/server';
-import type { OpeningHours } from '../../../types';
+import { readFormEntries } from '../../../utils/formEntries';
 
 export const prerender = false;
 // import data from "../../../../backups/openingHours.json";
@@ -21,38 +21,22 @@ export const POST: APIRoute = async ({ redirect, request }) => {
   // populate();
   // return redirect("/admin#times");
 
-  let formData: any;
+  const days = new Map<string, Record<string, string | boolean>>();
 
-  if (import.meta.env.DEV) {
-    formData = await request.formData();
-  } else {
-    // firebase cloud functions parse the request to json before sending it to Astro
-    // so we need to use the json content here instead of formData
-    // took me an entire day to figure out, so fuck you firebase
-    const obj = await request.json();
-    delete obj.message;
-    formData = Object.entries(obj);
-  }
-
-  const days = new Map<string, Partial<Omit<OpeningHours, 'index'>>>();
-
-  for (const [key, value] of formData) {
-    const keyParts = key.split('-');
-    const id = keyParts[0];
-    const field = keyParts[1];
+  for (const [key, value] of await readFormEntries(request)) {
+    const [id, field] = key.split('-');
+    if (!id || !field) continue;
 
     days.set(id, {
       ...days.get(id),
-      [field]:
-        field === 'closed' ? value.toString() === 'on' : value.toString(),
+      [field]: field === 'closed' ? value === 'on' : value,
     });
   }
 
   for (const [id, data] of days) {
-    if (!Object.keys(data).includes('closed')) data.closed = false;
-
     try {
-      await ref.doc(id).update(data);
+      // unchecked checkboxes are not submitted
+      await ref.doc(id).update({ closed: false, ...data });
     } catch (error) {
       logError('times', error);
       return new Response('Something went wrong', { status: 500 });

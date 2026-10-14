@@ -37,6 +37,7 @@ const offers = snapshot.docs
 
     if (
       hasDelete &&
+      // oxlint-disable-next-line no-alert -- native dialog is enough for the admin area
       !confirm('Sollen die gewählten Einträge wirklich gelöscht werden?')
     ) {
       e.preventDefault();

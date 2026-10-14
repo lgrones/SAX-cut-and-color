@@ -5,12 +5,10 @@
   --stone-800: #292524;
   --stone-900: #1c1917;
   --red-500: #ef4444;
-
-  --font-sans: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-sans: 'Segoe UI', tahoma, geneva, verdana, sans-serif;
   --font-cormorant:
-    'Cormorant Garamond', ui-serif, Georgia, Cambria, 'Times New Roman', Times,
+    'Cormorant Garamond', ui-serif, georgia, cambria, 'Times New Roman', times,
     serif;
-
   --header-height: 100px;
 
   color-scheme: dark;
@@ -36,7 +34,7 @@
 html {
   font-family: var(--font-sans);
   line-height: 1.5;
-  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   tab-size: 4;
 }
 
@@ -115,7 +113,7 @@ textarea {
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border-width: 0;
 }
@@ -255,7 +253,7 @@ textarea {
 
   &:checked {
     border-color: transparent;
-    background-color: currentColor;
+    background-color: currentcolor;
     background-image: url("data:image/svg+xml,%3csvg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 12'%3e %3cpath stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M1 5.917 5.724 10.5 15 1.5'/%3e %3c/svg%3e");
     background-size: 0.55em 0.55em;
     background-position: center;
@@ -295,7 +293,7 @@ textarea {
   border-radius: 0.5rem;
 
   &:hover {
-    background-color: rgb(217 190 145 / 0.9);
+    background-color: rgb(217 190 145 / 90%);
   }
 
   @media (min-width: 640px) {
@@ -309,7 +307,7 @@ textarea {
   border: 2px solid var(--stone-600);
 
   &:hover {
-    background-color: rgb(41 37 36 / 0.7);
+    background-color: rgb(41 37 36 / 70%);
   }
 
   &:disabled {

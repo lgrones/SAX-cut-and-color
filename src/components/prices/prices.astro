@@ -20,12 +20,8 @@ const prices = (snapshot.docs.map(doc => doc.data()) as Price[]).toSorted(
       <div class={getGridPos(i)}>
         <Card title={mainTitle} subTitle="Preise" id={mainTitle}>
           <div class="rows">
-            {prices.map(({ title: priceTitle, priceMin, priceMax }) => (
-              <PriceRow
-                title={priceTitle}
-                priceMin={priceMin}
-                priceMax={priceMax}
-              />
+            {prices.map(price => (
+              <PriceRow {...price} />
             ))}
           </div>
         </Card>

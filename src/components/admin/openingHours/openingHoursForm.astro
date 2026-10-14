@@ -128,19 +128,16 @@ const openingHours = snapshot.docs
   const checkboxes = [...inputs].filter(x => x.type === 'checkbox');
 
   checkboxes.forEach(x =>
-    x.addEventListener('change', e => {
-      if (!e.target) return;
+    x.addEventListener('change', () => {
+      const day = x.id.split('-')[0] ?? x.id;
 
-      // @ts-ignore
-      if (e.target.checked)
+      if (x.checked)
         textInputs
-          // @ts-ignore
-          .filter(y => y.id.startsWith(e.target.id.split('-')[0]))
+          .filter(y => y.id.startsWith(day))
           .forEach(y => (y.disabled = true));
       else
         textInputs
-          // @ts-ignore
-          .filter(y => y.id.startsWith(e.target.id.split('-')[0]))
+          .filter(y => y.id.startsWith(day))
           .forEach(y => {
             y.disabled = false;
             y.required = y.id.includes('timeAm');

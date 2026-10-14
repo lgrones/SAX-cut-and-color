@@ -134,7 +134,7 @@ export const InputElements = ({
           Löschen
         </label>
 
-        {currPrices?.map((x, i) => (
+        {currPrices.map((x, i) => (
           <InputElement
             {...x}
             id={id}

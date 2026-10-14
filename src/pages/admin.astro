@@ -3,6 +3,7 @@ export const prerender = false;
 
 import { app } from '../firebase/server';
 import { getAuth } from 'firebase-admin/auth';
+import { error as logError } from 'firebase-functions/logger';
 import Layout from '../layouts/Layout.astro';
 import OpeningHoursForm from '../components/admin/openingHours/openingHoursForm.astro';
 import PricesForm from '../components/admin/prices/pricesForm.astro';
@@ -15,14 +16,14 @@ if (!Astro.cookies.has('__session')) {
 try {
   const auth = getAuth(app);
 
-  const sessionCookie = Astro.cookies.get('__session')!.value;
+  const sessionCookie = Astro.cookies.get('__session')?.value ?? '';
   const decodedCookie = await auth.verifySessionCookie(sessionCookie);
 
   if (!decodedCookie) {
     return Astro.redirect('/signin');
   }
 } catch (error) {
-  console.error(error);
+  logError('admin', error);
   return Astro.redirect('/signin');
 }
 ---

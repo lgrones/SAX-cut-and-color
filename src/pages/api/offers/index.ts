@@ -3,7 +3,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { error as logError } from 'firebase-functions/logger';
 
 import { app } from '../../../firebase/server';
-import type { Offer } from '../../../types';
+import { readFormEntries } from '../../../utils/formEntries';
 
 export const prerender = false;
 // import data from "../../../../backups/offers.json";
@@ -21,27 +21,13 @@ export const POST: APIRoute = async ({ redirect, request }) => {
   // populate();
   // return redirect("/admin#offers");
 
-  let formData: any;
+  const offers = new Map<string, Record<string, string>>();
 
-  if (import.meta.env.DEV) {
-    formData = await request.formData();
-  } else {
-    // firebase cloud functions parse the request to json before sending it to Astro
-    // so we need to use the json content here instead of formData
-    // took me an entire day to figure out, so fuck you firebase
-    const obj = await request.json();
-    delete obj.message;
-    formData = Object.entries(obj);
-  }
+  for (const [key, value] of await readFormEntries(request)) {
+    const [id, field] = key.split('-');
+    if (!id || !field) continue;
 
-  const offers = new Map<string, Partial<Offer>>();
-
-  for (const [key, value] of formData) {
-    const keyParts = key.split('-');
-    const id = keyParts[0];
-    const field = keyParts[1];
-
-    offers.set(id, { ...offers.get(id), [field]: value.toString() });
+    offers.set(id, { ...offers.get(id), [field]: value });
   }
 
   const validOffers = [...offers].filter(

@@ -3,6 +3,7 @@ export const prerender = false;
 
 import { app } from '../firebase/server';
 import { getAuth } from 'firebase-admin/auth';
+import { error as logError } from 'firebase-functions/logger';
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/card/card.astro';
 
@@ -10,14 +11,14 @@ const auth = getAuth(app);
 
 if (Astro.cookies.has('__session')) {
   try {
-    const sessionCookie = Astro.cookies.get('__session')!.value;
+    const sessionCookie = Astro.cookies.get('__session')?.value ?? '';
     const decodedCookie = await auth.verifySessionCookie(sessionCookie);
 
     if (decodedCookie) {
       return Astro.redirect('/admin');
     }
   } catch (error) {
-    console.error(error);
+    logError('signin', error);
   }
 }
 ---
@@ -196,19 +197,20 @@ if (Astro.cookies.has('__session')) {
 
   const show = document.getElementById('show');
   const hide = document.getElementById('hide');
+  const password = [...inputs].find(x => x.id === 'password');
 
   show?.addEventListener('click', () => {
     show.classList.add('hidden');
     hide?.classList.remove('hidden');
 
-    [...inputs].find(x => x.id === 'password')!.type = 'text';
+    if (password) password.type = 'text';
   });
 
   hide?.addEventListener('click', () => {
     hide.classList.add('hidden');
     show?.classList.remove('hidden');
 
-    [...inputs].find(x => x.id === 'password')!.type = 'password';
+    if (password) password.type = 'password';
   });
 
   const loader = document.getElementById('loader');

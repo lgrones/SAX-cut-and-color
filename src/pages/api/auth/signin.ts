@@ -27,12 +27,11 @@ export const GET: APIRoute = async ({ request, cookies, redirect }) => {
     expiresIn: fiveDays,
   });
 
-  cookies.set(
-    '__session',
-    sessionCookie,
-    // @ts-ignore
-    { path: '/', httpOnly: true, secure: true },
-  );
+  cookies.set('__session', sessionCookie, {
+    path: '/',
+    httpOnly: true,
+    secure: true,
+  });
 
   return redirect('/admin');
 };
