@@ -1,4 +1,4 @@
-import type { OpeningHours } from '@domain/openingHours';
+import { OpeningHours } from '@domain/openingHours';
 import { Firebase } from '@services/firebase';
 
 import { mapOpeningHours } from './mapOpeningHours';
@@ -7,5 +7,5 @@ import { mapOpeningHours } from './mapOpeningHours';
 export const getOpeningHours = async (): Promise<OpeningHours[]> => {
   const documents = await Firebase.getDocuments('openingHours');
 
-  return documents.map(mapOpeningHours).toSorted((a, b) => a.index - b.index);
+  return OpeningHours.week(documents.map(mapOpeningHours));
 };

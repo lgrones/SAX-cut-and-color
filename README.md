@@ -22,7 +22,8 @@ The salon owner keeps prices, offers and opening hours up to date in a password-
 ## Development
 
 ```sh
-# start the local database, then the site
+# start the local database and auth, then the site
+# (add an admin user at http://localhost:4000/auth; data is kept on exit)
 pnpm firebase:emulators
 pnpm dev
 

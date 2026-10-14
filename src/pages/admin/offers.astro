@@ -1,0 +1,18 @@
+---
+export const prerender = false;
+
+import { getOffers } from '@business/offers/getOffers';
+import AdminLayout from '@presentation/layouts/AdminLayout.astro';
+import { OffersEditor } from '@presentation/components/admin/offers/offersEditor';
+
+// Access is checked by the auth middleware
+const offers = await getOffers();
+---
+
+<AdminLayout
+  section="offers"
+  title="Angebote"
+  description="Erscheinen auf der Startseite in dieser Reihenfolge. Zum Ändern antippen, zum Verschieben am Griff ziehen."
+>
+  <OffersEditor offers={offers} client:load />
+</AdminLayout>

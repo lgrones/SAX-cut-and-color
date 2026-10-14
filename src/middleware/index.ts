@@ -8,6 +8,7 @@ const PUBLIC_API_ROUTES = new Set(['/api/auth/signin', '/api/auth/signout']);
 
 const isProtected = (route: string) =>
   route === '/admin' ||
+  route.startsWith('/admin/') ||
   (route.startsWith('/api/') && !PUBLIC_API_ROUTES.has(route));
 
 // Routes that read the session but stay reachable without one

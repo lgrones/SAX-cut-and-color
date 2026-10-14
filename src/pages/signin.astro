@@ -9,7 +9,8 @@ import Card from '@presentation/components/card/card.astro';
 
 <Layout title="Admin Bereich Login">
   <Card title="Admin Bereich Login" id="login">
-    <form>
+    <!-- post so a failed script never puts the password in the URL -->
+    <form method="post">
       <div class="fields">
         <div>
           <label for="email" class="label">

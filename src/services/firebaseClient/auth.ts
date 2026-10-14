@@ -1,4 +1,5 @@
 import {
+  connectAuthEmulator,
   getAuth,
   inMemoryPersistence,
   signInWithEmailAndPassword,
@@ -8,6 +9,11 @@ import {
 import { app } from './app';
 
 const auth = getAuth(app);
+
+if (import.meta.env.DEV) {
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099');
+}
+
 // This will prevent the browser from storing session data
 void auth.setPersistence(inMemoryPersistence);
 

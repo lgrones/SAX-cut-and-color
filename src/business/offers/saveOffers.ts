@@ -1,29 +1,50 @@
+import { Offer } from '@domain/offer';
 import { Firebase } from '@services/firebase';
+import { z } from 'astro/zod';
 
-const isDeleted = (data: Record<string, string>) =>
-  Object.keys(data).some(x => x.includes('delete'));
+import { getOffers } from './getOffers';
 
-/**
- * Applies the admin form: adds offers with a `new` id, deletes the ones marked
- * for deletion and updates the rest. Form keys are `<id>-<field>`.
- */
-export const saveOffers = async (entries: [string, string][]) => {
-  const offers = new Map<string, Record<string, string>>();
+// The whole list in its new order. An offer without an id is new. Deletions
+// are explicit, so an offer added elsewhere since the list was loaded survives.
+const schema = z.object({
+  offers: z.array(
+    z.object({
+      id: z.string().min(1).optional(),
+      title: z.string(),
+      text: z.string(),
+    }),
+  ),
+  deleted: z.array(z.string().min(1)),
+});
 
-  for (const [key, value] of entries) {
-    const [id, field] = key.split('-');
-    if (!id || !field) continue;
+export type SaveOffersResult =
+  | { ok: true; offers: Offer[] }
+  | { ok: false; message: string };
 
-    offers.set(id, { ...offers.get(id), [field]: value });
+/** Applies the admin's list and returns all offers as now stored */
+export const saveOffers = async (input: unknown): Promise<SaveOffersResult> => {
+  const parsed = schema.safeParse(input);
+  if (!parsed.success) return { ok: false, message: 'Ungültige Eingabe' };
+
+  const { offers, deleted } = parsed.data;
+
+  if (offers.some(x => x.id && deleted.includes(x.id))) {
+    return { ok: false, message: 'Ungültige Eingabe' };
   }
 
-  for (const [id, data] of offers) {
-    if (id.startsWith('new')) {
-      if (!isDeleted(data)) await Firebase.addDocument('offers', data);
-    } else if (isDeleted(data)) {
-      await Firebase.deleteDocument('offers', id);
-    } else {
-      await Firebase.updateDocument('offers', id, data);
-    }
+  const problem = offers.map(Offer.problem).find(x => x);
+  if (problem) return { ok: false, message: problem };
+
+  for (const id of deleted) {
+    await Firebase.deleteDocument('offers', id);
   }
+
+  for (const [index, { id, title, text }] of offers.entries()) {
+    const data = { title: title.trim(), text: text.trim(), index };
+
+    if (id) await Firebase.updateDocument('offers', id, data);
+    else await Firebase.addDocument('offers', data);
+  }
+
+  return { ok: true, offers: await getOffers() };
 };

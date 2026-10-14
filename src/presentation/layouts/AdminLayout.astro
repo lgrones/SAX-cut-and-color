@@ -1,0 +1,132 @@
+---
+import '../styles/admin.css';
+
+export type AdminSection = 'hours' | 'prices' | 'offers';
+
+interface Props {
+  section: AdminSection;
+  title: string;
+  description: string;
+}
+
+const { section, title, description } = Astro.props;
+
+// 24×24 stroke icons, drawn with currentColor
+const sections: { id: AdminSection; label: string; icon: string }[] = [
+  {
+    id: 'hours',
+    label: 'Öffnungszeiten',
+    icon: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  },
+  {
+    id: 'prices',
+    label: 'Preise',
+    icon: '<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="8" cy="8" r="1.5"/>',
+  },
+  {
+    id: 'offers',
+    label: 'Angebote',
+    icon: '<path d="m12 3 2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/>',
+  },
+];
+
+const email = Astro.locals.user?.email;
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/favicon.png" />
+    <title>{title} · SAX Admin</title>
+  </head>
+
+  <body>
+    <div class="admin">
+      <aside class="sidebar">
+        <a href="/admin" class="brand">
+          SAX <span>Admin</span>
+        </a>
+
+        <nav aria-label="Admin" class="nav-area">
+          <ul class="nav">
+            {sections.map(x => (
+              <li>
+                <a
+                  href={'/admin/' + x.id}
+                  class="nav-link"
+                  aria-current={x.id === section ? 'page' : undefined}
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.75"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    set:html={x.icon}
+                  />
+                  {x.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+          {email && <p class="nav-user">{email}</p>}
+
+          <a href="/" class="nav-action" target="_blank">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path>
+            </svg>
+            Website ansehen
+          </a>
+
+          <form method="post" action="/api/auth/signout">
+            <button type="submit" class="nav-action">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M9 20H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h4M16 16l4-4-4-4M20 12H9"></path>
+              </svg>
+              Abmelden
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="page-header">
+          <h1>{title}</h1>
+          <p>{description}</p>
+        </header>
+
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>

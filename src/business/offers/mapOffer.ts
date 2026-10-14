@@ -1,7 +1,7 @@
 import type { Offer } from '@domain/offer';
 import type { FirestoreDocument } from '@services/firebase';
 
-// The admin form stores `index` as a string
+// The old admin form stored `index` as a string
 export const mapOffer = ({
   id,
   data: { index, ...data },

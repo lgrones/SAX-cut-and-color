@@ -3,6 +3,7 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 
 if (import.meta.env.DEV) {
   process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
+  process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:9099';
 }
 
 export const app =

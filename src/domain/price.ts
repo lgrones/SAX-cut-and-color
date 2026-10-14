@@ -2,6 +2,7 @@
 export interface Price {
   id: string;
   mainTitle: string;
+  /** Place in the list, first 0 */
   index: number;
   prices: PriceItem[];
 }
@@ -31,4 +32,31 @@ const label = (item: PriceItem): string =>
     ? 'Absprache im Salon'
     : formatRange(item.priceMin, item.priceMax);
 
-export const PriceItem = { label };
+/** Why a service can't be saved, if it can't */
+const itemProblem = (item: PriceItem): string | undefined => {
+  if (!item.title.trim()) return 'Bezeichnung fehlt';
+  if (item.salon) return undefined;
+  if (item.priceMin === undefined) return 'Preis fehlt';
+  if (!(item.priceMin > 0)) return 'Ungültiger Preis';
+  if (item.priceMax !== undefined && !(item.priceMax >= item.priceMin))
+    return '„bis“ liegt unter „von“';
+
+  return undefined;
+};
+
+export const PriceItem = { label, problem: itemProblem };
+
+/**
+ * Why a category can't be saved, if it can't. Its services are checked on their
+ * own.
+ */
+const problem = (
+  price: Pick<Price, 'mainTitle' | 'prices'>,
+): string | undefined => {
+  if (!price.mainTitle.trim()) return 'Name fehlt';
+  if (price.prices.length === 0) return 'Mindestens eine Leistung';
+
+  return undefined;
+};
+
+export const Price = { problem };

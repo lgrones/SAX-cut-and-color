@@ -1,56 +1,84 @@
+import { Price, PriceItem } from '@domain/price';
 import { Firebase } from '@services/firebase';
+import { z } from 'astro/zod';
 
-type Fields = Record<string, string | number | boolean>;
+import { getPrices } from './getPrices';
 
-const isDeleted = (fields: Fields) =>
-  Object.keys(fields).some(x => x.includes('delete'));
+const item = z.object({
+  title: z.string(),
+  priceMin: z.number().optional(),
+  priceMax: z.number().optional(),
+  salon: z.boolean().optional(),
+});
 
-const parsePriceField = (field: string, value: string) => {
-  if (field === 'title') return value;
-  if (field.includes('price')) return parseFloat(value) || '';
-  return value === 'on';
-};
+// The whole list in its new order. A category without an id is new. Deletions
+// are explicit, so a category added elsewhere since the list was loaded survives.
+const schema = z.object({
+  categories: z.array(
+    z.object({
+      id: z.string().min(1).optional(),
+      mainTitle: z.string(),
+      prices: z.array(item),
+    }),
+  ),
+  deleted: z.array(z.string().min(1)),
+});
 
-/**
- * Applies the admin form: adds categories with a `new` id, deletes the ones
- * marked for deletion and updates the rest. Form keys are `<id>-<field>` for a
- * category and `<id>-<field>-<index>` for one of its prices.
- */
-export const savePrices = async (entries: [string, string][]) => {
-  const blocks = new Map<string, { fields: Fields; prices?: Fields[] }>();
+export type SavePricesResult =
+  | { ok: true; prices: Price[] }
+  | { ok: false; message: string };
 
-  for (const [key, value] of entries) {
-    const [id, field, index] = key.split('-');
-    if (!id || !field) continue;
-
-    const block = blocks.get(id) ?? { fields: {} };
-    blocks.set(id, block);
-
-    if (index) {
-      const i = parseInt(index);
-      block.prices ??= [];
-      block.prices[i] = {
-        ...block.prices[i],
-        [field]: parsePriceField(field, value),
+// Only what the item's kind needs, Firestore rejects undefined fields
+const storedItem = ({
+  title,
+  priceMin,
+  priceMax,
+  salon,
+}: z.infer<typeof item>): PriceItem =>
+  salon
+    ? { title: title.trim(), salon: true }
+    : {
+        title: title.trim(),
+        ...(priceMin !== undefined && { priceMin }),
+        ...(priceMax !== undefined && { priceMax }),
       };
-    } else {
-      block.fields[field] = value;
-    }
+
+/** Applies the admin's list and returns all categories as now stored */
+export const savePrices = async (input: unknown): Promise<SavePricesResult> => {
+  const parsed = schema.safeParse(input);
+  if (!parsed.success) return { ok: false, message: 'Ungültige Eingabe' };
+
+  const { deleted } = parsed.data;
+  const categories = parsed.data.categories.map(
+    ({ id, mainTitle, prices }) => ({
+      id,
+      mainTitle,
+      prices: prices.map(storedItem),
+    }),
+  );
+
+  if (categories.some(x => x.id && deleted.includes(x.id))) {
+    return { ok: false, message: 'Ungültige Eingabe' };
   }
 
-  for (const [id, { fields, prices }] of blocks) {
-    if (isDeleted(fields) && id.startsWith('new')) continue;
+  const problem =
+    categories.map(Price.problem).find(x => x) ??
+    categories
+      .flatMap(x => x.prices)
+      .map(PriceItem.problem)
+      .find(x => x);
+  if (problem) return { ok: false, message: problem };
 
-    const data = prices
-      ? { ...fields, prices: prices.filter(x => !isDeleted(x)) }
-      : fields;
-
-    if (id.startsWith('new')) {
-      await Firebase.addDocument('prices', data);
-    } else if (isDeleted(fields)) {
-      await Firebase.deleteDocument('prices', id);
-    } else {
-      await Firebase.updateDocument('prices', id, data);
-    }
+  for (const id of deleted) {
+    await Firebase.deleteDocument('prices', id);
   }
+
+  for (const [index, { id, mainTitle, prices }] of categories.entries()) {
+    const data = { mainTitle: mainTitle.trim(), index, prices };
+
+    if (id) await Firebase.updateDocument('prices', id, data);
+    else await Firebase.addDocument('prices', data);
+  }
+
+  return { ok: true, prices: await getPrices() };
 };

@@ -1,12 +1,10 @@
 import type { OpeningHours } from '@domain/openingHours';
 import type { FirestoreDocument } from '@services/firebase';
 
-// The admin form stores `index` as a string
+// The old admin form stored `index` as a string
 export const mapOpeningHours = ({
-  id,
   data: { index, ...data },
 }: FirestoreDocument): OpeningHours => ({
-  ...(data as Omit<OpeningHours, 'id' | 'index'>),
-  id,
+  ...(data as Omit<OpeningHours, 'index'>),
   index: Number(index),
 });
