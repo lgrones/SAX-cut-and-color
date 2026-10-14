@@ -237,6 +237,85 @@
     {
       "files": ["*.config.mjs", "*.config.ts", "scripts/**/*"],
       "rules": { "no-console": "off" }
+    },
+    {
+      "files": ["src/domain/**"],
+      "rules": {
+        "import/no-relative-parent-imports": "error",
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@business/**",
+                  "@services/**",
+                  "@infrastructure/**",
+                  "@presentation/**",
+                  "astro:**"
+                ],
+                "message": "domain depends on nothing"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/services/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@domain/**", "@business/**", "@presentation/**"],
+                "message": "services know nothing about the domain"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/business/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@services/*/**"],
+                "message": "import the service facade, e.g. @services/firebase"
+              },
+              {
+                "group": [
+                  "@presentation/**",
+                  "**/presentation/**",
+                  "**/pages/**"
+                ],
+                "message": "business knows nothing about presentation"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/presentation/**", "src/pages/**", "src/middleware/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@services/*/**"],
+                "message": "import the service facade, e.g. @services/firebase"
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

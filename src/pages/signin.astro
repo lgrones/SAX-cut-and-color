@@ -1,8 +1,8 @@
 ---
 export const prerender = false;
 
-import Layout from '../layouts/Layout.astro';
-import Card from '../components/card/card.astro';
+import Layout from '@presentation/layouts/Layout.astro';
+import Card from '@presentation/components/card/card.astro';
 
 // Signed in users are redirected to /admin by the auth middleware
 ---
@@ -166,13 +166,7 @@ import Card from '../components/card/card.astro';
 </style>
 
 <script>
-  import {
-    getAuth,
-    inMemoryPersistence,
-    signInWithEmailAndPassword,
-    signOut,
-  } from 'firebase/auth';
-  import { app } from '../firebase/client';
+  import { FirebaseClient } from '@services/firebaseClient';
 
   const form = document.querySelector('form');
   const password = document.querySelector<HTMLInputElement>('#password');
@@ -194,10 +188,6 @@ import Card from '../components/card/card.astro';
     toggle.setAttribute('aria-pressed', String(show));
   });
 
-  const auth = getAuth(app);
-  // This will prevent the browser from storing session data
-  auth.setPersistence(inMemoryPersistence);
-
   form?.addEventListener('submit', async e => {
     e.preventDefault();
     setLoading(true);
@@ -205,19 +195,18 @@ import Card from '../components/card/card.astro';
     const formData = new FormData(form);
 
     try {
-      const { user } = await signInWithEmailAndPassword(
-        auth,
+      const idToken = await FirebaseClient.signIn(
         String(formData.get('email')),
         String(formData.get('password')),
       );
 
       const response = await fetch('/api/auth/signin', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+        headers: { Authorization: `Bearer ${idToken}` },
       });
 
       // The server keeps the session now, the client sign-in is not needed
-      await signOut(auth);
+      await FirebaseClient.signOut();
 
       if (!response.ok) throw new Error(await response.text());
 

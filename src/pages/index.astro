@@ -1,10 +1,11 @@
 ---
-import Contact from '../components/contact/contact.astro';
-import Offers from '../components/offers/offers.astro';
-import OpeningHours from '../components/openingHours/openingHours.astro';
-import Prices from '../components/prices/prices.astro';
-import Salon from '../components/salon/salon.astro';
-import Layout from '../layouts/Layout.astro';
+import Contact from '@presentation/components/contact/contact.astro';
+import Offers from '@presentation/components/offers/offers.astro';
+import OpeningHours from '@presentation/components/openingHours/openingHours.astro';
+import Prices from '@presentation/components/prices/prices.astro';
+import Salon from '@presentation/components/salon/salon.astro';
+import Layout from '@presentation/layouts/Layout.astro';
+import Loading from '@presentation/components/loading/loading.astro';
 ---
 
 <Layout title="SAX Cut + Colour">
@@ -32,7 +33,11 @@ import Layout from '../layouts/Layout.astro';
 
   <Prices />
 
-  <Offers />
+  <div id="offers">
+    <Offers server:defer>
+      <Loading slot="fallback" minHeight="24rem" />
+    </Offers>
+  </div>
 
   <Salon />
 </Layout>

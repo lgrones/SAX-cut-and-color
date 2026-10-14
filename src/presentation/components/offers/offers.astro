@@ -1,0 +1,17 @@
+---
+import Card from '../card/card.astro';
+import { getOffers } from '@business/offers/getOffers';
+
+const offers = await getOffers();
+
+// Always fetch fresh data so admin edits show up on the next page view
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+
+<div class="staggered-grid">
+  {offers.map(({ title, text }) => (
+    <Card title={title} subTitle="Angebot">
+      <p>{text}</p>
+    </Card>
+  ))}
+</div>

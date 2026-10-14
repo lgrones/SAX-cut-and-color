@@ -1,0 +1,54 @@
+---
+import Card from '../card/card.astro';
+import { getPrices } from '@business/prices/getPrices';
+import { PriceItem } from '@domain/price';
+
+const categories = await getPrices();
+
+// Always fetch fresh data so admin edits show up on the next page view
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+
+<div class="staggered-grid">
+  {categories.map(({ mainTitle, prices }) => (
+    <Card title={mainTitle} subTitle="Preise">
+      <div class="rows">
+        {prices.map(price => (
+          <>
+            <div class:list={['title', { nowrap: price.title.length < 25 }]}>
+              {price.title}
+            </div>
+
+            <div class="price">{PriceItem.label(price)}</div>
+          </>
+        ))}
+      </div>
+    </Card>
+  ))}
+</div>
+
+<style>
+  .rows {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem 3.5rem;
+
+    @media (min-width: 768px) {
+      column-gap: 6rem;
+    }
+  }
+
+  .title {
+    font-weight: 500;
+    letter-spacing: 0.025em;
+  }
+
+  .nowrap {
+    white-space: nowrap;
+  }
+
+  .price {
+    justify-self: end;
+    text-align: right;
+  }
+</style>

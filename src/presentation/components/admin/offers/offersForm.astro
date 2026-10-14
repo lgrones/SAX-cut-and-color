@@ -1,0 +1,35 @@
+---
+import { getOffers } from '@business/offers/getOffers';
+import Card from '../../card/card.astro';
+import { OffersInput } from './offersInput';
+
+const offers = await getOffers();
+---
+
+<Card title="Angebote" id="offers">
+  <form method="post" action="/api/offers" autocomplete="off" id="offersForm">
+    <OffersInput offers={offers} client:load />
+    <button type="submit" class="button form-submit">
+      Speichern
+    </button>
+  </form>
+</Card>
+<script>
+  const form = document.getElementById('offersForm') as HTMLFormElement;
+
+  form.addEventListener('submit', e => {
+    const formData = new FormData(form);
+
+    const hasDelete = Object.keys(Object.fromEntries(formData)).some(x =>
+      x.includes('delete'),
+    );
+
+    if (
+      hasDelete &&
+      // oxlint-disable-next-line no-alert -- native dialog is enough for the admin area
+      !confirm('Sollen die gewählten Einträge wirklich gelöscht werden?')
+    ) {
+      e.preventDefault();
+    }
+  });
+</script>

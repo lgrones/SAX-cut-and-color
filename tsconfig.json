@@ -6,6 +6,13 @@
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
     "useDefineForClassFields": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      "@domain/*": ["./src/domain/*"],
+      "@business/*": ["./src/business/*"],
+      "@services/*": ["./src/services/*"],
+      "@infrastructure/*": ["./src/infrastructure/*"],
+      "@presentation/*": ["./src/presentation/*"]
+    }
   }
 }

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="492" height="100" viewBox="0 0 492 100" role="img" aria-label="SAX Cut + Colour">
+  <title>SAX Cut + Colour</title>
+  <style>
+    .t { font-family: Inter, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, system-ui, sans-serif; font-size: 46px; font-weight: 700; letter-spacing: -1.5px; fill: #b08d57; }
+    .s { font-family: Inter, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, system-ui, sans-serif; font-size: 15px; font-weight: 400; letter-spacing: 0.2px; fill: #8b949e; }
+  </style>
+  <text class="t" x="50%" y="50" text-anchor="middle">SAX Cut + Colour</text>
+  <text class="s" x="50%" y="82" text-anchor="middle">hair salon · lochau</text>
+</svg>
