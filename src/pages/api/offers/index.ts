@@ -20,7 +20,7 @@ export const POST: APIRoute = async ({ redirect, request }) => {
 
   let formData: any;
 
-  if (process.env.NODE_ENV === "development") {
+  if (import.meta.env.DEV) {
     formData = await request.formData();
   } else {
     // firebase cloud functions parse the request to json before sending it to Astro

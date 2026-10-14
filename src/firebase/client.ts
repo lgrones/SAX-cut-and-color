@@ -13,6 +13,6 @@ const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig);
 
-if (process.env.NODE_ENV === "development") {
+if (import.meta.env.DEV) {
   connectFirestoreEmulator(getFirestore(), "127.0.0.1", 8080);
 }
