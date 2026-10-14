@@ -1,8 +1,8 @@
 ---
-import { Image } from "astro:assets";
-import Card from "../card/card.astro";
-import map from "../../assets/map.png";
-import ContactRow from "./contactRow.astro";
+import { Image } from 'astro:assets';
+import Card from '../card/card.astro';
+import map from '../../assets/map.png';
+import ContactRow from './contactRow.astro';
 ---
 
 <Card title="Kontakt" id="contact">
@@ -28,18 +28,15 @@ import ContactRow from "./contactRow.astro";
   </div>
 
   <div slot="image" class="map">
-    <Image
-      src={map}
-      alt="Karte"
-      loading="eager"
-      class="map-image"
-    />
+    <Image src={map} alt="Karte" loading="eager" class="map-image" />
 
     <a
       class="map-link text-link"
       href="https://maps.app.goo.gl/xGp8EXpDn3pVrubA6"
-      target="_blank">Zur Karte</a
+      target="_blank"
     >
+      Zur Karte
+    </a>
   </div>
 </Card>
 

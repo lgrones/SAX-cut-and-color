@@ -1,21 +1,23 @@
 ---
-import { getFirestore } from "firebase-admin/firestore";
-import { app } from "../../firebase/server";
-import Card from "../card/card.astro";
-import Day from "./day.astro";
-import type { OpeningHours } from "../../types";
+import { getFirestore } from 'firebase-admin/firestore';
+import { app } from '../../firebase/server';
+import Card from '../card/card.astro';
+import Day from './day.astro';
+import type { OpeningHours } from '../../types';
 
 const db = getFirestore(app);
-const ref = db.collection("openingHours");
+const ref = db.collection('openingHours');
 const snapshot = await ref.get();
 const openingHours = snapshot.docs
-  .map((doc) => doc.data())
+  .map(doc => doc.data())
   .toSorted((a, b) => a.index - b.index) as OpeningHours[];
 ---
 
 <Card title="Zeiten" id="opening-hours">
   <div class="days">
-    {openingHours.map((openingHour) => <Day {...openingHour} />)}
+    {openingHours.map(openingHour => (
+      <Day {...openingHour} />
+    ))}
   </div>
 </Card>
 

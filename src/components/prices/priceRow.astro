@@ -1,31 +1,29 @@
 ---
-import type { Price } from "../../types";
+import type { Price } from '../../types';
 
-type Props = Price["prices"][0];
+type Props = Price['prices'][0];
 
 const { title, priceMin, priceMax, salon } = Astro.props;
 
-const formatter = Intl.NumberFormat("de-DE", {
-  style: "currency",
-  currency: "EUR",
-  currencyDisplay: "code",
+const formatter = Intl.NumberFormat('de-DE', {
+  style: 'currency',
+  currency: 'EUR',
+  currencyDisplay: 'code',
 });
 
 const price =
   salon || !priceMin
-    ? "Absprache im Salon"
+    ? 'Absprache im Salon'
     : (priceMax
         ? formatter.formatRange(priceMin, priceMax)
         : formatter.format(priceMin)
       )
-        .replace("–", " - ")
-        .replace("≈", "")
-        .replaceAll(",00", "");
+        .replace('–', ' - ')
+        .replace('≈', '')
+        .replaceAll(',00', '');
 ---
 
-<div class:list={["title", { nowrap: title.length < 25 }]}>
-  {title}
-</div>
+<div class:list={['title', { nowrap: title.length < 25 }]}>{title}</div>
 
 <div class="price">{price}</div>
 

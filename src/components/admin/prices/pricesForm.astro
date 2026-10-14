@@ -1,19 +1,19 @@
 ---
-import { getFirestore } from "firebase-admin/firestore";
-import { app } from "../../../firebase/server";
-import Card from "../../card/card.astro";
-import type { Price } from "../../../types";
-import { PricesInput } from "./pricesInput";
+import { getFirestore } from 'firebase-admin/firestore';
+import { app } from '../../../firebase/server';
+import Card from '../../card/card.astro';
+import type { Price } from '../../../types';
+import { PricesInput } from './pricesInput';
 
 interface PricesWithId extends Price {
   id: string;
 }
 
 const db = getFirestore(app);
-const ref = db.collection("prices");
+const ref = db.collection('prices');
 const snapshot = await ref.get();
 const prices = snapshot.docs
-  .map((doc) => ({ id: doc.id, ...doc.data() }) as PricesWithId)
+  .map(doc => ({ id: doc.id, ...doc.data() }) as PricesWithId)
   .toSorted((a, b) => a.index - b.index);
 ---
 
@@ -21,27 +21,24 @@ const prices = snapshot.docs
   <form method="post" action="/api/prices" autocomplete="off" id="pricesForm">
     <PricesInput prices={prices} client:load />
 
-    <button
-      type="submit"
-      class="button form-submit"
-    >
+    <button type="submit" class="button form-submit">
       Speichern
     </button>
   </form>
 </Card>
 <script>
-  const form = document.getElementById("pricesForm") as HTMLFormElement;
+  const form = document.getElementById('pricesForm') as HTMLFormElement;
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener('submit', e => {
     const formData = new FormData(form);
 
-    const hasDelete = Object.keys(Object.fromEntries(formData)).some((x) =>
-      x.includes("delete")
+    const hasDelete = Object.keys(Object.fromEntries(formData)).some(x =>
+      x.includes('delete'),
     );
 
     if (
       hasDelete &&
-      !confirm("Sollen die gewählten Einträge wirklich gelöscht werden?")
+      !confirm('Sollen die gewählten Einträge wirklich gelöscht werden?')
     ) {
       e.preventDefault();
     }

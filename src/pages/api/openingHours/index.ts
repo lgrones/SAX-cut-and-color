@@ -1,14 +1,15 @@
-import type { APIRoute } from "astro";
-import { app } from "../../../firebase/server";
-import { getFirestore } from "firebase-admin/firestore";
-import type { OpeningHours } from "../../../types";
-import { error as logError } from "firebase-functions/logger";
+import type { APIRoute } from 'astro';
+import { getFirestore } from 'firebase-admin/firestore';
+import { error as logError } from 'firebase-functions/logger';
+
+import { app } from '../../../firebase/server';
+import type { OpeningHours } from '../../../types';
 
 export const prerender = false;
 // import data from "../../../../backups/openingHours.json";
 
 const db = getFirestore(app);
-const ref = db.collection("openingHours");
+const ref = db.collection('openingHours');
 
 // const populate = () => {
 //   for (const d of data) {
@@ -33,32 +34,30 @@ export const POST: APIRoute = async ({ redirect, request }) => {
     formData = Object.entries(obj);
   }
 
-  const days = new Map<string, Partial<Omit<OpeningHours, "index">>>();
+  const days = new Map<string, Partial<Omit<OpeningHours, 'index'>>>();
 
   for (const [key, value] of formData) {
-    const keyParts = key.split("-");
+    const keyParts = key.split('-');
     const id = keyParts[0];
     const field = keyParts[1];
 
     days.set(id, {
       ...days.get(id),
       [field]:
-        field === "closed" ? value.toString() === "on" : value.toString(),
+        field === 'closed' ? value.toString() === 'on' : value.toString(),
     });
   }
 
   for (const [id, data] of days) {
-    if (!Object.keys(data).includes("closed")) data.closed = false;
+    if (!Object.keys(data).includes('closed')) data.closed = false;
 
     try {
       await ref.doc(id).update(data);
     } catch (error) {
-      logError("times", error);
-      return new Response("Something went wrong", {
-        status: 500,
-      });
+      logError('times', error);
+      return new Response('Something went wrong', { status: 500 });
     }
   }
 
-  return redirect("/admin#times");
+  return redirect('/admin#times');
 };

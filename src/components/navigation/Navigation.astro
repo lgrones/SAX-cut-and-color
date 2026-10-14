@@ -1,7 +1,7 @@
 ---
-import { Image } from "astro:assets";
-import logo from "../../assets/logo.png";
-import Link from "./link.astro";
+import { Image } from 'astro:assets';
+import logo from '../../assets/logo.png';
+import Link from './link.astro';
 ---
 
 <header>
@@ -30,7 +30,8 @@ import Link from "./link.astro";
             stroke-linecap="round"
             stroke-linejoin="round"
             stroke-width="2"
-            d="M1 1h15M1 7h15M1 13h15"></path>
+            d="M1 1h15M1 7h15M1 13h15"
+          ></path>
         </svg>
       </button>
 
@@ -177,19 +178,19 @@ import Link from "./link.astro";
 </style>
 
 <script>
-  const menu = document.getElementById("navbar-default")!;
-  const burger = document.getElementById("burger")!;
+  const menu = document.getElementById('navbar-default')!;
+  const burger = document.getElementById('burger')!;
 
   const setOpen = (open: boolean) => {
-    menu.classList.toggle("open", open);
-    burger.setAttribute("aria-expanded", String(open));
+    menu.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', String(open));
   };
 
-  burger.addEventListener("click", () =>
-    setOpen(!menu.classList.contains("open"))
+  burger.addEventListener('click', () =>
+    setOpen(!menu.classList.contains('open')),
   );
 
   document
-    .querySelectorAll("header a, #overlay")
-    .forEach((x) => x.addEventListener("click", () => setOpen(false)));
+    .querySelectorAll('header a, #overlay')
+    .forEach(x => x.addEventListener('click', () => setOpen(false)));
 </script>

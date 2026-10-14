@@ -1,6 +1,8 @@
-import { useState } from "preact/hooks";
-import type { Price } from "../../../types";
-import "../admin.css";
+import '../admin.css';
+
+import { useState } from 'preact/hooks';
+
+import type { Price } from '../../../types';
 
 interface PricesWithId extends Price {
   id: string;
@@ -11,7 +13,7 @@ export const PricesInput = ({ prices }: { prices: PricesWithId[] }) => {
   const [currPrices, setCurrPrices] = useState(prices);
 
   const removePrice = (index: number) => {
-    setCurrPrices((prev) => prev.toSpliced(index, 1));
+    setCurrPrices(prev => prev.toSpliced(index, 1));
   };
 
   return (
@@ -25,16 +27,16 @@ export const PricesInput = ({ prices }: { prices: PricesWithId[] }) => {
           type="button"
           className="add-button"
           onClick={() => {
-            setCurrPrices((prev) => [
+            setCurrPrices(prev => [
               ...prev,
               {
-                id: "new" + index.toString(),
-                mainTitle: "",
-                index: Math.max(...prev.map((x) => x.index)) + 1,
-                prices: [{ title: "" }],
+                id: 'new' + index.toString(),
+                mainTitle: '',
+                index: Math.max(...prev.map(x => x.index)) + 1,
+                prices: [{ title: '' }],
               },
             ]);
-            setIndex((prev) => prev + 1);
+            setIndex(prev => prev + 1);
           }}
         >
           +
@@ -47,33 +49,29 @@ export const PricesInput = ({ prices }: { prices: PricesWithId[] }) => {
 export const InputElements = ({
   prices: { id, prices, mainTitle, removePrice, i, index },
 }: {
-  prices: PricesWithId & {
-    i: number;
-    removePrice: (index: number) => void;
-  };
+  prices: PricesWithId & { i: number; removePrice: (index: number) => void };
 }) => {
   const [checked, setChecked] = useState(false);
 
   const [currPrices, setCurrPrices] = useState(
-    prices.map((x, i) => ({ ...x, i }))
+    prices.map((x, i) => ({ ...x, i })),
   );
 
   const removeItem = (index: number) => {
-    if (index >= prices.length)
-      setCurrPrices((prev) => prev.toSpliced(index, 1));
+    if (index >= prices.length) setCurrPrices(prev => prev.toSpliced(index, 1));
   };
 
   return (
     <div className="price-block">
       <div className="price-block-header">
         <div className="price-block-title">
-          <label htmlFor={id + "-mainTitle"} className="label">
+          <label htmlFor={id + '-mainTitle'} className="label">
             Haupttitel
           </label>
 
           <input
-            name={id + "-mainTitle"}
-            id={id + "-mainTitle"}
+            name={id + '-mainTitle'}
+            id={id + '-mainTitle'}
             defaultValue={mainTitle}
             required
             disabled={checked}
@@ -82,13 +80,13 @@ export const InputElements = ({
         </div>
 
         <div>
-          <label htmlFor={id + "-index"} className="label">
+          <label htmlFor={id + '-index'} className="label">
             Position
           </label>
 
           <input
-            name={id + "-index"}
-            id={id + "-index"}
+            name={id + '-index'}
+            id={id + '-index'}
             defaultValue={index}
             type="number"
             min={0}
@@ -100,47 +98,39 @@ export const InputElements = ({
 
         <div className="price-block-delete">
           <input
-            name={id + "-delete"}
-            id={id + "-delete"}
+            name={id + '-delete'}
+            id={id + '-delete'}
             type="checkbox"
             checked={checked}
-            onChange={(e) =>
-              id.includes("new")
+            onChange={e =>
+              id.includes('new')
                 ? removePrice(i)
                 : setChecked(e.currentTarget.checked)
             }
             className="checkbox"
           />
-          <label htmlFor={id + "-delete"}>
-            Preisblock Löschen
-          </label>
+          <label htmlFor={id + '-delete'}>Preisblock Löschen</label>
         </div>
       </div>
 
       <div className="price-rows">
-        <label htmlFor={id + "-title-0"} className="label">
+        <label htmlFor={id + '-title-0'} className="label">
           Titel
         </label>
 
-        <label htmlFor={id + "-priceMin-0"} className="label">
+        <label htmlFor={id + '-priceMin-0'} className="label">
           Min. Preis
         </label>
 
-        <label htmlFor={id + "-priceMax-0"} className="label">
+        <label htmlFor={id + '-priceMax-0'} className="label">
           Max. Preis
         </label>
 
-        <label
-          htmlFor={id + "-salon-0"}
-          className="label centered"
-        >
+        <label htmlFor={id + '-salon-0'} className="label centered">
           Absprache
         </label>
 
-        <label
-          htmlFor={id + "-delete-0"}
-          className="label centered"
-        >
+        <label htmlFor={id + '-delete-0'} className="label centered">
           Löschen
         </label>
 
@@ -160,13 +150,13 @@ export const InputElements = ({
           className="button button-secondary"
           disabled={checked}
           onClick={() => {
-            setCurrPrices((prev) => [
+            setCurrPrices(prev => [
               ...prev,
               {
-                title: "",
+                title: '',
                 i:
                   prev
-                    .map((x) => x.i)
+                    .map(x => x.i)
                     .reduce((prev, curr) => (curr > prev ? curr : prev), 0) + 1,
               },
             ]);
@@ -188,7 +178,7 @@ export const InputElement = ({
   index,
   removeItem,
   disabled,
-}: Price["prices"][0] & {
+}: Price['prices'][0] & {
   id: string;
   index: number;
   disabled: boolean;
@@ -200,8 +190,8 @@ export const InputElement = ({
   return (
     <>
       <input
-        name={id + "-title-" + index}
-        id={id + "-title-" + index}
+        name={id + '-title-' + index}
+        id={id + '-title-' + index}
         defaultValue={title}
         required
         disabled={disabled || isDelete}
@@ -211,8 +201,8 @@ export const InputElement = ({
       <input
         type="number"
         min={0}
-        name={id + "-priceMin-" + index}
-        id={id + "-priceMin-" + index}
+        name={id + '-priceMin-' + index}
+        id={id + '-priceMin-' + index}
         step=".01"
         defaultValue={priceMin}
         disabled={disabled || isSalon || isDelete}
@@ -223,8 +213,8 @@ export const InputElement = ({
       <input
         type="number"
         min={0}
-        name={id + "-priceMax-" + index}
-        id={id + "-priceMax-" + index}
+        name={id + '-priceMax-' + index}
+        id={id + '-priceMax-' + index}
         defaultValue={priceMax}
         step=".01"
         disabled={disabled || isSalon || isDelete}
@@ -232,22 +222,22 @@ export const InputElement = ({
       />
 
       <input
-        name={id + "-salon-" + index}
-        id={id + "-salon-" + index}
+        name={id + '-salon-' + index}
+        id={id + '-salon-' + index}
         type="checkbox"
         disabled={disabled}
         checked={isSalon}
-        onChange={(e) => setIsSalon(e.currentTarget.checked)}
+        onChange={e => setIsSalon(e.currentTarget.checked)}
         className="checkbox centered"
       />
 
       <input
-        name={id + "-delete-" + index}
-        id={id + "-delete-" + index}
+        name={id + '-delete-' + index}
+        id={id + '-delete-' + index}
         type="checkbox"
         disabled={disabled}
         defaultChecked={isDelete}
-        onChange={(e) => {
+        onChange={e => {
           removeItem(index);
           setDelete(e.currentTarget.checked);
         }}

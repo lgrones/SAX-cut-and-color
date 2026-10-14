@@ -6,9 +6,10 @@
   --stone-900: #1c1917;
   --red-500: #ef4444;
 
-  --font-sans: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  --font-cormorant: "Cormorant Garamond", ui-serif, Georgia, Cambria,
-    "Times New Roman", Times, serif;
+  --font-sans: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-cormorant:
+    'Cormorant Garamond', ui-serif, Georgia, Cambria, 'Times New Roman', Times,
+    serif;
 
   --header-height: 100px;
 
@@ -101,7 +102,7 @@ textarea {
   resize: vertical;
 }
 
-[hidden]:where(:not([hidden="until-found"])) {
+[hidden]:where(:not([hidden='until-found'])) {
   display: none;
 }
 
@@ -218,7 +219,7 @@ textarea {
     padding: 0.625rem;
   }
 
-  &[type="number"] {
+  &[type='number'] {
     appearance: textfield;
   }
 

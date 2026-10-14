@@ -1,43 +1,39 @@
 ---
-import Card from "../card/card.astro";
-import { getFirestore } from "firebase-admin/firestore";
-import { app } from "../../firebase/server";
-import PriceRow from "./priceRow.astro";
-import type { Price } from "../../types";
-import { getGridPos } from "../../utils/gridPos";
+import Card from '../card/card.astro';
+import { getFirestore } from 'firebase-admin/firestore';
+import { app } from '../../firebase/server';
+import PriceRow from './priceRow.astro';
+import type { Price } from '../../types';
+import { getGridPos } from '../../utils/gridPos';
 
 const db = getFirestore(app);
-const ref = db.collection("prices");
+const ref = db.collection('prices');
 const snapshot = await ref.get();
-const prices = (snapshot.docs.map((doc) => doc.data()) as Price[]).toSorted(
-  (a, b) => a.index - b.index
+const prices = (snapshot.docs.map(doc => doc.data()) as Price[]).toSorted(
+  (a, b) => a.index - b.index,
 );
 ---
 
 <div>
   <div id="prices" class="staggered-grid">
-    {
-      prices.map(({ mainTitle, prices }, i) => (
-        <div class={getGridPos(i)}>
-          <Card title={mainTitle} subTitle="Preise" id={mainTitle}>
-            <div class="rows">
-              {prices.map(({ title: priceTitle, priceMin, priceMax }) => (
-                <PriceRow
-                  title={priceTitle}
-                  priceMin={priceMin}
-                  priceMax={priceMax}
-                />
-              ))}
-            </div>
-          </Card>
-        </div>
-      ))
-    }
+    {prices.map(({ mainTitle, prices }, i) => (
+      <div class={getGridPos(i)}>
+        <Card title={mainTitle} subTitle="Preise" id={mainTitle}>
+          <div class="rows">
+            {prices.map(({ title: priceTitle, priceMin, priceMax }) => (
+              <PriceRow
+                title={priceTitle}
+                priceMin={priceMin}
+                priceMax={priceMax}
+              />
+            ))}
+          </div>
+        </Card>
+      </div>
+    ))}
   </div>
 
-  <p class="note">
-    Bezahlung nur in Bar. Keine Kartenzahlung möglich.
-  </p>
+  <p class="note">Bezahlung nur in Bar. Keine Kartenzahlung möglich.</p>
 </div>
 
 <style>

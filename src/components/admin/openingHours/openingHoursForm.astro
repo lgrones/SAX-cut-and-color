@@ -1,106 +1,93 @@
 ---
-import { getFirestore } from "firebase-admin/firestore";
-import { app } from "../../../firebase/server";
-import Card from "../../card/card.astro";
-import type { OpeningHours } from "../../../types";
+import { getFirestore } from 'firebase-admin/firestore';
+import { app } from '../../../firebase/server';
+import Card from '../../card/card.astro';
+import type { OpeningHours } from '../../../types';
 
 interface OpeningHoursWithId extends OpeningHours {
   id: string;
 }
 
 const db = getFirestore(app);
-const ref = db.collection("openingHours");
+const ref = db.collection('openingHours');
 const snapshot = await ref.get();
 const openingHours = snapshot.docs
-  .map((doc) => ({ id: doc.id, ...doc.data() }) as OpeningHoursWithId)
+  .map(doc => ({ id: doc.id, ...doc.data() }) as OpeningHoursWithId)
   .toSorted((a, b) => a.index - b.index);
 ---
 
 <Card title="Zeiten" id="times">
   <form method="post" action="/api/openingHours" autocomplete="off">
     <div class="days">
-      {
-        openingHours.map((openingHour) => (
-          <div class="day" id={openingHour.id}>
-            <p class="day-name">{openingHour.day}</p>
+      {openingHours.map(openingHour => (
+        <div class="day" id={openingHour.id}>
+          <p class="day-name">{openingHour.day}</p>
 
-            <label
-              for={openingHour.id + "-timeAmStart"}
-              class="label"
-            >
-              Vormittag
-            </label>
+          <label for={openingHour.id + '-timeAmStart'} class="label">
+            Vormittag
+          </label>
 
-            <div class="range">
-              <input
-                type="time"
-                name={openingHour.id + "-timeAmStart"}
-                id={openingHour.id + "-timeAmStart"}
-                value={openingHour.timeAmStart}
-                disabled={openingHour.closed}
-                required={!openingHour.closed}
-                class="input"
-              />
-              -
-              <input
-                type="time"
-                name={openingHour.id + "-timeAmEnd"}
-                id={openingHour.id + "-timeAmEnd"}
-                value={openingHour.timeAmEnd}
-                disabled={openingHour.closed}
-                required={!openingHour.closed}
-                class="input"
-              />
-            </div>
-
-            <label
-              for={openingHour.id + "-timePmStart"}
-              class="label"
-            >
-              Nachmittag
-            </label>
-
-            <div class="range">
-              <input
-                type="time"
-                name={openingHour.id + "-timePmStart"}
-                id={openingHour.id + "-timePmStart"}
-                value={openingHour.timePmStart}
-                disabled={openingHour.closed}
-                class="input"
-              />
-              -
-              <input
-                type="time"
-                name={openingHour.id + "-timePmEnd"}
-                id={openingHour.id + "-timePmEnd"}
-                value={openingHour.timePmEnd}
-                disabled={openingHour.closed}
-                class="input"
-              />
-            </div>
-
-            <div class="checkbox-row">
-              <input
-                name={openingHour.id + "-closed"}
-                id={openingHour.id + "-closed"}
-                type="checkbox"
-                checked={openingHour.closed}
-                class="checkbox"
-              />
-              <label for={openingHour.id + "-closed"}>
-                Geschlossen
-              </label>
-            </div>
+          <div class="range">
+            <input
+              type="time"
+              name={openingHour.id + '-timeAmStart'}
+              id={openingHour.id + '-timeAmStart'}
+              value={openingHour.timeAmStart}
+              disabled={openingHour.closed}
+              required={!openingHour.closed}
+              class="input"
+            />
+            -
+            <input
+              type="time"
+              name={openingHour.id + '-timeAmEnd'}
+              id={openingHour.id + '-timeAmEnd'}
+              value={openingHour.timeAmEnd}
+              disabled={openingHour.closed}
+              required={!openingHour.closed}
+              class="input"
+            />
           </div>
-        ))
-      }
+
+          <label for={openingHour.id + '-timePmStart'} class="label">
+            Nachmittag
+          </label>
+
+          <div class="range">
+            <input
+              type="time"
+              name={openingHour.id + '-timePmStart'}
+              id={openingHour.id + '-timePmStart'}
+              value={openingHour.timePmStart}
+              disabled={openingHour.closed}
+              class="input"
+            />
+            -
+            <input
+              type="time"
+              name={openingHour.id + '-timePmEnd'}
+              id={openingHour.id + '-timePmEnd'}
+              value={openingHour.timePmEnd}
+              disabled={openingHour.closed}
+              class="input"
+            />
+          </div>
+
+          <div class="checkbox-row">
+            <input
+              name={openingHour.id + '-closed'}
+              id={openingHour.id + '-closed'}
+              type="checkbox"
+              checked={openingHour.closed}
+              class="checkbox"
+            />
+            <label for={openingHour.id + '-closed'}>Geschlossen</label>
+          </div>
+        </div>
+      ))}
     </div>
 
-    <button
-      type="submit"
-      class="button form-submit"
-    >
+    <button type="submit" class="button form-submit">
       Speichern
     </button>
   </form>
@@ -135,29 +122,29 @@ const openingHours = snapshot.docs
 
 <script>
   const inputs = document.querySelectorAll(
-    "#times input"
+    '#times input',
   ) as NodeListOf<HTMLInputElement>;
-  const textInputs = [...inputs].filter((x) => x.type !== "checkbox");
-  const checkboxes = [...inputs].filter((x) => x.type === "checkbox");
+  const textInputs = [...inputs].filter(x => x.type !== 'checkbox');
+  const checkboxes = [...inputs].filter(x => x.type === 'checkbox');
 
-  checkboxes.forEach((x) =>
-    x.addEventListener("change", (e) => {
+  checkboxes.forEach(x =>
+    x.addEventListener('change', e => {
       if (!e.target) return;
 
       // @ts-ignore
       if (e.target.checked)
         textInputs
           // @ts-ignore
-          .filter((y) => y.id.startsWith(e.target.id.split("-")[0]))
-          .forEach((y) => (y.disabled = true));
+          .filter(y => y.id.startsWith(e.target.id.split('-')[0]))
+          .forEach(y => (y.disabled = true));
       else
         textInputs
           // @ts-ignore
-          .filter((y) => y.id.startsWith(e.target.id.split("-")[0]))
-          .forEach((y) => {
+          .filter(y => y.id.startsWith(e.target.id.split('-')[0]))
+          .forEach(y => {
             y.disabled = false;
-            y.required = y.id.includes("timeAm");
+            y.required = y.id.includes('timeAm');
           });
-    })
+    }),
   );
 </script>

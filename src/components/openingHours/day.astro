@@ -1,5 +1,5 @@
 ---
-import type { OpeningHours } from "../../types";
+import type { OpeningHours } from '../../types';
 
 type Props = OpeningHours;
 
@@ -10,24 +10,22 @@ const hasPmTimes = !!timePmStart && !!timePmEnd;
 const isClosed = closed || (!hasAmTimes && !hasPmTimes);
 ---
 
-{
-  isClosed ? null : (
-    <div class="day">
-      <div class="name">{day}</div>
-      <div>
-        {timeAmStart}
-        {timeAmEnd && ` - ${timeAmEnd}`} Uhr
-        {hasPmTimes && (
-          <>
-            {hasAmTimes && <br />}
-            {timePmStart}
-            {timePmEnd && ` - ${timePmEnd}`} Uhr
-          </>
-        )}
-      </div>
+{isClosed ? null : (
+  <div class="day">
+    <div class="name">{day}</div>
+    <div>
+      {timeAmStart}
+      {timeAmEnd && ` - ${timeAmEnd}`} Uhr
+      {hasPmTimes && (
+        <>
+          {hasAmTimes && <br />}
+          {timePmStart}
+          {timePmEnd && ` - ${timePmEnd}`} Uhr
+        </>
+      )}
     </div>
-  )
-}
+  </div>
+)}
 
 <style>
   .day {

@@ -1,6 +1,8 @@
-import { useState } from "preact/hooks";
-import type { Offer } from "../../../types";
-import "../admin.css";
+import '../admin.css';
+
+import { useState } from 'preact/hooks';
+
+import type { Offer } from '../../../types';
 
 export const OffersInput = ({
   offers,
@@ -11,7 +13,7 @@ export const OffersInput = ({
   const [currOffers, setCurrOffers] = useState(offers);
 
   const removeItem = (index: number) => {
-    setCurrOffers((prev) => prev.toSpliced(index, 1));
+    setCurrOffers(prev => prev.toSpliced(index, 1));
   };
 
   return (
@@ -25,16 +27,16 @@ export const OffersInput = ({
           type="button"
           className="add-button"
           onClick={() => {
-            setCurrOffers((prev) => [
+            setCurrOffers(prev => [
               ...prev,
               {
-                id: "new" + index.toString(),
-                text: "",
-                title: "",
-                index: Math.max(...prev.map((x) => x.index)) + 1,
+                id: 'new' + index.toString(),
+                text: '',
+                title: '',
+                index: Math.max(...prev.map(x => x.index)) + 1,
               },
             ]);
-            setIndex((prev) => prev + 1);
+            setIndex(prev => prev + 1);
           }}
         >
           +
@@ -51,23 +53,19 @@ export const InputElement = ({
   index,
   i,
   removeItem,
-}: {
-  id: string;
-  i: number;
-  removeItem: (index: number) => void;
-} & Offer) => {
+}: { id: string; i: number; removeItem: (index: number) => void } & Offer) => {
   const [checked, setChecked] = useState(false);
 
   return (
     <div className="offer">
       <div className="offer-header">
         <div className="offer-title">
-          <label htmlFor={id + "-title"} className="label">
+          <label htmlFor={id + '-title'} className="label">
             Titel
           </label>
           <input
-            name={id + "-title"}
-            id={id + "-title"}
+            name={id + '-title'}
+            id={id + '-title'}
             defaultValue={title}
             required
             disabled={checked}
@@ -76,13 +74,13 @@ export const InputElement = ({
         </div>
 
         <div className="offer-index">
-          <label htmlFor={id + "-index"} className="label">
+          <label htmlFor={id + '-index'} className="label">
             Position
           </label>
 
           <input
-            name={id + "-index"}
-            id={id + "-index"}
+            name={id + '-index'}
+            id={id + '-index'}
             defaultValue={index}
             type="number"
             min={0}
@@ -93,13 +91,13 @@ export const InputElement = ({
         </div>
       </div>
 
-      <label htmlFor={id + "-text"} className="label">
+      <label htmlFor={id + '-text'} className="label">
         Text
       </label>
 
       <textarea
-        name={id + "-text"}
-        id={id + "-text"}
+        name={id + '-text'}
+        id={id + '-text'}
         defaultValue={text}
         disabled={checked}
         rows={5}
@@ -109,20 +107,18 @@ export const InputElement = ({
 
       <div className="checkbox-row">
         <input
-          name={id + "-delete"}
-          id={id + "-delete"}
+          name={id + '-delete'}
+          id={id + '-delete'}
           type="checkbox"
           checked={checked}
-          onChange={(e) =>
-            id.includes("new")
+          onChange={e =>
+            id.includes('new')
               ? removeItem(i)
               : setChecked(e.currentTarget.checked)
           }
           className="checkbox"
         />
-        <label htmlFor={id + "-delete"}>
-          Löschen
-        </label>
+        <label htmlFor={id + '-delete'}>Löschen</label>
       </div>
     </div>
   );

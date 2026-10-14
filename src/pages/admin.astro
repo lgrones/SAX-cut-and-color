@@ -1,29 +1,29 @@
 ---
 export const prerender = false;
 
-import { app } from "../firebase/server";
-import { getAuth } from "firebase-admin/auth";
-import Layout from "../layouts/Layout.astro";
-import OpeningHoursForm from "../components/admin/openingHours/openingHoursForm.astro";
-import PricesForm from "../components/admin/prices/pricesForm.astro";
-import OffersForm from "../components/admin/offers/offersForm.astro";
+import { app } from '../firebase/server';
+import { getAuth } from 'firebase-admin/auth';
+import Layout from '../layouts/Layout.astro';
+import OpeningHoursForm from '../components/admin/openingHours/openingHoursForm.astro';
+import PricesForm from '../components/admin/prices/pricesForm.astro';
+import OffersForm from '../components/admin/offers/offersForm.astro';
 
-if (!Astro.cookies.has("__session")) {
-  return Astro.redirect("/signin");
+if (!Astro.cookies.has('__session')) {
+  return Astro.redirect('/signin');
 }
 
 try {
   const auth = getAuth(app);
 
-  const sessionCookie = Astro.cookies.get("__session")!.value;
+  const sessionCookie = Astro.cookies.get('__session')!.value;
   const decodedCookie = await auth.verifySessionCookie(sessionCookie);
 
   if (!decodedCookie) {
-    return Astro.redirect("/signin");
+    return Astro.redirect('/signin');
   }
 } catch (error) {
   console.error(error);
-  return Astro.redirect("/signin");
+  return Astro.redirect('/signin');
 }
 ---
 
@@ -35,10 +35,8 @@ try {
   <OffersForm />
 
   <form action="/api/auth/signout">
-    <button
-      type="submit"
-      class="button form-submit"
-      >Ausloggen</button
-    >
+    <button type="submit" class="button form-submit">
+      Ausloggen
+    </button>
   </form>
 </Layout>

@@ -1,6 +1,7 @@
-import type { APIRoute } from "astro";
-import { app } from "../../../firebase/server";
-import { getAuth } from "firebase-admin/auth";
+import type { APIRoute } from 'astro';
+import { getAuth } from 'firebase-admin/auth';
+
+import { app } from '../../../firebase/server';
 
 export const prerender = false;
 
@@ -8,16 +9,16 @@ export const GET: APIRoute = async ({ request, cookies, redirect }) => {
   const auth = getAuth(app);
 
   /* Get token from request headers */
-  const idToken = request.headers.get("Authorization")?.split("Bearer ")[1];
+  const idToken = request.headers.get('Authorization')?.split('Bearer ')[1];
   if (!idToken) {
-    return new Response("No token found", { status: 401 });
+    return new Response('No token found', { status: 401 });
   }
 
   /* Verify id token */
   try {
     await auth.verifyIdToken(idToken);
   } catch (error) {
-    return new Response("Invalid token", { status: 401 });
+    return new Response('Invalid token', { status: 401 });
   }
 
   /* Create and set session cookie */
@@ -27,15 +28,11 @@ export const GET: APIRoute = async ({ request, cookies, redirect }) => {
   });
 
   cookies.set(
-    "__session",
+    '__session',
     sessionCookie,
     // @ts-ignore
-    {
-      path: "/",
-      httpOnly: true,
-      secure: true,
-    }
+    { path: '/', httpOnly: true, secure: true },
   );
 
-  return redirect("/admin");
+  return redirect('/admin');
 };

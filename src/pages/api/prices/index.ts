@@ -1,14 +1,15 @@
-import type { APIRoute } from "astro";
-import { app } from "../../../firebase/server";
-import { getFirestore } from "firebase-admin/firestore";
-import type { Price } from "../../../types";
-import { error as logError } from "firebase-functions/logger";
+import type { APIRoute } from 'astro';
+import { getFirestore } from 'firebase-admin/firestore';
+import { error as logError } from 'firebase-functions/logger';
+
+import { app } from '../../../firebase/server';
+import type { Price } from '../../../types';
 
 export const prerender = false;
 // import data from "../../../../backups/prices.json";
 
 const db = getFirestore(app);
-const ref = db.collection("prices");
+const ref = db.collection('prices');
 
 // const populate = () => {
 //   for (const d of data) {
@@ -36,7 +37,7 @@ export const POST: APIRoute = async ({ redirect, request }) => {
   const prices = new Map<string, Partial<Price>>();
 
   for (const [key, value] of formData) {
-    const keyParts = key.split("-");
+    const keyParts = key.split('-');
     const id = keyParts[0];
     const field = keyParts[1];
     const index = keyParts[2];
@@ -52,51 +53,46 @@ export const POST: APIRoute = async ({ redirect, request }) => {
       pricesList[parseInt(index)] = {
         ...pricesList[parseInt(index)],
         [field]:
-          field === "title"
+          field === 'title'
             ? value.toString()
-            : field.includes("price")
-            ? parseFloat(value.toString()) || ""
-            : value.toString() === "on",
+            : field.includes('price')
+              ? parseFloat(value.toString()) || ''
+              : value.toString() === 'on',
       };
 
       continue;
     }
 
-    prices.set(id, {
-      ...prices.get(id),
-      [field]: value.toString(),
-    });
+    prices.set(id, { ...prices.get(id), [field]: value.toString() });
   }
 
   const validPrices = [...prices].filter(
     ([id, data]) =>
-      !id.startsWith("new") ||
-      !Object.keys(data).find((x) => x.includes("delete"))
+      !id.startsWith('new') ||
+      !Object.keys(data).find(x => x.includes('delete')),
   );
 
   for (const validPrice of validPrices) {
     validPrice[1].prices = validPrice[1].prices?.filter(
-      (x) => !Object.keys(x).find((y) => y.includes("delete"))
+      x => !Object.keys(x).find(y => y.includes('delete')),
     );
   }
 
   for (const [id, data] of validPrices) {
     try {
-      if (id.startsWith("new")) {
+      if (id.startsWith('new')) {
         await ref.add(data);
-      } else if (Object.keys(data).find((x) => x.includes("delete"))) {
+      } else if (Object.keys(data).find(x => x.includes('delete'))) {
         await ref.doc(id).delete();
       } else {
         await ref.doc(id).update(data);
       }
     } catch (error) {
-      logError("prices", error);
+      logError('prices', error);
 
-      return new Response("Something went wrong", {
-        status: 500,
-      });
+      return new Response('Something went wrong', { status: 500 });
     }
   }
 
-  return redirect("/admin#prices");
+  return redirect('/admin#prices');
 };

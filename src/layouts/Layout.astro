@@ -1,8 +1,8 @@
 ---
-import Footer from "../components/footer/footer.astro";
-import Navigation from "../components/navigation/Navigation.astro";
-import { SEOMetadata } from "astro-seo-metadata";
-import "../styles/global.css";
+import Footer from '../components/footer/footer.astro';
+import Navigation from '../components/navigation/Navigation.astro';
+import { SEOMetadata } from 'astro-seo-metadata';
+import '../styles/global.css';
 
 interface Props {
   title: string;
@@ -13,19 +13,21 @@ const { title, disableScrollSmooth } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" class:list={{ "scroll-smooth": !disableScrollSmooth }}>
+<html lang="en" class:list={{ 'scroll-smooth': !disableScrollSmooth }}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <SEOMetadata
-      siteName={"Sax Cut + Colour"}
+      siteName={'Sax Cut + Colour'}
       title={title}
-      description={"Entdecken Sie bei SAX die Kunst der Haarpflege und des Stylings. Unsere erfahrene Friseurin verwöhnt Sie mit maßgeschneiderten Schnitten, trendigen Farben und professionellen Pflegebehandlungen. Vereinbaren Sie noch heute einen Termin und erleben Sie Schönheit und Entspannung in unserem gemütlichen Salon."}
-      favicon={"/favicon.png"}
+      description={
+        'Entdecken Sie bei SAX die Kunst der Haarpflege und des Stylings. Unsere erfahrene Friseurin verwöhnt Sie mit maßgeschneiderten Schnitten, trendigen Farben und professionellen Pflegebehandlungen. Vereinbaren Sie noch heute einen Termin und erleben Sie Schönheit und Entspannung in unserem gemütlichen Salon.'
+      }
+      favicon={'/favicon.png'}
       author="Petra Zangerl"
       astroSitemap={true}
       canonicalUrl={Astro.url.toString()}
-      type={"website"}
+      type={'website'}
       astroGenerator={true}
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />

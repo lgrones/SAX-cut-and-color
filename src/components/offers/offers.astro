@@ -1,26 +1,24 @@
 ---
-import Card from "../card/card.astro";
-import { getFirestore } from "firebase-admin/firestore";
-import { app } from "../../firebase/server";
-import type { Offer } from "../../types";
-import { getGridPos } from "../../utils/gridPos";
+import Card from '../card/card.astro';
+import { getFirestore } from 'firebase-admin/firestore';
+import { app } from '../../firebase/server';
+import type { Offer } from '../../types';
+import { getGridPos } from '../../utils/gridPos';
 
 const db = getFirestore(app);
-const ref = db.collection("offers");
+const ref = db.collection('offers');
 const snapshot = await ref.get();
 const offers = snapshot.docs
-  .map((doc) => doc.data())
+  .map(doc => doc.data())
   .toSorted((a, b) => a.index - b.index) as Offer[];
 ---
 
 <div id="offers" class="staggered-grid">
-  {
-    offers.map(({ title, text }, i) => (
-      <div class={getGridPos(i)}>
-        <Card title={title} subTitle="Angebot" id={title}>
-          <p>{text}</p>
-        </Card>
-      </div>
-    ))
-  }
+  {offers.map(({ title, text }, i) => (
+    <div class={getGridPos(i)}>
+      <Card title={title} subTitle="Angebot" id={title}>
+        <p>{text}</p>
+      </Card>
+    </div>
+  ))}
 </div>
