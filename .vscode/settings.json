@@ -1,0 +1,13 @@
+{
+  "cssVariables.lookupFiles": ["src/**/*.css", "src/**/*.astro"],
+  "css.validate": false,
+  "postcss.validate": false,
+  "stylelint.validate": ["css", "scss", "astro"],
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": { "source.fixAll.oxc": "explicit" },
+  "[typescript]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[javascript]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[json]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[jsonc]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[astro]": { "editor.defaultFormatter": "astro-build.astro-vscode" }
+}

@@ -2,7 +2,7 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on merge
-"on":
+'on':
   push:
     branches:
       - main
@@ -16,11 +16,11 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-      - run: pnpm i --frozen-lockfile && pnpm run check && pnpm run build
+      - run: pnpm i --frozen-lockfile && pnpm validate && pnpm build
       - uses: FirebaseExtended/action-hosting-deploy@v0.11
         with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_SAX_CUT_AND_COLOR }}"
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SAX_CUT_AND_COLOR }}'
           channelId: live
           projectId: sax-cut-and-color
         env:
