@@ -5,6 +5,9 @@ import PriceRow from './priceRow.astro';
 import type { Price } from '../../types';
 
 const categories = await getCollection<Price>('prices');
+
+// Always fetch fresh data so admin edits show up on the next page view
+Astro.response.headers.set('Cache-Control', 'no-store');
 ---
 
 <div class="staggered-grid">

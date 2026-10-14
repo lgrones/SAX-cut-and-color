@@ -4,6 +4,9 @@ import Day from './day.astro';
 import type { OpeningHours } from '../../types';
 
 const openingHours = await getCollection<OpeningHours>('openingHours');
+
+// Always fetch fresh data so admin edits show up on the next page view
+Astro.response.headers.set('Cache-Control', 'no-store');
 ---
 
 <div class="days">
