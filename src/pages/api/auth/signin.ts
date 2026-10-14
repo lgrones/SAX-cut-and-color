@@ -1,37 +1,42 @@
 import type { APIRoute } from 'astro';
 import { getAuth } from 'firebase-admin/auth';
 
-import { app } from '../../../firebase/server';
+import { app, SESSION_COOKIE } from '../../../firebase/server';
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ request, cookies, redirect }) => {
+const SESSION_MAX_AGE = 60 * 60 * 24 * 5; // 5 days, in seconds
+const MAX_SIGN_IN_AGE = 5 * 60; // only accept tokens from a fresh sign-in
+
+export const POST: APIRoute = async ({ request, cookies }) => {
   const auth = getAuth(app);
 
-  /* Get token from request headers */
   const idToken = request.headers.get('Authorization')?.split('Bearer ')[1];
   if (!idToken) {
     return new Response('No token found', { status: 401 });
   }
 
-  /* Verify id token */
   try {
-    await auth.verifyIdToken(idToken);
-  } catch (error) {
+    const { auth_time } = await auth.verifyIdToken(idToken, true);
+
+    if (Date.now() / 1000 - auth_time > MAX_SIGN_IN_AGE) {
+      return new Response('Recent sign-in required', { status: 401 });
+    }
+  } catch {
     return new Response('Invalid token', { status: 401 });
   }
 
-  /* Create and set session cookie */
-  const fiveDays = 60 * 60 * 24 * 5 * 1000;
   const sessionCookie = await auth.createSessionCookie(idToken, {
-    expiresIn: fiveDays,
+    expiresIn: SESSION_MAX_AGE * 1000,
   });
 
-  cookies.set('__session', sessionCookie, {
+  cookies.set(SESSION_COOKIE, sessionCookie, {
     path: '/',
+    maxAge: SESSION_MAX_AGE,
     httpOnly: true,
     secure: true,
+    sameSite: 'strict',
   });
 
-  return redirect('/admin');
+  return new Response(null, { status: 204 });
 };

@@ -1,29 +1,15 @@
 ---
 export const prerender = false;
 
-import { app } from '../firebase/server';
-import { getAuth } from 'firebase-admin/auth';
-import { error as logError } from 'firebase-functions/logger';
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/card/card.astro';
 
-const auth = getAuth(app);
-
-const sessionCookie = Astro.cookies.get('__session')?.value;
-
-if (sessionCookie) {
-  try {
-    await auth.verifySessionCookie(sessionCookie);
-    return Astro.redirect('/admin');
-  } catch (error) {
-    logError('signin', error);
-  }
-}
+// Signed in users are redirected to /admin by the auth middleware
 ---
 
 <Layout title="Admin Bereich Login">
   <Card title="Admin Bereich Login" id="login">
-    <form action="/api/auth/signin" method="post">
+    <form>
       <div class="fields">
         <div>
           <label for="email" class="label">
@@ -184,6 +170,7 @@ if (sessionCookie) {
     getAuth,
     inMemoryPersistence,
     signInWithEmailAndPassword,
+    signOut,
   } from 'firebase/auth';
   import { app } from '../firebase/client';
 
@@ -225,12 +212,16 @@ if (sessionCookie) {
       );
 
       const response = await fetch('/api/auth/signin', {
+        method: 'POST',
         headers: { Authorization: `Bearer ${await user.getIdToken()}` },
       });
 
-      if (!response.redirected) throw new Error(await response.text());
+      // The server keeps the session now, the client sign-in is not needed
+      await signOut(auth);
 
-      window.location.assign(response.url);
+      if (!response.ok) throw new Error(await response.text());
+
+      window.location.assign('/admin');
     } catch {
       setLoading(false);
       validation?.classList.remove('invisible');

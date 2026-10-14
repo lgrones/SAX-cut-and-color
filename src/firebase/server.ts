@@ -6,6 +6,9 @@ if (import.meta.env.DEV) {
   process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
 }
 
+// Firebase Hosting only forwards a cookie with exactly this name to the backend
+export const SESSION_COOKIE = '__session';
+
 export const app =
   getApps()[0] ??
   initializeApp({
