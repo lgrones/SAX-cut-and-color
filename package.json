@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "firebase:emulators": "firebase emulators:start --only firestore,hosting --import firebase-export-1714228570097AZJB4e",
+    "firebase:emulators": "firebase emulators:start --only firestore",
     "firebase:export": "firebase emulators:export exported-dev-data",
     "firebase:kill": "npx kill-port 4000 4400 4500 6100 8080 9000 9099",
     "build": "astro build",
@@ -16,7 +16,9 @@
     "format:fix": "oxfmt && prettier --write \"**/*.astro\"",
     "astro:check": "astro check",
     "astro": "astro",
-    "publish": "firebase deploy --only hosting"
+    "release": "pnpm build && pnpm release:server && pnpm release:hosting",
+    "release:server": "gcloud run deploy web --source . --project sax-cut-and-color --region europe-west1 --allow-unauthenticated --set-secrets PROJECT_ID=PROJECT_ID:latest,CLIENT_EMAIL=CLIENT_EMAIL:latest,PRIVATE_KEY=PRIVATE_KEY:latest",
+    "release:hosting": "firebase deploy --only hosting"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.7",

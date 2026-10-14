@@ -30,4 +30,10 @@ pnpm dev
 pnpm validate
 ```
 
-A merge to main deploys to Firebase Hosting.
+## Deploys
+
+A merge to main deploys; `pnpm release` does the same by hand. Prerendered pages and assets go to Firebase Hosting. Everything else is rewritten to the Astro server on Cloud Run: server islands, admin and the API. Both halves must come from the same build. Server island props are encrypted with a per-build key.
+
+| Topic                    | Where                                  |
+| ------------------------ | -------------------------------------- |
+| Cloud Run one-time setup | [docs/cloud-run.md](docs/cloud-run.md) |
