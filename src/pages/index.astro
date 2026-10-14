@@ -29,14 +29,20 @@ import Layout from "../layouts/Layout.astro";
   </div>
 
   <div class="flex justify-between flex-wrap gap-x-24 gap-y-12 md:gap-y-20">
-    <OpeningHours />
+    <OpeningHours server:defer>
+      <div slot="fallback" id="opening-hours" class="min-h-80"></div>
+    </OpeningHours>
 
     <Contact />
   </div>
 
-  <Prices />
+  <Prices server:defer>
+    <div slot="fallback" id="prices" class="min-h-96"></div>
+  </Prices>
 
-  <Offers />
+  <Offers server:defer>
+    <div slot="fallback" id="offers" class="min-h-96"></div>
+  </Offers>
 
   <Salon />
 </Layout>

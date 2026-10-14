@@ -3,6 +3,8 @@ import { app } from "../../../firebase/server";
 import { getFirestore } from "firebase-admin/firestore";
 import type { OpeningHours } from "../../../types";
 import { error as logError } from "firebase-functions/logger";
+
+export const prerender = false;
 // import data from "../../../../backups/openingHours.json";
 
 const db = getFirestore(app);

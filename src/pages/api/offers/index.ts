@@ -3,6 +3,8 @@ import { app } from "../../../firebase/server";
 import { getFirestore } from "firebase-admin/firestore";
 import { error as logError } from "firebase-functions/logger";
 import type { Offer } from "../../../types";
+
+export const prerender = false;
 // import data from "../../../../backups/offers.json";
 
 const db = getFirestore(app);
