@@ -18,20 +18,20 @@ const openingHours = snapshot.docs
 
 <Card title="Zeiten" id="times">
   <form method="post" action="/api/openingHours" autocomplete="off">
-    <div class="flex flex-wrap gap-x-10 gap-y-6">
+    <div class="days">
       {
         openingHours.map((openingHour) => (
-          <div class="flex flex-col gap-y-2" id={openingHour.id}>
-            <p class="block text-xl text-sax-tan">{openingHour.day}</p>
+          <div class="day" id={openingHour.id}>
+            <p class="day-name">{openingHour.day}</p>
 
             <label
               for={openingHour.id + "-timeAmStart"}
-              class="block  text-sax-tan"
+              class="label"
             >
               Vormittag
             </label>
 
-            <div class="flex gap-2 items-center text-white">
+            <div class="range">
               <input
                 type="time"
                 name={openingHour.id + "-timeAmStart"}
@@ -39,7 +39,7 @@ const openingHours = snapshot.docs
                 value={openingHour.timeAmStart}
                 disabled={openingHour.closed}
                 required={!openingHour.closed}
-                class="bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40"
+                class="input"
               />
               -
               <input
@@ -49,25 +49,25 @@ const openingHours = snapshot.docs
                 value={openingHour.timeAmEnd}
                 disabled={openingHour.closed}
                 required={!openingHour.closed}
-                class="bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40"
+                class="input"
               />
             </div>
 
             <label
               for={openingHour.id + "-timePmStart"}
-              class="block  text-sax-tan"
+              class="label"
             >
               Nachmittag
             </label>
 
-            <div class="flex gap-2 items-center text-white">
+            <div class="range">
               <input
                 type="time"
                 name={openingHour.id + "-timePmStart"}
                 id={openingHour.id + "-timePmStart"}
                 value={openingHour.timePmStart}
                 disabled={openingHour.closed}
-                class="bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40"
+                class="input"
               />
               -
               <input
@@ -76,19 +76,19 @@ const openingHours = snapshot.docs
                 id={openingHour.id + "-timePmEnd"}
                 value={openingHour.timePmEnd}
                 disabled={openingHour.closed}
-                class="bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40"
+                class="input"
               />
             </div>
 
-            <div class="flex items-center mb-4">
+            <div class="checkbox-row">
               <input
                 name={openingHour.id + "-closed"}
                 id={openingHour.id + "-closed"}
                 type="checkbox"
                 checked={openingHour.closed}
-                class="w-4 h-4 text-sax-tan rounded bg-stone-800 border-stone-600 focus:border-sax-tan focus:ring-0 focus:ring-offset-0"
+                class="checkbox"
               />
-              <label for={openingHour.id + "-closed"} class="ms-2">
+              <label for={openingHour.id + "-closed"}>
                 Geschlossen
               </label>
             </div>
@@ -99,12 +99,40 @@ const openingHours = snapshot.docs
 
     <button
       type="submit"
-      class="mt-8 text-sax-dark bg-sax-tan hover:bg-sax-tan/90 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+      class="button form-submit"
     >
       Speichern
     </button>
   </form>
 </Card>
+
+<style>
+  .days {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 2.5rem;
+  }
+
+  .day {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+  }
+
+  .day-name {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    color: var(--sax-tan);
+  }
+
+  .range {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #fff;
+  }
+</style>
+
 <script>
   const inputs = document.querySelectorAll(
     "#times input"

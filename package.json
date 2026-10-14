@@ -18,16 +18,13 @@
     "@astrojs/node": "^11.1.7",
     "@astrojs/preact": "^6.0.6",
     "@astrojs/sitemap": "^3.7.4",
-    "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.8",
     "astro-seo-metadata": "^0.6.0",
     "firebase": "^13.0.0",
     "firebase-admin": "^14.5.0",
     "firebase-functions": "^7.4.0",
-    "flowbite": "^4.0.2",
     "preact": "^11.0.1",
-    "sharp": "^0.35.5",
-    "tailwindcss": "^4.3.3"
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

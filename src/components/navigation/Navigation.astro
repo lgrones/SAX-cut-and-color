@@ -5,31 +5,21 @@ import Link from "./link.astro";
 ---
 
 <header>
-  <nav
-    class="dark:bg-sax-dark fixed w-full z-20 top-0 start-0 h-[100px] md:h-[120px]"
-  >
-    <div
-      class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto py-4 px-6 bg-sax-dark"
-    >
-      <a href="/" class="md:hidden flex items-center space-x-3">
-        <Image
-          src={logo}
-          alt="SAX Logo"
-          loading="eager"
-          class="w-[120px] md:w-[150px]"
-        />
+  <nav>
+    <div class="bar">
+      <a href="/" class="logo logo-mobile">
+        <Image src={logo} alt="SAX Logo" loading="eager" class="logo-image" />
       </a>
 
       <button
         id="burger"
         type="button"
-        class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden text-sax-tan dark:hover:text-sax-dark dark:hover:bg-sax-tan scale-125"
+        class="burger"
         aria-controls="navbar-default"
         aria-expanded="false"
       >
         <span class="sr-only">Navigation öffnen</span>
         <svg
-          class="w-5 h-5"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -44,13 +34,8 @@ import Link from "./link.astro";
         </svg>
       </button>
 
-      <div
-        class="hidden relative w-full md:block md:w-auto"
-        id="navbar-default"
-      >
-        <ul
-          class="text-lg flex flex-col p-0 mt-4 md:flex-row gap-y-2 md:space-x-12 md:mt-0"
-        >
+      <div class="menu" id="navbar-default">
+        <ul>
           <li>
             <Link name="Zeiten" link="opening-hours" />
           </li>
@@ -68,35 +53,143 @@ import Link from "./link.astro";
           </li>
         </ul>
 
-        <div
-          id="overlay"
-          class="absolute md:hidden w-full h-dvh bg-sax-dark/60"
-        >
-        </div>
+        <div id="overlay" class="overlay"></div>
       </div>
 
-      <a href="/" class="hidden md:flex items-center space-x-3">
-        <Image
-          src={logo}
-          alt="SAX Logo"
-          loading="eager"
-          class="w-[120px] md:w-[150px]"
-        />
+      <a href="/" class="logo logo-desktop">
+        <Image src={logo} alt="SAX Logo" loading="eager" class="logo-image" />
       </a>
     </div>
   </nav>
 </header>
+
+<style>
+  nav {
+    position: fixed;
+    top: 0;
+    inset-inline-start: 0;
+    z-index: 20;
+    width: 100%;
+    height: var(--header-height);
+    background-color: var(--sax-dark);
+  }
+
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding: 1rem 1.5rem;
+    background-color: var(--sax-dark);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+  }
+
+  .logo-desktop {
+    display: none;
+  }
+
+  .logo-image {
+    width: 120px;
+  }
+
+  .burger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--sax-tan);
+    border-radius: 0.5rem;
+    scale: 1.25;
+
+    &:hover {
+      color: var(--sax-dark);
+      background-color: var(--sax-tan);
+    }
+
+    & svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  .menu {
+    display: none;
+    position: relative;
+    width: 100%;
+
+    &.open {
+      display: block;
+    }
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  .overlay {
+    position: absolute;
+    width: 100%;
+    height: 100dvh;
+    background-color: rgb(22 21 22 / 0.6);
+  }
+
+  @media (min-width: 768px) {
+    .logo-mobile,
+    .burger,
+    .overlay {
+      display: none;
+    }
+
+    .logo-desktop {
+      display: flex;
+    }
+
+    .logo-image {
+      width: 150px;
+    }
+
+    .menu {
+      display: block;
+      width: auto;
+    }
+
+    ul {
+      flex-direction: row;
+      column-gap: 3rem;
+      margin-top: 0;
+    }
+  }
+</style>
+
 <script>
-  import { Collapse } from "flowbite";
+  const menu = document.getElementById("navbar-default")!;
+  const burger = document.getElementById("burger")!;
 
-  const targetEl = document.getElementById("navbar-default");
-  const triggerEl = document.getElementById("burger");
-  const overlayEl = document.getElementById("overlay");
+  const setOpen = (open: boolean) => {
+    menu.classList.toggle("open", open);
+    burger.setAttribute("aria-expanded", String(open));
+  };
 
-  const collapse = new Collapse(targetEl, triggerEl);
+  burger.addEventListener("click", () =>
+    setOpen(!menu.classList.contains("open"))
+  );
 
-  const links = document.querySelectorAll("header a");
-
-  links.forEach((x) => x.addEventListener("click", () => collapse.collapse()));
-  overlayEl?.addEventListener("click", () => collapse.collapse());
+  document
+    .querySelectorAll("header a, #overlay")
+    .forEach((x) => x.addEventListener("click", () => setOpen(false)));
 </script>

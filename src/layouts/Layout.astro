@@ -13,7 +13,7 @@ const { title, disableScrollSmooth } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" class={`dark ${!disableScrollSmooth ? "scroll-smooth" : ""}`}>
+<html lang="en" class:list={{ "scroll-smooth": !disableScrollSmooth }}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -35,41 +35,67 @@ const { title, disableScrollSmooth } = Astro.props;
       rel="stylesheet"
     />
   </head>
-  <body class="bg-sax-dark container mx-auto max-w-screen-xl px-6">
+  <body>
     <Navigation />
 
-    <main class="my-8 flex gap-y-12 md:gap-y-24 flex-col relative z-10">
+    <main>
       <slot />
     </main>
 
     <Footer />
 
-    <div
-      class="rounded-full border border-t-0 border-sax-tan opacity-25 fixed z-0 aspect-square w-full xl:w-4/6 start-0 end-0 -top-32 mx-auto"
-    >
-    </div>
+    <div class="ring ring-top"></div>
+    <div class="ring ring-bottom"></div>
 
-    <div
-      class="rounded-full border border-t-0 border-sax-tan opacity-25 fixed z-0 aspect-square w-full md:w-4/6 start-48 end-48 top-2/3 sm:hidden mx-auto"
-    >
-    </div>
+    <style>
+      body {
+        width: 100%;
+        max-width: 1280px;
+        margin-inline: auto;
+        padding-inline: 1.5rem;
+        background-color: var(--sax-dark);
+      }
 
-    <style is:global>
-      @layer base {
-        :root {
-          --accent: 213, 177, 129;
-          color-scheme: dark;
+      main {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        row-gap: 3rem;
+        margin-block: 2rem;
+
+        @media (min-width: 768px) {
+          row-gap: 6rem;
         }
-        html {
-          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .ring {
+        position: fixed;
+        z-index: 0;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        margin-inline: auto;
+        border: 1px solid var(--sax-tan);
+        border-top-width: 0;
+        border-radius: 9999px;
+        opacity: 0.25;
+      }
+
+      .ring-top {
+        inset-inline: 0;
+        top: -8rem;
+
+        @media (min-width: 1280px) {
+          width: 66.666667%;
         }
-        *,
-        *::before,
-        *::after {
-          box-sizing: border-box;
-        }
-        * {
-          margin: 0;
+      }
+
+      .ring-bottom {
+        inset-inline: 12rem;
+        top: 66.666667%;
+
+        @media (min-width: 640px) {
+          display: none;
         }
       }
     </style>

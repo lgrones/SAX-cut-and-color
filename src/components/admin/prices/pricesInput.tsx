@@ -1,5 +1,6 @@
 import { useState } from "preact/hooks";
 import type { Price } from "../../../types";
+import "../admin.css";
 
 interface PricesWithId extends Price {
   id: string;
@@ -14,15 +15,15 @@ export const PricesInput = ({ prices }: { prices: PricesWithId[] }) => {
   };
 
   return (
-    <div className="flex flex-wrap gap-x-10 gap-y-16">
+    <div className="entries price-blocks">
       {currPrices.map((prices, i) => (
         <InputElements prices={{ ...prices, i, removePrice }} key={prices.id} />
       ))}
 
-      <div className="flex items-center">
+      <div className="add-button-wrapper">
         <button
           type="button"
-          className="text-sax-tan text-6xl bg-stone-800 hover:bg-stone-900 border-2 border-stone-600 rounded-full px-4 pb-2.5 aspect-square"
+          className="add-button"
           onClick={() => {
             setCurrPrices((prev) => [
               ...prev,
@@ -63,10 +64,10 @@ export const InputElements = ({
   };
 
   return (
-    <div className="flex flex-col gap-y-4 w-full lg:w-[48%]">
-      <div className="grid grid-cols-6 gap-x-4 items-center">
-        <div className="col-span-3">
-          <label htmlFor={id + "-mainTitle"} className="block text-sax-tan">
+    <div className="price-block">
+      <div className="price-block-header">
+        <div className="price-block-title">
+          <label htmlFor={id + "-mainTitle"} className="label">
             Haupttitel
           </label>
 
@@ -76,12 +77,12 @@ export const InputElements = ({
             defaultValue={mainTitle}
             required
             disabled={checked}
-            className="text-white bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40"
+            className="input"
           />
         </div>
 
         <div>
-          <label htmlFor={id + "-index"} className="block text-sax-tan">
+          <label htmlFor={id + "-index"} className="label">
             Position
           </label>
 
@@ -93,11 +94,11 @@ export const InputElements = ({
             min={0}
             required
             disabled={checked}
-            className="text-white bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="input"
           />
         </div>
 
-        <div className="flex items-center mt-6 col-span-2">
+        <div className="price-block-delete">
           <input
             name={id + "-delete"}
             id={id + "-delete"}
@@ -108,37 +109,37 @@ export const InputElements = ({
                 ? removePrice(i)
                 : setChecked(e.currentTarget.checked)
             }
-            className="w-4 h-4 text-sax-tan rounded bg-stone-800 border-stone-600 focus:border-sax-tan focus:ring-0 focus:ring-offset-0"
+            className="checkbox"
           />
-          <label htmlFor={id + "-delete"} className="ms-2">
+          <label htmlFor={id + "-delete"}>
             Preisblock Löschen
           </label>
         </div>
       </div>
 
-      <div className="grid grid-cols-[minmax(0,_1fr)_repeat(4,_80px)] items-center gap-x-4 gap-y-2">
-        <label htmlFor={id + "-title-0"} className="block text-sax-tan">
+      <div className="price-rows">
+        <label htmlFor={id + "-title-0"} className="label">
           Titel
         </label>
 
-        <label htmlFor={id + "-priceMin-0"} className="block text-sax-tan">
+        <label htmlFor={id + "-priceMin-0"} className="label">
           Min. Preis
         </label>
 
-        <label htmlFor={id + "-priceMax-0"} className="block text-sax-tan">
+        <label htmlFor={id + "-priceMax-0"} className="label">
           Max. Preis
         </label>
 
         <label
           htmlFor={id + "-salon-0"}
-          className="block text-sax-tan justify-self-center"
+          className="label centered"
         >
           Absprache
         </label>
 
         <label
           htmlFor={id + "-delete-0"}
-          className="block text-sax-tan justify-self-center"
+          className="label centered"
         >
           Löschen
         </label>
@@ -156,7 +157,7 @@ export const InputElements = ({
 
         <button
           type="button"
-          className=" text-sax-tan bg-stone-800 hover:bg-stone-800/70 border-2 border-stone-600 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center disabled:opacity-40"
+          className="button button-secondary"
           disabled={checked}
           onClick={() => {
             setCurrPrices((prev) => [
@@ -204,7 +205,7 @@ export const InputElement = ({
         defaultValue={title}
         required
         disabled={disabled || isDelete}
-        className="text-white bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40"
+        className="input"
       />
 
       <input
@@ -216,7 +217,7 @@ export const InputElement = ({
         defaultValue={priceMin}
         disabled={disabled || isSalon || isDelete}
         required
-        className="text-white bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="input"
       />
 
       <input
@@ -227,7 +228,7 @@ export const InputElement = ({
         defaultValue={priceMax}
         step=".01"
         disabled={disabled || isSalon || isDelete}
-        className="text-white bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="input"
       />
 
       <input
@@ -237,7 +238,7 @@ export const InputElement = ({
         disabled={disabled}
         checked={isSalon}
         onChange={(e) => setIsSalon(e.currentTarget.checked)}
-        className="w-4 h-4 justify-self-center text-sax-tan rounded bg-stone-800 border-stone-600 focus:border-sax-tan focus:ring-0 focus:ring-offset-0 disabled:opacity-40"
+        className="checkbox centered"
       />
 
       <input
@@ -250,7 +251,7 @@ export const InputElement = ({
           removeItem(index);
           setDelete(e.currentTarget.checked);
         }}
-        className="w-4 h-4 justify-self-center text-sax-tan rounded bg-stone-800 border-stone-600 focus:border-sax-tan focus:ring-0 focus:ring-offset-0 disabled:opacity-40"
+        className="checkbox centered"
       />
     </>
   );

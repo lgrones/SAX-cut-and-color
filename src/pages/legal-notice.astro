@@ -3,35 +3,35 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="SAX Cut + Colour Impressum">
-  <div class="pt-[103px] md:pt-[120px] text-sax-tan">
-    <div class="font-cormorant text-2xl mb-2">
+  <div class="section">
+    <div class="heading">
       Name & Kontaktdaten des Anbieters
     </div>
     Sax Cut + Colour by Petra Zangerl<br />Landstraße 46<br />6911 Lochau<br
     />Austria<br /><a
       href="tel:+436644213849"
-      class="underline underline-offset-4 decoration-1">+43 664 421 384 9</a
+      class="text-link">+43 664 421 384 9</a
     ><br /><a
       href="mailto:petra.zangerl@chello.at"
-      class="underline underline-offset-4 decoration-1"
+      class="text-link"
       >petra.zangerl@chello.at</a
     ><br />ATU 63588237
-    <div class="font-cormorant text-2xl mb-2 mt-6">
+    <div class="heading">
       Firmenbuchnummer und Firmenbuchgericht
     </div>
     FN 62067a, Landesgericht Feldkirch
-    <div class="font-cormorant text-2xl mb-2 mt-6">
+    <div class="heading">
       Gewerbeberechtigung
     </div>Friseurin und Perückenmacherin (Stylistin) (Handwerk) gemäß § 94 Z 22
     GewO 1994
-    <div class="font-cormorant text-2xl mb-2 mt-6">Nutzungsbedingungen</div>Die
+    <div class="heading">Nutzungsbedingungen</div>Die
     Inhalte dieser Website sind frei nutzbar und dienen ausschließlich der
     Information. Es kommen durch die Nutzung der Auswahlmöglichkeiten der
     Website keinerlei Rechtsgeschäfte zwischen der Eigentümerin und den Nutzern
     zustande. Die weitere Vorgangsweise zwischen Anbietern und Nutzern und der
     mögliche spätere Abschluss von Aufträgen zwischen Anbietern und Nutzern
     liegen im ausschließlichen Ermessen der Nutzer.
-    <div class="font-cormorant text-2xl mb-2 mt-6">
+    <div class="heading">
       Copyright und Haftungsausschluss
     </div>Im Hinblick auf die technischen Eigenschaften des Internets kann keine
     Gewähr für die Authentizität, Richtigkeit und Vollständigkeit der im
@@ -50,7 +50,7 @@ import Layout from "../layouts/Layout.astro";
     willkommen. Jede Einbindung einzelner Seiten unseres Angebotes in fremde
     Frames ist zu unterlassen, ebenso das zur Verfügung stellen unseres
     RSS-Feeds auf fremden Seiten.
-    <div class="font-cormorant text-2xl mb-2 mt-6">Datenschutz</div>Soweit auf
+    <div class="heading">Datenschutz</div>Soweit auf
     unseren Seiten personenbezogene Daten (beispielsweise Name, Anschrift oder
     E-Mail-Adressen) erhoben werden, erfolgt dies soweit möglich stets auf
     freiwilliger Basis. Die Nutzung der Angebote und Dienste ist, soweit
@@ -60,7 +60,7 @@ import Layout from "../layouts/Layout.astro";
     Informationsmaterialien wird hiermit ausdrücklich widersprochen. Die
     Betreiber der Seiten behalten sich ausdrücklich rechtliche Schritte im Falle
     der unverlangten Zusendung von Werbeinformationen, etwa durch Spam-Mails,
-    vor.<div class="font-cormorant text-2xl mb-2 mt-6">
+    vor.<div class="heading">
       Haftung für Links
     </div>Dieses Weblog enthält Links zu externen Webseiten Dritter, auf deren
     Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden
@@ -74,3 +74,17 @@ import Layout from "../layouts/Layout.astro";
     werden wir derartige Links umgehend entfernen.
   </div>
 </Layout>
+
+<style>
+  .heading {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-cormorant);
+    font-size: 1.5rem;
+    line-height: 2rem;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+</style>

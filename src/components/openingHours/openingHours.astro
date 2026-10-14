@@ -14,7 +14,15 @@ const openingHours = snapshot.docs
 ---
 
 <Card title="Zeiten" id="opening-hours">
-  <div class="flex flex-col gap-y-4">
+  <div class="days">
     {openingHours.map((openingHour) => <Day {...openingHour} />)}
   </div>
 </Card>
+
+<style>
+  .days {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+  }
+</style>

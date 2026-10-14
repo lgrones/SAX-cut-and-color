@@ -10,55 +10,99 @@ import { Image } from "astro:assets";
 ---
 
 <Card title="Salon" id="salon">
-  <div class="flex flex-wrap gap-4">
-    <div
-      class="sm:flex-[calc(50%_-_2rem)] sm:max-w-[calc(50%_-_2rem)] flex-[100%] max-w-[100%]"
-    >
+  <div class="gallery">
+    <div class="column column-1">
       <Image
         src={salon2}
         alt="Salon"
-        class="rounded w-100 align-middle"
+        class="photo"
         loading="eager"
       />
       <Image
         src={salon5}
         alt="Utensilien"
-        class="rounded w-100 align-middle mt-4"
+        class="photo"
         loading="eager"
       />
     </div>
-    <div
-      class="md:flex-[25%] md:max-w-[25%] sm:flex-[50%] sm:max-w-[50%] flex-[100%] max-w-[100%]"
-    >
+    <div class="column column-2">
       <Image
         src={salon3}
         alt="Salon"
-        class="rounded w-100 align-middle"
+        class="photo"
         loading="eager"
       />
 
       <Image
         src={salon7}
         alt="Produkte"
-        class="rounded w-100 align-middle mt-4"
+        class="photo"
         loading="eager"
       />
     </div>
-    <div
-      class="md:flex-[25%] md:max-w-[25%] sm:flex-[calc(50%_-_2rem)] sm:max-w-[calc(50%_-_2rem)] sm:translate-y-[-66.5vw] md:translate-y-0 flex-[100%] max-w-[100%]"
-    >
+    <div class="column column-3">
       <Image
         src={salon8}
         alt="Friseurinnen"
-        class="rounded w-100 align-middle"
+        class="photo"
         loading="eager"
       />
       <Image
         src={salon4}
         alt="Büsten"
-        class="rounded w-100 align-middle mt-4"
+        class="photo"
         loading="eager"
       />
     </div>
   </div>
 </Card>
+
+<style>
+  .gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .column {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  .photo {
+    border-radius: 0.25rem;
+
+    & + & {
+      margin-top: 1rem;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .column-1,
+    .column-3 {
+      flex-basis: calc(50% - 2rem);
+      max-width: calc(50% - 2rem);
+    }
+
+    .column-2 {
+      flex-basis: 50%;
+      max-width: 50%;
+    }
+
+    .column-3 {
+      translate: 0 -66.5vw;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .column-2,
+    .column-3 {
+      flex-basis: 25%;
+      max-width: 25%;
+    }
+
+    .column-3 {
+      translate: none;
+    }
+  }
+</style>

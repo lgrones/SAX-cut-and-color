@@ -1,5 +1,6 @@
 import { useState } from "preact/hooks";
 import type { Offer } from "../../../types";
+import "../admin.css";
 
 export const OffersInput = ({
   offers,
@@ -14,15 +15,15 @@ export const OffersInput = ({
   };
 
   return (
-    <div className="flex flex-wrap gap-x-10 gap-y-6">
+    <div className="entries offers">
       {currOffers.map((props, i) => (
         <InputElement {...props} i={i} removeItem={removeItem} key={props.id} />
       ))}
 
-      <div className="flex items-center">
+      <div className="add-button-wrapper">
         <button
           type="button"
-          className="text-sax-tan text-6xl bg-stone-800 hover:bg-stone-900 border-2 border-stone-600 aspect-square rounded-full px-4 pb-2.5"
+          className="add-button"
           onClick={() => {
             setCurrOffers((prev) => [
               ...prev,
@@ -58,10 +59,10 @@ export const InputElement = ({
   const [checked, setChecked] = useState(false);
 
   return (
-    <div className="flex flex-col gap-y-2">
-      <div className="flex gap-x-4">
-        <div className="flex-1">
-          <label htmlFor={id + "-title"} className="block text-sax-tan">
+    <div className="offer">
+      <div className="offer-header">
+        <div className="offer-title">
+          <label htmlFor={id + "-title"} className="label">
             Titel
           </label>
           <input
@@ -70,12 +71,12 @@ export const InputElement = ({
             defaultValue={title}
             required
             disabled={checked}
-            className="text-white bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40"
+            className="input"
           />
         </div>
 
-        <div className="w-16">
-          <label htmlFor={id + "-index"} className="block text-sax-tan">
+        <div className="offer-index">
+          <label htmlFor={id + "-index"} className="label">
             Position
           </label>
 
@@ -87,12 +88,12 @@ export const InputElement = ({
             min={0}
             required
             disabled={checked}
-            className="text-white bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="input"
           />
         </div>
       </div>
 
-      <label htmlFor={id + "-text"} className="block  text-sax-tan">
+      <label htmlFor={id + "-text"} className="label">
         Text
       </label>
 
@@ -103,10 +104,10 @@ export const InputElement = ({
         disabled={checked}
         rows={5}
         cols={48}
-        className="text-white bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-1.5 disabled:opacity-40"
+        className="input"
       />
 
-      <div className="flex items-center mb-4">
+      <div className="checkbox-row">
         <input
           name={id + "-delete"}
           id={id + "-delete"}
@@ -117,9 +118,9 @@ export const InputElement = ({
               ? removeItem(i)
               : setChecked(e.currentTarget.checked)
           }
-          className="w-4 h-4 text-sax-tan rounded bg-stone-800 border-stone-600 focus:border-sax-tan focus:ring-0 focus:ring-offset-0"
+          className="checkbox"
         />
-        <label htmlFor={id + "-delete"} className="ms-2">
+        <label htmlFor={id + "-delete"}>
           Löschen
         </label>
       </div>

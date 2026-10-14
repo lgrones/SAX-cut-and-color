@@ -3,16 +3,7 @@ import Card from "../card/card.astro";
 import { getFirestore } from "firebase-admin/firestore";
 import { app } from "../../firebase/server";
 import type { Offer } from "../../types";
-
-const getGridPos = (index: number) => {
-  if (index % 4 === 0) return "col-start-1 sm:col-start-2 lg:col-end-7";
-
-  if (index % 3 == 0) return "col-start-1 lg:col-start-2";
-
-  if (index % 2 == 0) return "col-start-1 sm:col-start-2 lg:col-end-6";
-
-  return "col-start-1";
-};
+import { getGridPos } from "../../utils/gridPos";
 
 const db = getFirestore(app);
 const ref = db.collection("offers");
@@ -22,12 +13,10 @@ const offers = snapshot.docs
   .toSorted((a, b) => a.index - b.index) as Offer[];
 ---
 
-<div id="offers" class="grid grid-cols-6 gap-x-16">
+<div id="offers" class="staggered-grid">
   {
     offers.map(({ title, text }, i) => (
-      <div
-        class={`col-span-6 sm:col-span-5 md:col-span-3 lg:col-span-2 ${getGridPos(i + 1 > 4 ? i - 3 : i + 1)}`}
-      >
+      <div class={getGridPos(i)}>
         <Card title={title} subTitle="Angebot" id={title}>
           <p>{text}</p>
         </Card>

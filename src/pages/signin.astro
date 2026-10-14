@@ -25,34 +25,33 @@ if (Astro.cookies.has("__session")) {
 <Layout title="Admin Bereich Login">
   <Card title="Admin Bereich Login" id="login">
     <form action="/api/auth/signin" method="post">
-      <div class="grid gap-6 mb-6 md:grid-cols-2 mt-10">
+      <div class="fields">
         <div>
-          <label for="email" class="block mb-2 text-sax-tan">E-Mail</label>
+          <label for="email" class="label">E-Mail</label>
           <input
             type="email"
             name="email"
             id="email"
-            class="text-white bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-2.5"
+            class="input input-lg"
             required
           />
         </div>
 
-        <div class="relative">
-          <label for="password" class="block mb-2 text-sax-tan">Passwort</label>
+        <div class="password">
+          <label for="password" class="label">Passwort</label>
           <input
             type="password"
             name="password"
             id="password"
-            class="text-white bg-stone-800 border-2 border-stone-600 rounded-lg focus:border-sax-tan focus:ring-0 block w-full p-2.5"
+            class="input input-lg"
             required
           />
-          <span class="text-sax-tan">
+          <span class="toggle">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
               height="20"
               fill="currentColor"
-              class="absolute top-[2.85rem] right-4 cursor-pointer"
               id="show"
             >
               <path
@@ -66,8 +65,8 @@ if (Astro.cookies.has("__session")) {
               height="20"
               fill="currentColor"
               viewBox="0 0 17 15"
-              class="absolute top-[2.85rem] right-4 cursor-pointer hidden"
               id="hide"
+              class="hidden"
             >
               <path
                 d="M1.99 1.99a1 1 0 00-.697 1.717l11 11a1 1 0 101.414-1.414l-.912-.912a8 8 0 002.943-4.391A8 8 0 008 2a8 8 0 00-4.303 1.283l-.99-.99a1 1 0 00-.717-.303zM8 4a4 4 0 014 4 4 4 0 01-.977 2.61L5.39 4.973A4 4 0 018 4zM1.273 5.687A8 8 0 00.262 8.01 8 8 0 008 14a8 8 0 001.445-.14l-1.884-1.885a4 4 0 01-3.532-3.531z"
@@ -79,18 +78,18 @@ if (Astro.cookies.has("__session")) {
         </div>
       </div>
 
-      <div class="flex gap-x-6 items-center">
+      <div class="actions">
         <button
           type="submit"
-          class="text-sax-dark bg-sax-tan hover:bg-sax-tan/90 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+          class="button"
         >
           Login
         </button>
 
-        <div role="status" class="hidden" id="loader">
+        <div role="status" id="loader" hidden>
           <svg
             aria-hidden="true"
-            class="w-8 h-8 text-stone-600 animate-spin fill-sax-tan"
+            class="spinner"
             viewBox="0 0 100 101"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -104,12 +103,77 @@ if (Astro.cookies.has("__session")) {
         </div>
       </div>
 
-      <p id="validation" class="mt-2 text-red-500 invisible">
+      <p id="validation" class="validation invisible">
         Falsches Passwort oder E-Mail Adresse
       </p>
     </form>
   </Card>
 </Layout>
+
+<style>
+  .fields {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .label {
+    margin-bottom: 0.5rem;
+  }
+
+  .password {
+    position: relative;
+  }
+
+  .toggle {
+    color: var(--sax-tan);
+
+    & svg {
+      position: absolute;
+      top: 2.85rem;
+      right: 1rem;
+      cursor: pointer;
+    }
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    column-gap: 1.5rem;
+  }
+
+  .spinner {
+    width: 2rem;
+    height: 2rem;
+    color: var(--stone-600);
+    fill: var(--sax-tan);
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .validation {
+    margin-top: 0.5rem;
+    color: var(--red-500);
+  }
+
+  .invisible {
+    visibility: hidden;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
 
 <script>
   import {
@@ -154,7 +218,7 @@ if (Astro.cookies.has("__session")) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    loader?.classList.remove("hidden");
+    if (loader) loader.hidden = false;
 
     const formData = new FormData(form);
     const email = formData.get("email")?.toString();
@@ -184,7 +248,7 @@ if (Astro.cookies.has("__session")) {
         window.location.assign(response.url);
       }
     } catch (error) {
-      loader?.classList.add("hidden");
+      if (loader) loader.hidden = true;
       document.getElementById("validation")?.classList.remove("invisible");
     }
   });

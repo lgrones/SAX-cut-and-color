@@ -12,8 +12,8 @@ const isClosed = closed || (!hasAmTimes && !hasPmTimes);
 
 {
   isClosed ? null : (
-    <div class="flex justify-between gap-x-14 sm:gap-x-24 text-nowrap">
-      <div class="font-medium tracking-wide">{day}</div>
+    <div class="day">
+      <div class="name">{day}</div>
       <div>
         {timeAmStart}
         {timeAmEnd && ` - ${timeAmEnd}`} Uhr
@@ -28,3 +28,21 @@ const isClosed = closed || (!hasAmTimes && !hasPmTimes);
     </div>
   )
 }
+
+<style>
+  .day {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 3.5rem;
+    text-wrap: nowrap;
+
+    @media (min-width: 640px) {
+      column-gap: 6rem;
+    }
+  }
+
+  .name {
+    font-weight: 500;
+    letter-spacing: 0.025em;
+  }
+</style>
