@@ -1,15 +1,10 @@
 ---
-import Card from '../card/card.astro';
-import { getCollection } from '../../firebase/server';
-import type { Offer } from '../../types';
-
-const offers = await getCollection<Offer>('offers');
+import Loading from '../loading/loading.astro';
+import OfferCards from './offerCards.astro';
 ---
 
-<div id="offers" class="staggered-grid">
-  {offers.map(({ title, text }) => (
-    <Card title={title} subTitle="Angebot">
-      <p>{text}</p>
-    </Card>
-  ))}
+<div id="offers">
+  <OfferCards server:defer>
+    <Loading slot="fallback" minHeight="24rem" />
+  </OfferCards>
 </div>

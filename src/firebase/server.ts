@@ -21,10 +21,11 @@ export const app =
 
 /** All documents of a collection, ordered by their `index` field */
 export const getCollection = async <T>(name: string) => {
-  const snapshot = await getFirestore(app)
-    .collection(name)
-    .orderBy('index')
-    .get();
+  const snapshot = await getFirestore(app).collection(name).get();
 
-  return snapshot.docs.map(doc => doc.data() as T);
+  // Sorted here rather than with orderBy: the admin forms store `index` as a
+  // string, which Firestore would order as text and after any numeric values
+  return snapshot.docs
+    .toSorted((a, b) => Number(a.get('index')) - Number(b.get('index')))
+    .map(doc => doc.data() as T);
 };

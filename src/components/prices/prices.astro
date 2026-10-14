@@ -1,39 +1,17 @@
 ---
-import Card from '../card/card.astro';
-import { getCollection } from '../../firebase/server';
-import PriceRow from './priceRow.astro';
-import type { Price } from '../../types';
-
-const categories = await getCollection<Price>('prices');
+import Loading from '../loading/loading.astro';
+import PriceCards from './priceCards.astro';
 ---
 
-<div>
-  <div id="prices" class="staggered-grid">
-    {categories.map(({ mainTitle, prices }) => (
-      <Card title={mainTitle} subTitle="Preise">
-        <div class="rows">
-          {prices.map(price => (
-            <PriceRow {...price} />
-          ))}
-        </div>
-      </Card>
-    ))}
-  </div>
+<div id="prices">
+  <PriceCards server:defer>
+    <Loading slot="fallback" minHeight="24rem" />
+  </PriceCards>
 
   <p class="note">Bezahlung nur in Bar. Keine Kartenzahlung möglich.</p>
 </div>
 
 <style>
-  .rows {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.5rem 3.5rem;
-
-    @media (min-width: 768px) {
-      column-gap: 6rem;
-    }
-  }
-
   .note {
     padding-top: 5rem;
     font-size: 0.75rem;

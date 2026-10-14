@@ -25,20 +25,14 @@ import Layout from '../layouts/Layout.astro';
   </div>
 
   <div class="info">
-    <OpeningHours server:defer>
-      <div slot="fallback" id="opening-hours" class="fallback-sm"></div>
-    </OpeningHours>
+    <OpeningHours />
 
     <Contact />
   </div>
 
-  <Prices server:defer>
-    <div slot="fallback" id="prices" class="fallback-lg"></div>
-  </Prices>
+  <Prices />
 
-  <Offers server:defer>
-    <div slot="fallback" id="offers" class="fallback-lg"></div>
-  </Offers>
+  <Offers />
 
   <Salon />
 </Layout>
@@ -81,13 +75,5 @@ import Layout from '../layouts/Layout.astro';
     @media (min-width: 768px) {
       row-gap: 5rem;
     }
-  }
-
-  .fallback-sm {
-    min-height: 20rem;
-  }
-
-  .fallback-lg {
-    min-height: 24rem;
   }
 </style>
