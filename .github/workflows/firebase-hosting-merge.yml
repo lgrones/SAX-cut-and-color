@@ -10,12 +10,14 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
-          version: 8
-      - run: pnpm i && pnpm run check && pnpm run build
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+          node-version: 24
+          cache: pnpm
+      - run: pnpm i --frozen-lockfile && pnpm run check && pnpm run build
+      - uses: FirebaseExtended/action-hosting-deploy@v0.11
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_SAX_CUT_AND_COLOR }}"

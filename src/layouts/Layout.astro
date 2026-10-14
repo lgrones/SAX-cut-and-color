@@ -2,6 +2,7 @@
 import Footer from "../components/footer/footer.astro";
 import Navigation from "../components/navigation/Navigation.astro";
 import { SEOMetadata } from "astro-seo-metadata";
+import "../styles/global.css";
 
 interface Props {
   title: string;
@@ -53,22 +54,23 @@ const { title, disableScrollSmooth } = Astro.props;
     >
     </div>
 
-    <script src="../../node_modules/flowbite/dist/flowbite.min.js"></script>
     <style is:global>
-      :root {
-        --accent: 213, 177, 129;
-        color-scheme: dark;
-      }
-      html {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      }
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-      * {
-        margin: 0;
+      @layer base {
+        :root {
+          --accent: 213, 177, 129;
+          color-scheme: dark;
+        }
+        html {
+          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+        *,
+        *::before,
+        *::after {
+          box-sizing: border-box;
+        }
+        * {
+          margin: 0;
+        }
       }
     </style>
   </body>

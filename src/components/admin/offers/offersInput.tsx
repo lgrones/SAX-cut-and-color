@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "preact/hooks";
 import type { Offer } from "../../../types";
 
 export const OffersInput = ({

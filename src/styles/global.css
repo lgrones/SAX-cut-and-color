@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@plugin "flowbite/plugin";
+@source "../../node_modules/flowbite";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-sax-dark: #161516;
+  --color-sax-tan: #d9be91;
+
+  --font-cormorant: "Cormorant Garamond", ui-serif, Georgia, Cambria,
+    "Times New Roman", Times, serif;
+}
+
+/* Tailwind v4 dropped pointer cursor on buttons; keep v3 behavior */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}

@@ -15,22 +15,26 @@
     "publish": "firebase deploy --only hosting"
   },
   "dependencies": {
-    "@astrojs/check": "^0.5.10",
-    "@astrojs/node": "^8.2.5",
-    "@astrojs/react": "3.3.0",
-    "@astrojs/sitemap": "^3.1.4",
-    "@astrojs/tailwind": "^5.1.0",
-    "@types/react": "18.2.79",
-    "@types/react-dom": "18.2.25",
-    "astro": "^4.6.1",
+    "@astrojs/node": "^11.1.7",
+    "@astrojs/preact": "^6.0.6",
+    "@astrojs/sitemap": "^3.7.4",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.8",
     "astro-seo-metadata": "^0.6.0",
-    "firebase": "^10.11.0",
-    "firebase-admin": "^12.0.0",
-    "firebase-functions": "^4.9.0",
-    "flowbite": "^2.3.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "tailwindcss": "^3.4.3",
-    "typescript": "^5.4.5"
-  }
+    "firebase": "^13.0.0",
+    "firebase-admin": "^14.5.0",
+    "firebase-functions": "^7.4.0",
+    "flowbite": "^4.0.2",
+    "preact": "^11.0.1",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": "24"
+  },
+  "packageManager": "pnpm@12.11.2+sha512.25a51652a196785af5f28bda6dfe8dc582ebefa4ac1d180221ce1390231c5fb76637822ea4b6e4633ce74acdcb0a77f725af11bad38177fdeddaee818a955cb9"
 }
