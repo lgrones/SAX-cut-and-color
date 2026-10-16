@@ -1,10 +1,19 @@
+// Starts Sentry with the server, not with the first page, so API errors before
+// it are reported too
+import '@infrastructure/sentryServer';
+
+import { SENTRY_TUNNEL } from '@infrastructure/sentryOptions';
 import { SESSION_COOKIE } from '@infrastructure/sessionCookie';
 import { Firebase } from '@services/firebase';
 import { defineMiddleware } from 'astro:middleware';
 
 // Matched against the resolved route instead of the raw URL, so variants like
 // `/admin/` or `/%61dmin` can't slip past the check
-const PUBLIC_API_ROUTES = new Set(['/api/auth/signin', '/api/auth/signout']);
+const PUBLIC_API_ROUTES = new Set([
+  '/api/auth/signin',
+  '/api/auth/signout',
+  SENTRY_TUNNEL,
+]);
 
 const isProtected = (route: string) =>
   route === '/admin' ||

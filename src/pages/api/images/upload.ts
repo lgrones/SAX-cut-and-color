@@ -1,5 +1,6 @@
 import { originalUrl } from '@business/images/imageFiles';
 import { uploadImage } from '@business/images/uploadImage';
+import { captureException } from '@sentry/astro';
 import type { APIRoute } from 'astro';
 import { error as logError } from 'firebase-functions/logger';
 
@@ -22,6 +23,7 @@ export const POST: APIRoute = async ({ request }) => {
       : Response.json({ message: result.message }, { status: 400 });
   } catch (error) {
     logError('images', error);
+    captureException(error);
     return Response.json(
       { message: 'Hochladen fehlgeschlagen' },
       { status: 500 },

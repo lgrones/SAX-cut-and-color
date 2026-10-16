@@ -17,6 +17,12 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm i --frozen-lockfile && pnpm validate && pnpm build
+        # see docs/sentry.md; PR previews build without, so Sentry is off there
+        env:
+          SENTRY_DSN: '${{ vars.SENTRY_DSN }}'
+          SENTRY_ORG: '${{ vars.SENTRY_ORG }}'
+          SENTRY_PROJECT: '${{ vars.SENTRY_PROJECT }}'
+          SENTRY_AUTH_TOKEN: '${{ secrets.SENTRY_AUTH_TOKEN }}'
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SAX_CUT_AND_COLOR }}'

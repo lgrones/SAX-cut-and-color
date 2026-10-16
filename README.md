@@ -38,3 +38,4 @@ A merge to main deploys; `pnpm release` does the same by hand. Assets go to Fire
 | Topic                    | Where                                  |
 | ------------------------ | -------------------------------------- |
 | Cloud Run one-time setup | [docs/cloud-run.md](docs/cloud-run.md) |
+| Error reporting setup    | [docs/sentry.md](docs/sentry.md)       |

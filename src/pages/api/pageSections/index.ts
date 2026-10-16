@@ -1,4 +1,5 @@
 import { showSection } from '@business/pageSections/showSection';
+import { captureException } from '@sentry/astro';
 import type { APIRoute } from 'astro';
 import { error as logError } from 'firebase-functions/logger';
 
@@ -15,6 +16,7 @@ export const POST: APIRoute = async ({ request }) => {
       : Response.json({ message: result.message }, { status: 400 });
   } catch (error) {
     logError('sections', error);
+    captureException(error);
     return Response.json(
       { message: 'Speichern fehlgeschlagen' },
       { status: 500 },

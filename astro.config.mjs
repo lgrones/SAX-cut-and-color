@@ -1,6 +1,9 @@
+import { env } from 'node:process';
+
 import node from '@astrojs/node';
 import preact from '@astrojs/preact';
 import sitemap from '@astrojs/sitemap';
+import sentry from '@sentry/astro';
 import { defineConfig, envField, fontProviders } from 'astro/config';
 
 // https://astro.build/config
@@ -19,7 +22,21 @@ export default defineConfig({
       filter: page => !/^\/(admin|signin)(\/|$)/.test(new URL(page).pathname),
     }),
     preact(),
+    // Errors from the browser and the server; the options, which collect no
+    // personal data, are in the init files
+    sentry({
+      clientInitPath: 'src/infrastructure/sentryClient.ts',
+      serverInitPath: 'src/infrastructure/sentryServer.ts',
+      // org, project and token come from SENTRY_ORG, SENTRY_PROJECT and
+      // SENTRY_AUTH_TOKEN; source maps are uploaded, then deleted, only when
+      // the token is set
+      sourcemaps: { disable: !env.SENTRY_AUTH_TOKEN },
+      telemetry: false,
+    }),
   ],
+  // Leaves Sentry's tracing and debug logging out of the bundles, with or
+  // without the upload, which would otherwise do it
+  vite: { define: { __SENTRY_TRACING__: false, __SENTRY_DEBUG__: false } },
   // Downloaded at build time and served from our own domain, so visitors
   // never contact Google (GDPR)
   fonts: [
@@ -47,6 +64,12 @@ export default defineConfig({
       PROJECT_ID: envField.string({ context: 'server', access: 'secret' }),
       CLIENT_EMAIL: envField.string({ context: 'server', access: 'secret' }),
       PRIVATE_KEY: envField.string({ context: 'server', access: 'secret' }),
+      // Public, it only lets the browser send reports. Without it Sentry is off
+      SENTRY_DSN: envField.string({
+        context: 'client',
+        access: 'public',
+        optional: true,
+      }),
       STORAGE_BUCKET: envField.string({
         context: 'server',
         access: 'public',
