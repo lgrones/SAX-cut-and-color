@@ -7,6 +7,9 @@ import { defineConfig, envField, fontProviders } from 'astro/config';
 export default defineConfig({
   adapter: node({ mode: 'standalone' }),
   site: 'https://www.sax-cut-and-colour.at',
+  // One URL per page: canonical, sitemap and links all go without the slash,
+  // and the server redirects the other form (dev answers it with a 404)
+  trailingSlash: 'never',
   integrations: [
     // the back office has nothing to index
     sitemap({
