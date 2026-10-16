@@ -73,8 +73,8 @@ export const hairSalon = (
       addressLocality: town,
       addressCountry: 'AT',
     },
-    // TODO: add `geo` (latitude/longitude) once the salon's coordinates are
-    // stored with the contact; geocoding the address here could be wrong
+    // Landstraße 46, 6911 Lochau per OpenStreetMap; update when the salon moves
+    geo: { '@type': 'GeoCoordinates', latitude: 47.52689, longitude: 9.75124 },
     ...(hours.length > 0 && { openingHoursSpecification: hours }),
     ...(priceRange && { priceRange }),
     ...(startPage.hero && { image: startPage.hero.src }),
