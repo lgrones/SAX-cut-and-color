@@ -64,6 +64,7 @@ const problems = (contact: Contact): Partial<Record<Field, string>> => {
 };
 
 export const Contact = {
+  dialNumber,
   phoneHref,
   whatsappHref,
   emailHref,

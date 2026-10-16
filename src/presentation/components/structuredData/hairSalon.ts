@@ -64,7 +64,7 @@ export const hairSalon = (
     '@id': `${url}#salon`,
     name: 'SAX Cut + Colour by Petra Zangerl',
     url,
-    telephone: contact.phone,
+    telephone: Contact.dialNumber(contact),
     email: contact.email,
     address: {
       '@type': 'PostalAddress',
