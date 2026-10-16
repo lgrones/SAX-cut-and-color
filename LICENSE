@@ -1,3 +1,16 @@
+The source code in this repository is licensed under the MIT License below.
+
+The MIT License does not cover the following, which are not licensed for any
+use and remain the property of their respective owners, all rights reserved:
+
+- the name "SAX Cut + Colour", its logo and wordmark, and any other branding
+- the photos and images, including everything in src/presentation/assets/,
+  public/favicon.png, public/og-image.jpg and docs/assets/
+
+If you reuse the code, replace these with your own.
+
+---
+
 MIT License
 
 Copyright (c) 2024-2026 Leah Grones
