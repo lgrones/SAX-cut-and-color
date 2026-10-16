@@ -295,6 +295,10 @@
                   "**/pages/**"
                 ],
                 "message": "business knows nothing about presentation"
+              },
+              {
+                "group": ["@sentry/**"],
+                "message": "report errors through @services/sentry"
               }
             ]
           }
@@ -311,6 +315,10 @@
               {
                 "group": ["@services/*/**"],
                 "message": "import the service facade, e.g. @services/firebase"
+              },
+              {
+                "group": ["@sentry/**"],
+                "message": "report errors through @services/sentry"
               }
             ]
           }

@@ -333,6 +333,7 @@ const links = startPage
         Math.min(window.innerHeight * 0.3, 200);
       const tops = ids.flatMap(id => {
         const section = document.getElementById(id);
+
         return section
           ? [{ id, top: section.getBoundingClientRect().top }]
           : [];
@@ -349,6 +350,7 @@ const links = startPage
       for (const link of links) {
         const on = active.includes(link.dataset.spy ?? '');
         link.classList.toggle('is-active', on);
+
         if (on) link.setAttribute('aria-current', 'location');
         else link.removeAttribute('aria-current');
       }
@@ -357,6 +359,7 @@ const links = startPage
     let frame = 0;
     const scheduleUpdate = () => {
       if (frame) return;
+
       frame = requestAnimationFrame(() => {
         frame = 0;
         updateActive();
@@ -375,11 +378,13 @@ const links = startPage
     if (toggle && menu) {
       const setOpen = (open: boolean) => {
         menu.hidden = !open;
+
         toggle.setAttribute('aria-expanded', String(open));
         toggle.setAttribute(
           'aria-label',
           open ? 'Menü schließen' : 'Menü öffnen',
         );
+
         // the open menu moves the header bottom
         scheduleUpdate();
       };
@@ -387,14 +392,17 @@ const links = startPage
       toggle.addEventListener('click', () =>
         setOpen(toggle.getAttribute('aria-expanded') !== 'true'),
       );
+
       menu.addEventListener('click', e => {
         if ((e.target as Element).closest('a')) setOpen(false);
       });
+
       document.addEventListener('keydown', e => {
         if (e.key !== 'Escape' || menu.hidden) return;
         setOpen(false);
         if (toggle instanceof HTMLElement) toggle.focus();
       });
+
       window.matchMedia('(width >= 760px)').addEventListener('change', e => {
         if (e.matches) setOpen(false);
       });

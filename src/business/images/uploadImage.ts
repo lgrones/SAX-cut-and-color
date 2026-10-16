@@ -51,14 +51,17 @@ export const uploadImage = async (
       position: sharp.strategy.attention,
     })
     .toBuffer({ resolveWithObject: true });
+
   const fraction = (value: number | undefined, size: number) =>
     value === undefined ? 0.5 : Math.min(1, Math.max(0, value / size));
+
   const focus = {
     x: fraction(info.attentionX, width),
     y: fraction(info.attentionY, height),
   };
 
   const id = crypto.randomUUID();
+
   await Firebase.uploadFile(
     originalPath(id),
     original.data,

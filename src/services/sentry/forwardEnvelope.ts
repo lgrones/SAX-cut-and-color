@@ -11,6 +11,7 @@ const envelopeDsn = (envelope: Uint8Array): URL | undefined => {
     const { dsn } = JSON.parse(
       decoder.decode(end === -1 ? envelope : envelope.subarray(0, end)),
     ) as { dsn?: unknown };
+
     return typeof dsn === 'string' ? new URL(dsn) : undefined;
   } catch {
     return undefined;

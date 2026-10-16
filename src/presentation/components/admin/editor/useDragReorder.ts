@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { type PointerEvent as ReactPointerEvent, useState } from 'react';
 
 import { dragTarget } from './dragTarget';
 
@@ -12,7 +12,7 @@ export const useDragReorder = (move: (key: string, to: number) => void) => {
 
   // Listens on the window, since reordering moves the handle's element and a
   // pointer capture would not survive that
-  const startDrag = (key: string, e: PointerEvent) => {
+  const startDrag = (key: string, e: ReactPointerEvent) => {
     const list = (e.currentTarget as HTMLElement | null)?.closest(
       '[data-reorder]',
     );
@@ -25,6 +25,7 @@ export const useDragReorder = (move: (key: string, to: number) => void) => {
       const items = [...list.children] as HTMLElement[];
       const middles = items.map(x => {
         const rect = x.getBoundingClientRect();
+
         return rect.top + rect.height / 2;
       });
       const index = items.findIndex(x => x.dataset.key === key);

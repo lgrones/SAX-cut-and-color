@@ -1,192 +1,111 @@
 import '../admin.css';
 
-import {
-  type Focus,
-  type ImageSlot,
-  SiteImage,
-  type SiteImages,
-} from '@domain/image';
-import type { ComponentChildren } from 'preact';
-import { useRef, useState } from 'preact/hooks';
+import type {
+  EditableImage,
+  EditableImages,
+} from '@business/images/withOriginals';
+import { type Focus, type ImageSlot, SiteImage } from '@domain/image';
+import { useForm } from '@mantine/form';
+import { type PointerEvent, type ReactNode, useRef, useState } from 'react';
 
-import { moveItem } from '../editor/dragTarget';
 import { TrashIcon, UploadIcon } from '../editor/icons';
 import { DragHint, ReorderItem } from '../editor/reorderItem';
-import { SaveBar, StatusBanner, UndoNote } from '../editor/saveBar';
+import { SaveBar, StatusBanner } from '../editor/saveBar';
 import { type EditorStatus, saveRequest } from '../editor/saveRequest';
 import { useDragReorder } from '../editor/useDragReorder';
 import { useUnsavedWarning } from '../editor/useUnsavedWarning';
 import { DropZone, useNoFileNavigation } from './dropZone';
 import { focusAt, nudge } from './focusAt';
-import { type UploadedImage, uploadPhoto } from './uploadPhoto';
-
-type GalleryDraft = UploadedImage & { alt: string };
-
-export type EditorImages = Partial<Record<ImageSlot, UploadedImage>> & {
-  gallery: GalleryDraft[];
-};
-
-interface Removed {
-  draft: GalleryDraft;
-  index: number;
-}
+import { uploadPhoto } from './uploadPhoto';
 
 // The shapes a gallery tile takes in the page grid, across breakpoints
 const galleryAspects = [1, 2, 1 / 2, 3 / 2];
 
-const payload = (images: EditorImages) => ({
-  ...Object.fromEntries(
-    SiteImage.slotNames.map(slot => {
-      const image = images[slot];
-      return [slot, image ? { id: image.id, focus: image.focus } : null];
-    }),
-  ),
-  gallery: images.gallery.map(({ id, focus, alt }) => ({ id, focus, alt })),
-});
-
-const allImages = (images: EditorImages) => [
-  ...SiteImage.slotNames.flatMap(slot => images[slot] ?? []),
-  ...images.gallery,
-];
-
-export const ImagesEditor = ({ images }: { images: EditorImages }) => {
-  const [saved, setSaved] = useState(images);
-  const [draft, setDraft] = useState(images);
-  const [removed, setRemoved] = useState<Removed[]>([]);
+export const ImagesEditor = ({ images }: { images: EditableImages }) => {
+  const [status, setStatus] = useState<EditorStatus>({ kind: 'idle' });
   const [openKey, setOpenKey] = useState<string>();
   const [uploading, setUploading] = useState(0);
-  const [status, setStatus] = useState<EditorStatus>({ kind: 'idle' });
 
-  const dirty =
-    removed.length > 0 ||
-    JSON.stringify(payload(draft)) !== JSON.stringify(payload(saved));
-  const invalid = draft.gallery.some(x => SiteImage.problem(x));
+  // Controlled, since every row shows its description and crop while editing
+  const form = useForm<EditableImages>({
+    mode: 'controlled',
+    initialValues: images,
+    onValuesChange: () => setStatus({ kind: 'idle' }),
+  });
 
-  useUnsavedWarning(dirty || uploading > 0);
+  const gallery = form.values.gallery;
+  // no new files while uploading, nor while a save runs
+  const busy = uploading > 0 || form.submitting;
+
+  useUnsavedWarning(form.isDirty() || uploading > 0);
   useNoFileNavigation();
 
-  const edit = (update: (prev: EditorImages) => EditorImages) => {
-    setDraft(update);
-    setStatus({ kind: 'idle' });
-  };
-
-  const changeGallery = (id: string, patch: Partial<GalleryDraft>) =>
-    edit(prev => ({
-      ...prev,
-      gallery: prev.gallery.map(x => (x.id === id ? { ...x, ...patch } : x)),
-    }));
-
-  const move = (id: string, to: (from: number) => number) =>
-    edit(prev => {
-      const from = prev.gallery.findIndex(x => x.id === id);
-      return { ...prev, gallery: moveItem(prev.gallery, from, to(from)) };
-    });
-
   const { dragKey, startDrag } = useDragReorder((key, to) =>
-    move(key, () => to),
+    form.reorderListItem('gallery', {
+      from: gallery.findIndex(x => x.id === key),
+      to,
+    }),
   );
 
   /** Uploads one after another, so a phone on a weak connection keeps up */
-  const upload = async (files: File[], add: (image: UploadedImage) => void) => {
+  const upload = async (files: File[], add: (image: EditableImage) => void) => {
     setUploading(prev => prev + files.length);
 
     for (const file of files) {
       const result = await uploadPhoto(file);
       setUploading(prev => prev - 1);
 
-      if (result.ok) add(result.data as UploadedImage);
+      if (result.ok) add(result.data as EditableImage);
       else setStatus(result.status);
     }
   };
 
   const addToGallery = (files: File[]) =>
     void upload(files, image => {
-      edit(prev => ({
-        ...prev,
-        gallery: [...prev.gallery, { ...image, alt: '' }],
-      }));
+      form.insertListItem('gallery', { ...image, alt: '' });
       setOpenKey(image.id);
     });
 
-  const remove = (id: string) => {
-    const index = draft.gallery.findIndex(x => x.id === id);
-    const image = draft.gallery[index];
-    if (!image) return;
+  // Saving replaces the stored images; the answer is the new starting point
+  const submit = form.onSubmit(async values => {
+    const result = await saveRequest('/api/images', values);
 
-    setRemoved(prev => [...prev, { draft: image, index }]);
-    edit(prev => ({ ...prev, gallery: prev.gallery.toSpliced(index, 1) }));
-  };
-
-  const undo = () => {
-    const last = removed.at(-1);
-    if (!last) return;
-
-    setRemoved(prev => prev.slice(0, -1));
-    edit(prev => ({
-      ...prev,
-      gallery: prev.gallery.toSpliced(last.index, 0, last.draft),
-    }));
-  };
-
-  const submit = async (e: Event) => {
-    e.preventDefault();
-    setStatus({ kind: 'saving' });
-
-    const result = await saveRequest('/api/images', payload(draft));
     if (!result.ok) {
       setStatus(result.status);
       return;
     }
 
-    // the server answers with the stored images; their originals are known
-    const stored = result.data as SiteImages;
-    const src = new Map(allImages(draft).map(x => [x.id, x.src] as const));
-    const withSrc = <T extends SiteImage>(image: T) => ({
-      ...image,
-      src: src.get(image.id) ?? '',
-    });
-    const next: EditorImages = { gallery: stored.gallery.map(withSrc) };
-    for (const slot of SiteImage.slotNames) {
-      const image = stored[slot];
-      if (image) next[slot] = withSrc(image);
-    }
-
-    setSaved(next);
-    setDraft(next);
-    setRemoved([]);
+    form.setInitialValues(result.data as EditableImages);
+    form.reset();
     setStatus({ kind: 'saved' });
-  };
+  });
 
-  const lastRemoved = removed.at(-1);
-  const slot = (name: ImageSlot) => (
-    <SlotCard
-      key={name}
-      slot={name}
-      image={draft[name]}
-      uploading={uploading > 0}
-      onFocus={focus =>
-        edit(prev => {
-          const image = prev[name];
-          return image ? { ...prev, [name]: { ...image, focus } } : prev;
-        })
-      }
-      onReplace={file =>
-        void upload([file], image => edit(prev => ({ ...prev, [name]: image })))
-      }
-      onRemove={() => edit(({ [name]: _removed, ...rest }) => rest)}
-    />
-  );
+  const shown: EditorStatus = form.submitting ? { kind: 'saving' } : status;
 
   return (
-    <form onSubmit={e => void submit(e)} autocomplete="off" noValidate>
+    <form onSubmit={submit} autoComplete="off" noValidate>
       <StatusBanner
-        status={status}
+        status={shown}
         savedText="Bilder gespeichert"
         onClose={() => setStatus({ kind: 'idle' })}
       />
 
-      <div className="panel">
-        <div className="slots">{SiteImage.slotNames.map(slot)}</div>
+      <fieldset className="panel" disabled={form.submitting}>
+        <div className="slots">
+          {SiteImage.slotNames.map(name => (
+            <SlotCard
+              key={name}
+              slot={name}
+              image={form.values[name]}
+              busy={busy}
+              onFocus={focus => form.setFieldValue(`${name}.focus`, focus)}
+              onReplace={file =>
+                void upload([file], image => form.setFieldValue(name, image))
+              }
+              onRemove={() => form.setFieldValue(name, undefined)}
+            />
+          ))}
+        </div>
 
         <div className="gallery-head">
           <h2>Galerie</h2>
@@ -198,12 +117,12 @@ export const ImagesEditor = ({ images }: { images: EditorImages }) => {
 
         <DragHint />
 
-        {draft.gallery.length === 0 && (
+        {gallery.length === 0 && (
           <p className="list-empty">Noch keine Bilder in der Galerie.</p>
         )}
 
         <ol className="reorder-list" data-reorder>
-          {draft.gallery.map(image => (
+          {gallery.map((image, index) => (
             <ReorderItem
               key={image.id}
               itemKey={image.id}
@@ -216,7 +135,11 @@ export const ImagesEditor = ({ images }: { images: EditorImages }) => {
                 setOpenKey(prev => (prev === image.id ? undefined : image.id))
               }
               onDragStart={e => startDrag(image.id, e)}
-              onStep={by => move(image.id, from => from + by)}
+              index={index}
+              count={gallery.length}
+              onMove={to =>
+                form.reorderListItem('gallery', { from: index, to })
+              }
               media={
                 <img
                   className="thumb"
@@ -231,7 +154,9 @@ export const ImagesEditor = ({ images }: { images: EditorImages }) => {
               <FocusPicker
                 image={image}
                 aspects={galleryAspects}
-                onChange={focus => changeGallery(image.id, { focus })}
+                onChange={focus =>
+                  form.setFieldValue(`gallery.${index}.focus`, focus)
+                }
               />
 
               <div>
@@ -243,18 +168,17 @@ export const ImagesEditor = ({ images }: { images: EditorImages }) => {
                   className="input"
                   rows={2}
                   placeholder="z. B. Zwei Frisierplätze mit Pop-Art-Bildern"
-                  value={image.alt}
                   aria-invalid={!!SiteImage.problem(image)}
-                  onInput={e =>
-                    changeGallery(image.id, { alt: e.currentTarget.value })
-                  }
+                  {...form.getInputProps(`gallery.${index}.alt`, {
+                    withError: false,
+                  })}
                 />
               </div>
 
               <button
                 type="button"
                 className="button button-secondary button-danger"
-                onClick={() => remove(image.id)}
+                onClick={() => form.removeListItem('gallery', index)}
               >
                 <TrashIcon />
                 Bild entfernen
@@ -263,38 +187,26 @@ export const ImagesEditor = ({ images }: { images: EditorImages }) => {
           ))}
         </ol>
 
-        <DropZone
-          className="drop-field"
-          disabled={uploading > 0}
-          onFiles={addToGallery}
-        >
+        <DropZone className="drop-field" disabled={busy} onFiles={addToGallery}>
           <UploadIcon />
           <p className="drop-hint">Bilder hierher ziehen oder</p>
-          <FileButton multiple disabled={uploading > 0} onFiles={addToGallery}>
+          <FileButton multiple disabled={busy} onFiles={addToGallery}>
             Bilder wählen
           </FileButton>
         </DropZone>
 
         <SaveBar
-          status={status}
-          dirty={dirty}
-          invalid={invalid || uploading > 0}
+          status={shown}
+          dirty={form.isDirty()}
+          invalid={gallery.some(x => SiteImage.problem(x)) || uploading > 0}
           onDiscard={() => {
-            setDraft(saved);
-            setRemoved([]);
+            form.reset();
             setOpenKey(undefined);
-            setStatus({ kind: 'idle' });
           }}
         >
-          {uploading > 0 ? (
-            <span>Wird hochgeladen …</span>
-          ) : (
-            lastRemoved && (
-              <UndoNote label={lastRemoved.draft.alt} onUndo={undo} />
-            )
-          )}
+          {uploading > 0 && <span>Wird hochgeladen …</span>}
         </SaveBar>
-      </div>
+      </fieldset>
     </form>
   );
 };
@@ -302,14 +214,15 @@ export const ImagesEditor = ({ images }: { images: EditorImages }) => {
 const SlotCard = ({
   slot,
   image,
-  uploading,
+  busy,
   onFocus,
   onReplace,
   onRemove,
 }: {
   slot: ImageSlot;
-  image: UploadedImage | undefined;
-  uploading: boolean;
+  image: EditableImage | undefined;
+  /** No new file can be taken right now */
+  busy: boolean;
   onFocus: (focus: Focus) => void;
   onReplace: (file: File) => void;
   /** Only an optional slot can be left without an image */
@@ -325,7 +238,7 @@ const SlotCard = ({
   };
 
   return (
-    <DropZone className="slot" disabled={uploading} onFiles={replace}>
+    <DropZone className="slot" disabled={busy} onFiles={replace}>
       <h2>
         {label}
         {optional && <span className="slot-optional"> (optional)</span>}
@@ -356,7 +269,7 @@ const SlotCard = ({
       )}
 
       <div className="slot-actions">
-        <FileButton disabled={uploading} onFiles={replace}>
+        <FileButton disabled={busy} onFiles={replace}>
           {image ? 'Ersetzen' : 'Bild wählen'}
         </FileButton>
 
@@ -395,13 +308,14 @@ const FocusPicker = ({
   aspects,
   onChange,
 }: {
-  image: UploadedImage;
+  image: EditableImage;
   aspects: number[];
   onChange: (focus: Focus) => void;
 }) => {
-  const pick = (e: PointerEvent) => {
-    const frame = e.currentTarget as HTMLElement;
-    onChange(focusAt(frame.getBoundingClientRect(), e.clientX, e.clientY));
+  const pick = (e: PointerEvent<HTMLElement>) => {
+    const frame = e.currentTarget.getBoundingClientRect();
+
+    onChange(focusAt(frame, e.clientX, e.clientY));
   };
 
   return (
@@ -426,8 +340,10 @@ const FocusPicker = ({
             ArrowUp: [0, -0.05],
             ArrowDown: [0, 0.05],
           };
+
           const step = steps[e.key];
           if (!step) return;
+
           e.preventDefault();
           onChange(nudge(image.focus, ...step));
         }}
@@ -475,7 +391,7 @@ const FileButton = ({
   multiple?: boolean;
   disabled: boolean;
   onFiles: (files: File[]) => void;
-  children: ComponentChildren;
+  children: ReactNode;
 }) => {
   const input = useRef<HTMLInputElement>(null);
 

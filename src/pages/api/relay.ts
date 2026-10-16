@@ -1,8 +1,6 @@
 import { Sentry } from '@services/sentry';
 import type { APIRoute } from 'astro';
 
-export const prerender = false;
-
 // An error report with its stack trace stays far below this
 const MAX_ENVELOPE_BYTES = 1024 * 1024;
 
@@ -14,8 +12,7 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(null, { status: 413 });
   }
 
-  return (
-    (await Sentry.forwardEnvelope(envelope)) ??
-    new Response(null, { status: 400 })
-  );
+  const response = await Sentry.forwardEnvelope(envelope);
+
+  return response ?? new Response(null, { status: 400 });
 };

@@ -27,6 +27,7 @@ const send = async (
   if (response.ok) {
     const data: unknown =
       response.status === 204 ? undefined : await response.json();
+
     return { ok: true, data };
   }
 

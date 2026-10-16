@@ -1,6 +1,4 @@
 ---
-export const prerender = false;
-
 import { getContact } from '@business/contact/getContact';
 import { getStartPage } from '@business/startPage/getStartPage';
 import { CACHE_CONTROL } from '@infrastructure/cacheControl';
@@ -21,6 +19,7 @@ import Layout from '@presentation/layouts/Layout.astro';
 // failed load throws before the header is set, so the error page is never cached
 const [startPage, contact] = await Promise.all([getStartPage(), getContact()]);
 const { prices, offers, gallery, hours, hero, portrait, map } = startPage;
+
 Astro.response.headers.set(
   'Cache-Control',
   Astro.cookies.has(SESSION_COOKIE)

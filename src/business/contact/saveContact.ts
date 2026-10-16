@@ -1,5 +1,5 @@
 import { Contact } from '@domain/contact';
-import { Firebase } from '@services/firebase';
+import { Firebase, FixedDocument } from '@services/firebase';
 import { z } from 'astro/zod';
 
 const text = z.string().trim().max(200);
@@ -25,9 +25,10 @@ export const saveContact = async (
 
   const contact = parsed.data;
   const problem = Object.values(Contact.problems(contact)).find(x => x);
+
   if (problem) return { ok: false, message: problem };
 
-  await Firebase.setDocument('settings', 'contact', contact);
+  await Firebase.setDocument(FixedDocument.contact, contact);
 
   return { ok: true, contact };
 };

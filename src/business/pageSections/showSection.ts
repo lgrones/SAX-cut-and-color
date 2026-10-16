@@ -1,5 +1,5 @@
 import { PageSection } from '@domain/pageSection';
-import { Firebase } from '@services/firebase';
+import { Firebase, FixedDocument } from '@services/firebase';
 import { z } from 'astro/zod';
 
 import { getHiddenSections } from './getHiddenSections';
@@ -16,12 +16,13 @@ export const showSection = async (
   input: unknown,
 ): Promise<ShowSectionResult> => {
   const parsed = schema.safeParse(input);
+
   if (!parsed.success) return { ok: false, message: 'Ungültige Eingabe' };
 
   const { section, shown } = parsed.data;
   const others = (await getHiddenSections()).filter(x => x !== section);
 
-  await Firebase.setDocument('settings', 'sections', {
+  await Firebase.setDocument(FixedDocument.sections, {
     hidden: shown ? others : [...others, section],
   });
 

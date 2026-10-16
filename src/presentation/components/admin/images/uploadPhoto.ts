@@ -1,5 +1,3 @@
-import type { SiteImage } from '@domain/image';
-
 import { type SaveResult, uploadRequest } from '../editor/saveRequest';
 
 // Shrunk in the browser first: less mobile data, and formats the server can't
@@ -12,6 +10,7 @@ const shrink = async (file: File): Promise<Blob> => {
       imageOrientation: 'from-image',
     });
     const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
+
     const canvas = document.createElement('canvas');
     canvas.width = Math.round(bitmap.width * scale);
     canvas.height = Math.round(bitmap.height * scale);
@@ -32,9 +31,6 @@ const shrink = async (file: File): Promise<Blob> => {
     return file;
   }
 };
-
-/** An uploaded image with the URL of its original */
-export type UploadedImage = SiteImage & { src: string };
 
 export const uploadPhoto = async (file: File): Promise<SaveResult> => {
   const form = new FormData();

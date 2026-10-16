@@ -1,160 +1,103 @@
 import '../admin.css';
 
 import { Offer } from '@domain/offer';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { type UseFormReturnType, useForm } from '@mantine/form';
+import { useEffect, useRef, useState } from 'react';
 
-import { moveItem } from '../editor/dragTarget';
 import { PlusIcon, TrashIcon } from '../editor/icons';
 import { DragHint, ReorderItem } from '../editor/reorderItem';
-import { SaveBar, StatusBanner, UndoNote } from '../editor/saveBar';
+import { SaveBar, StatusBanner } from '../editor/saveBar';
 import { type EditorStatus, saveRequest } from '../editor/saveRequest';
 import { useDragReorder } from '../editor/useDragReorder';
 import { useUnsavedWarning } from '../editor/useUnsavedWarning';
 
-/** An offer as edited. `key` is stable across saves; `id` is unset until saved. */
-interface Draft {
-  key: string;
+/** A new offer has no id until saved, so rows go by `key` */
+type Item = Pick<Offer, 'title' | 'kind' | 'text'> & {
   id?: string;
-  title: string;
-  kind: string;
-  text: string;
+  key: string;
+};
+
+interface Values {
+  offers: Item[];
 }
 
-interface Removed {
-  draft: Draft;
-  index: number;
-}
-
-const toDraft = (offer: Offer): Draft => ({
-  key: offer.id,
-  id: offer.id,
-  title: offer.title,
-  kind: offer.kind,
-  text: offer.text,
+const toValues = (offers: Offer[]): Values => ({
+  offers: offers.map(x => ({ ...x, key: x.id })),
 });
-
-const toInput = ({ id, title, kind, text }: Draft) => ({
-  id,
-  title,
-  kind,
-  text,
-});
-
-const content = (drafts: Draft[]) => JSON.stringify(drafts.map(toInput));
 
 export const OffersEditor = ({ offers }: { offers: Offer[] }) => {
-  const [saved, setSaved] = useState(() => offers.map(toDraft));
-  const [drafts, setDrafts] = useState(saved);
-  const [removed, setRemoved] = useState<Removed[]>([]);
-  const [openKey, setOpenKey] = useState<string>();
   const [status, setStatus] = useState<EditorStatus>({ kind: 'idle' });
+  const [openKey, setOpenKey] = useState<string>();
 
-  const dirty = removed.length > 0 || content(drafts) !== content(saved);
-  const invalid = drafts.some(x => Offer.problem(x));
+  // Controlled, since every row shows its title and problem while typing
+  const form = useForm<Values>({
+    mode: 'controlled',
+    initialValues: toValues(offers),
+    onValuesChange: () => setStatus({ kind: 'idle' }),
+  });
 
-  useUnsavedWarning(dirty);
+  const items = form.values.offers;
 
-  const edit = (update: (prev: Draft[]) => Draft[]) => {
-    setDrafts(update);
-    setStatus({ kind: 'idle' });
-  };
-
-  const change = (key: string, patch: Partial<Draft>) =>
-    edit(prev => prev.map(x => (x.key === key ? { ...x, ...patch } : x)));
-
-  const move = (key: string, to: (from: number) => number) =>
-    edit(prev => {
-      const from = prev.findIndex(x => x.key === key);
-      return moveItem(prev, from, to(from));
-    });
+  useUnsavedWarning(form.isDirty());
 
   const { dragKey, startDrag } = useDragReorder((key, to) =>
-    move(key, () => to),
+    form.reorderListItem('offers', {
+      from: items.findIndex(x => x.key === key),
+      to,
+    }),
   );
 
-  const add = () => {
-    const key = crypto.randomUUID();
-    edit(prev => [...prev, { key, title: '', kind: '', text: '' }]);
-    setOpenKey(key);
-  };
-
-  const remove = (key: string) => {
-    const index = drafts.findIndex(x => x.key === key);
-    const draft = drafts[index];
-    if (!draft) return;
-
-    setRemoved(prev => [...prev, { draft, index }]);
-    edit(prev => prev.toSpliced(index, 1));
-  };
-
-  const undo = () => {
-    const last = removed.at(-1);
-    if (!last) return;
-
-    setRemoved(prev => prev.slice(0, -1));
-    edit(prev => prev.toSpliced(last.index, 0, last.draft));
-  };
-
-  const submit = async (e: Event) => {
-    e.preventDefault();
-    setStatus({ kind: 'saving' });
-
-    const result = await saveRequest('/api/offers', {
-      offers: drafts.map(toInput),
-      deleted: removed.flatMap(x => (x.draft.id ? [x.draft.id] : [])),
-    });
+  // Saving replaces the stored list. New offers only get their id now, so the
+  // stored list is the new starting point.
+  const submit = form.onSubmit(async values => {
+    const result = await saveRequest('/api/offers', values.offers);
 
     if (!result.ok) {
       setStatus(result.status);
       return;
     }
 
-    // New offers only get their id now, so take the list as stored
-    const next = (result.data as Offer[]).map(toDraft);
-    setSaved(next);
-    setDrafts(next);
-    setRemoved([]);
+    form.setInitialValues(toValues(result.data as Offer[]));
+    form.reset();
     setStatus({ kind: 'saved' });
-  };
+  });
 
-  const lastRemoved = removed.at(-1);
+  const shown: EditorStatus = form.submitting ? { kind: 'saving' } : status;
 
   return (
-    <form onSubmit={e => void submit(e)} autocomplete="off" noValidate>
+    <form onSubmit={submit} autoComplete="off" noValidate>
       <StatusBanner
-        status={status}
+        status={shown}
         savedText="Angebote gespeichert"
         onClose={() => setStatus({ kind: 'idle' })}
       />
 
-      <div className="panel">
+      <fieldset className="panel" disabled={form.submitting}>
         <DragHint />
 
-        {drafts.length === 0 && (
+        {items.length === 0 && (
           <p className="list-empty">Noch keine Angebote.</p>
         )}
 
         <ol className="reorder-list" data-reorder>
-          {drafts.map(draft => (
+          {items.map((item, index) => (
             <ReorderItem
-              key={draft.key}
-              itemKey={draft.key}
-              title={draft.title}
-              preview={draft.text}
-              problem={Offer.problem(draft)}
-              open={openKey === draft.key}
-              dragging={dragKey === draft.key}
+              key={item.key}
+              itemKey={item.key}
+              title={item.title}
+              preview={item.text}
+              problem={Offer.problem(item)}
+              open={openKey === item.key}
+              dragging={dragKey === item.key}
               onToggle={() =>
-                setOpenKey(prev => (prev === draft.key ? undefined : draft.key))
+                setOpenKey(prev => (prev === item.key ? undefined : item.key))
               }
-              onDragStart={e => startDrag(draft.key, e)}
-              onStep={by => move(draft.key, from => from + by)}
+              onDragStart={e => startDrag(item.key, e)}
+              index={index}
+              count={items.length}
+              onMove={to => form.reorderListItem('offers', { from: index, to })}
             >
-              <OfferFields
-                draft={draft}
-                onChange={patch => change(draft.key, patch)}
-                onRemove={() => remove(draft.key)}
-              />
+              <OfferFields form={form} index={index} item={item} />
             </ReorderItem>
           ))}
         </ol>
@@ -163,7 +106,17 @@ export const OffersEditor = ({ offers }: { offers: Offer[] }) => {
           <button
             type="button"
             className="button button-secondary"
-            onClick={add}
+            onClick={() => {
+              const key = crypto.randomUUID();
+
+              form.insertListItem('offers', {
+                key,
+                title: '',
+                kind: '',
+                text: '',
+              });
+              setOpenKey(key);
+            }}
           >
             <PlusIcon />
             Angebot hinzufügen
@@ -171,37 +124,34 @@ export const OffersEditor = ({ offers }: { offers: Offer[] }) => {
         </div>
 
         <SaveBar
-          status={status}
-          dirty={dirty}
-          invalid={invalid}
+          status={shown}
+          dirty={form.isDirty()}
+          invalid={items.some(x => Offer.problem(x))}
           onDiscard={() => {
-            setDrafts(saved);
-            setRemoved([]);
+            form.reset();
             setOpenKey(undefined);
-            setStatus({ kind: 'idle' });
           }}
-        >
-          {lastRemoved && (
-            <UndoNote label={lastRemoved.draft.title} onUndo={undo} />
-          )}
-        </SaveBar>
-      </div>
+        />
+      </fieldset>
     </form>
   );
 };
 
 const OfferFields = ({
-  draft,
-  onChange,
-  onRemove,
+  form,
+  index,
+  item,
 }: {
-  draft: Draft;
-  onChange: (patch: Partial<Draft>) => void;
-  onRemove: () => void;
+  form: UseFormReturnType<Values>;
+  index: number;
+  item: Item;
 }) => {
-  const id = 'offer-' + draft.key;
+  const id = 'offer-' + item.key;
   const title = useRef<HTMLInputElement>(null);
-  const isNew = !draft.id;
+  const isNew = !item.id;
+
+  const field = (name: 'title' | 'kind' | 'text') =>
+    form.getInputProps(`offers.${index}.${name}`, { withError: false });
 
   // a new offer opens straight into its title
   useEffect(() => {
@@ -218,9 +168,8 @@ const OfferFields = ({
           id={id + '-title'}
           ref={title}
           className="input"
-          value={draft.title}
-          aria-invalid={!!Offer.problem(draft)}
-          onInput={e => onChange({ title: e.currentTarget.value })}
+          aria-invalid={!!Offer.problem(item)}
+          {...field('title')}
         />
       </div>
 
@@ -231,9 +180,8 @@ const OfferFields = ({
         <input
           id={id + '-kind'}
           className="input"
-          value={draft.kind}
           placeholder="z. B. Coloration"
-          onInput={e => onChange({ kind: e.currentTarget.value })}
+          {...field('kind')}
         />
       </div>
 
@@ -245,15 +193,14 @@ const OfferFields = ({
           id={id + '-text'}
           className="input"
           rows={5}
-          value={draft.text}
-          onInput={e => onChange({ text: e.currentTarget.value })}
+          {...field('text')}
         />
       </div>
 
       <button
         type="button"
         className="button button-secondary button-danger"
-        onClick={onRemove}
+        onClick={() => form.removeListItem('offers', index)}
       >
         <TrashIcon />
         Angebot entfernen

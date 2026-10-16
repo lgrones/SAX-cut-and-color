@@ -1,9 +1,9 @@
 ---
-export const prerender = false;
-
 import { getOffers } from '@business/offers/getOffers';
 import { getHiddenSections } from '@business/pageSections/getHiddenSections';
+import { PageSection } from '@domain/pageSection';
 import AdminLayout from '@presentation/layouts/AdminLayout.astro';
+import { AdminSection } from '@presentation/layouts/adminSection';
 import { SectionToggle } from '@presentation/components/admin/pageSections/sectionToggle';
 import { OffersEditor } from '@presentation/components/admin/offers/offersEditor';
 
@@ -12,13 +12,13 @@ const [offers, hidden] = await Promise.all([getOffers(), getHiddenSections()]);
 ---
 
 <AdminLayout
-  section="offers"
+  section={AdminSection.offers}
   title="Angebote"
   description="Erscheinen auf der Startseite in dieser Reihenfolge. Zum Ändern antippen, zum Verschieben am Griff ziehen."
 >
   <SectionToggle
-    section="offers"
-    shown={!hidden.includes('offers')}
+    section={PageSection.offers}
+    shown={!hidden.includes(PageSection.offers)}
     client:load
   />
   <OffersEditor offers={offers} client:load />

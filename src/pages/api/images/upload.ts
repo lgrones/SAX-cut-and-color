@@ -1,10 +1,7 @@
-import { originalUrl } from '@business/images/imageFiles';
 import { uploadImage } from '@business/images/uploadImage';
-import { captureException } from '@sentry/astro';
+import { withOriginal } from '@business/images/withOriginals';
+import { Sentry } from '@services/sentry';
 import type { APIRoute } from 'astro';
-import { error as logError } from 'firebase-functions/logger';
-
-export const prerender = false;
 
 /** Takes one photo as `image` in a multipart form */
 export const POST: APIRoute = async ({ request }) => {
@@ -19,11 +16,11 @@ export const POST: APIRoute = async ({ request }) => {
     const result = await uploadImage(new Uint8Array(await file.arrayBuffer()));
 
     return result.ok
-      ? Response.json({ ...result.image, src: originalUrl(result.image.id) })
+      ? Response.json(withOriginal(result.image))
       : Response.json({ message: result.message }, { status: 400 });
   } catch (error) {
-    logError('images', error);
-    captureException(error);
+    Sentry.reportError('images', error);
+
     return Response.json(
       { message: 'Hochladen fehlgeschlagen' },
       { status: 500 },

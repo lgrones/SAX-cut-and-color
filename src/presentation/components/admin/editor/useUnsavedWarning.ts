@@ -1,4 +1,4 @@
-import { useEffect } from 'preact/hooks';
+import { useEffect } from 'react';
 
 /** Asks before leaving the page while there are unsaved changes */
 export const useUnsavedWarning = (dirty: boolean) => {
@@ -7,6 +7,7 @@ export const useUnsavedWarning = (dirty: boolean) => {
 
     const warn = (e: BeforeUnloadEvent) => e.preventDefault();
     window.addEventListener('beforeunload', warn);
+
     return () => window.removeEventListener('beforeunload', warn);
   }, [dirty]);
 };

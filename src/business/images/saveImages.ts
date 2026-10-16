@@ -4,7 +4,7 @@ import {
   SiteImage,
   type SiteImages,
 } from '@domain/image';
-import { Firebase } from '@services/firebase';
+import { Firebase, FixedDocument } from '@services/firebase';
 import { z } from 'astro/zod';
 import sharp from 'sharp';
 
@@ -14,7 +14,9 @@ import {
   galleryPrefix,
   galleryWidths,
   LONG_CACHE,
+  originalId,
   originalPath,
+  originalsPrefix,
   slotFolder,
   slotPath,
   slotPrefix,
@@ -27,12 +29,14 @@ const focus = z.object({
   x: z.number().min(0).max(1),
   y: z.number().min(0).max(1),
 });
+
 const ref = z.object({ id: z.uuid(), focus });
 
 const schema = z.object({
-  hero: ref.nullable(),
-  portrait: ref.nullable(),
-  map: ref.nullable(),
+  // a slot left out has no image
+  hero: ref.optional(),
+  portrait: ref.optional(),
+  map: ref.optional(),
   gallery: z.array(ref.extend({ alt: z.string() })),
 });
 
@@ -58,7 +62,7 @@ const loadOriginal = async ({ id, focus }: Ref) => {
 
 const saveSlot = async (
   slot: ImageSlot,
-  next: Ref | null,
+  next: Ref | undefined,
   stored: SiteImage | undefined,
 ): Promise<SiteImage | undefined> => {
   // an optional slot taken off the page, its files go in the clean up
@@ -73,7 +77,9 @@ const saveSlot = async (
     return stored;
 
   const { source, image } = await loadOriginal(next);
+
   const region = SiteImage.crop(image, SiteImage.slots[slot].aspect);
+
   await renderVariants(
     source,
     variantWidths(slotWidths, region.width),
@@ -94,6 +100,7 @@ const saveGalleryImage = async (
   if (stored) return { ...stored, focus: next.focus, alt };
 
   const { source, image } = await loadOriginal(next);
+
   await renderVariants(
     source,
     variantWidths(galleryWidths, image.width),
@@ -126,9 +133,11 @@ const cleanUp = async (images: SiteImages, previous: SiteImages) => {
   );
   const cutoff = Date.now() - ABANDONED_AFTER_MS;
 
-  for (const file of await Firebase.listFiles('images/originals/')) {
-    const id = file.path.slice('images/originals/'.length, -'.webp'.length);
+  for (const file of await Firebase.listFiles(originalsPrefix)) {
+    const id = originalId(file.path);
+
     if (used.has(id)) continue;
+
     if (replaced.has(id) || file.created.getTime() < cutoff) {
       await Firebase.deleteFile(file.path);
     }
@@ -160,6 +169,7 @@ export const saveImages = async (input: unknown): Promise<SaveImagesResult> => {
 
   const { gallery } = parsed.data;
   const problem = gallery.map(SiteImage.problem).find(x => x);
+
   if (problem) return { ok: false, message: problem };
 
   const previous = await getImages();
@@ -169,6 +179,7 @@ export const saveImages = async (input: unknown): Promise<SaveImagesResult> => {
     slot =>
       !SiteImage.slots[slot].optional && previous[slot] && !parsed.data[slot],
   );
+
   if (removesRequired) return { ok: false, message: 'Ungültige Eingabe' };
 
   const images: SiteImages = { gallery: [] };
@@ -182,7 +193,7 @@ export const saveImages = async (input: unknown): Promise<SaveImagesResult> => {
     images.gallery.push(await saveGalleryImage(next, stored));
   }
 
-  await Firebase.setDocument('images', 'site', images);
+  await Firebase.setDocument(FixedDocument.images, images);
   await cleanUp(images, previous);
 
   return { ok: true, images };

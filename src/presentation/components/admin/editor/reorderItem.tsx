@@ -1,5 +1,4 @@
-import type { ComponentChildren } from 'preact';
-import { useRef } from 'preact/hooks';
+import { type PointerEvent, type ReactNode, useRef } from 'react';
 
 import { ChevronIcon, GripIcon } from './icons';
 
@@ -23,7 +22,9 @@ export const ReorderItem = ({
   dragging,
   onToggle,
   onDragStart,
-  onStep,
+  index,
+  count,
+  onMove,
   media,
   children,
 }: {
@@ -34,12 +35,15 @@ export const ReorderItem = ({
   open: boolean;
   dragging: boolean;
   onToggle: () => void;
-  onDragStart: (e: PointerEvent) => void;
-  /** Moves the item up (-1) or down (1) */
-  onStep: (by: number) => void;
+  onDragStart: (e: PointerEvent<HTMLButtonElement>) => void;
+  /** The item's place in its list, and the list's length */
+  index: number;
+  count: number;
+  /** Moves the item to another place, only ever one within the list */
+  onMove: (to: number) => void;
   /** Shown before the summary, e.g. a thumbnail */
-  media?: ComponentChildren;
-  children: ComponentChildren;
+  media?: ReactNode;
+  children: ReactNode;
 }) => {
   const handle = useRef<HTMLButtonElement>(null);
   const bodyId = 'item-' + itemKey;
@@ -61,7 +65,11 @@ export const ReorderItem = ({
           onKeyDown={e => {
             if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
             e.preventDefault();
-            onStep(e.key === 'ArrowUp' ? -1 : 1);
+
+            const to = index + (e.key === 'ArrowUp' ? -1 : 1);
+            if (to < 0 || to >= count) return;
+
+            onMove(to);
             // moving the item in the DOM can drop the focus
             requestAnimationFrame(() => handle.current?.focus());
           }}

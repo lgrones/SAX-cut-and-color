@@ -1,29 +1,16 @@
 ---
-export const prerender = false;
-
 import { getImages } from '@business/images/getImages';
-import { originalUrl } from '@business/images/imageFiles';
-import { SiteImage } from '@domain/image';
+import { withOriginals } from '@business/images/withOriginals';
 import AdminLayout from '@presentation/layouts/AdminLayout.astro';
-import {
-  type EditorImages,
-  ImagesEditor,
-} from '@presentation/components/admin/images/imagesEditor';
+import { AdminSection } from '@presentation/layouts/adminSection';
+import { ImagesEditor } from '@presentation/components/admin/images/imagesEditor';
 
 // Access is checked by the auth middleware
-const stored = await getImages();
-
-const images: EditorImages = {
-  gallery: stored.gallery.map(x => ({ ...x, src: originalUrl(x.id) })),
-};
-for (const slot of SiteImage.slotNames) {
-  const image = stored[slot];
-  if (image) images[slot] = { ...image, src: originalUrl(image.id) };
-}
+const images = withOriginals(await getImages());
 ---
 
 <AdminLayout
-  section="images"
+  section={AdminSection.images}
   title="Bilder"
   description="Startbild, Porträt, Karte und Galerie der Startseite. Neue Bilder sind nach dem Speichern innerhalb weniger Minuten zu sehen."
 >

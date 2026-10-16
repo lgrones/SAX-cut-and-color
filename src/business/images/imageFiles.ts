@@ -17,19 +17,34 @@ export const LONG_CACHE = 'public, max-age=31536000, immutable';
  */
 export const variantWidths = (widths: number[], sourceWidth: number) => {
   const larger = widths.find(x => x >= sourceWidth);
+
   return [...widths.filter(x => x < sourceWidth), ...(larger ? [larger] : [])];
 };
 
-export const originalPath = (id: string) => `images/originals/${id}.webp`;
-export const slotPrefix = (slot: ImageSlot) => `images/${slot}/`;
+const ROOT = 'images/';
+
+export const originalsPrefix = `${ROOT}originals/`;
+
+export const originalPath = (id: string) => `${originalsPrefix}${id}.webp`;
+
+/** The id of the image an original's path belongs to */
+export const originalId = (path: string) =>
+  path.slice(originalsPrefix.length, -'.webp'.length);
+
+export const slotPrefix = (slot: ImageSlot) => `${ROOT}${slot}/`;
+
 /** The folder of a slot's image as cropped now: a new crop gets new URLs */
 export const slotFolder = (slot: ImageSlot, image: SiteImage) => {
   const { left, top } = SiteImage.crop(image, SiteImage.slots[slot].aspect);
+
   return `${slotPrefix(slot)}${image.id}/${left}-${top}/`;
 };
+
 export const slotPath = (slot: ImageSlot, image: SiteImage, width: number) =>
   `${slotFolder(slot, image)}${width}.webp`;
-export const galleryPrefix = (id: string) => `images/gallery/${id}/`;
+
+export const galleryPrefix = (id: string) => `${ROOT}gallery/${id}/`;
+
 export const galleryPath = (id: string, width: number) =>
   `${galleryPrefix(id)}${width}.webp`;
 

@@ -11,6 +11,7 @@ const number = (value: unknown, fallback: number) =>
 
 const mapFocus = (value: unknown): Focus => {
   const focus = (value ?? {}) as Record<string, unknown>;
+
   return { x: number(focus.x, 0.5), y: number(focus.y, 0.5) };
 };
 

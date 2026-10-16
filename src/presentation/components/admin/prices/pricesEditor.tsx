@@ -1,19 +1,19 @@
 import '../admin.css';
 
 import { Price, PriceItem } from '@domain/price';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { type UseFormReturnType, useForm } from '@mantine/form';
+import { useEffect, useRef, useState } from 'react';
 
-import { moveItem } from '../editor/dragTarget';
 import { PlusIcon, TrashIcon } from '../editor/icons';
 import { DragHint, ReorderItem } from '../editor/reorderItem';
-import { SaveBar, StatusBanner, UndoNote } from '../editor/saveBar';
+import { SaveBar, StatusBanner } from '../editor/saveBar';
 import { type EditorStatus, saveRequest } from '../editor/saveRequest';
 import { useDragReorder } from '../editor/useDragReorder';
 import { useUnsavedWarning } from '../editor/useUnsavedWarning';
 import { formatAmount, parseAmount } from './amount';
 
 /** A service as edited, amounts as typed */
-interface ItemDraft {
+interface Item {
   key: string;
   title: string;
   min: string;
@@ -21,37 +21,37 @@ interface ItemDraft {
   salon: boolean;
 }
 
-/**
- * A category as edited. `key` is stable across saves; `id` is unset until
- * saved.
- */
-interface CategoryDraft {
+/** A new category has no id until saved, so rows go by `key` */
+interface Category {
   key: string;
   id?: string;
   mainTitle: string;
-  items: ItemDraft[];
+  items: Item[];
 }
 
-type Removed =
-  | { kind: 'category'; draft: CategoryDraft; index: number }
-  | { kind: 'item'; categoryKey: string; item: ItemDraft; index: number };
+interface Values {
+  categories: Category[];
+}
 
-// Services have no id, their keys only need to be stable while editing and the
-// same on the server and in the browser
-const toDraft = (price: Price): CategoryDraft => ({
-  key: price.id,
-  id: price.id,
-  mainTitle: price.mainTitle,
-  items: price.prices.map((item, i) => ({
-    key: price.id + '-' + i,
-    title: item.title,
-    min: formatAmount(item.priceMin),
-    max: formatAmount(item.priceMax),
-    salon: !!item.salon,
+type PricesForm = UseFormReturnType<Values>;
+
+// Services have no id, their keys only need to be stable while editing
+const toValues = (prices: Price[]): Values => ({
+  categories: prices.map(price => ({
+    key: price.id,
+    id: price.id,
+    mainTitle: price.mainTitle,
+    items: price.prices.map((item, i) => ({
+      key: price.id + '-' + i,
+      title: item.title,
+      min: formatAmount(item.priceMin),
+      max: formatAmount(item.priceMax),
+      salon: !!item.salon,
+    })),
   })),
 });
 
-const toPriceItem = (item: ItemDraft): PriceItem => {
+const toPriceItem = (item: Item): PriceItem => {
   if (item.salon) return { title: item.title, salon: true };
 
   const priceMin = parseAmount(item.min);
@@ -64,16 +64,9 @@ const toPriceItem = (item: ItemDraft): PriceItem => {
   };
 };
 
-const payload = (drafts: CategoryDraft[]) =>
-  drafts.map(({ id, mainTitle, items }) => ({
-    id,
-    mainTitle,
-    prices: items.map(toPriceItem),
-  }));
+const itemProblem = (item: Item) => PriceItem.problem(toPriceItem(item));
 
-const itemProblem = (item: ItemDraft) => PriceItem.problem(toPriceItem(item));
-
-const categoryProblem = (category: CategoryDraft) =>
+const categoryProblem = (category: Category) =>
   Price.problem({
     mainTitle: category.mainTitle,
     prices: category.items.map(toPriceItem),
@@ -82,7 +75,7 @@ const categoryProblem = (category: CategoryDraft) =>
     ? 'Eine Leistung ist unvollständig'
     : undefined);
 
-const newItem = (): ItemDraft => ({
+const newItem = (): Item => ({
   key: crypto.randomUUID(),
   title: '',
   min: '',
@@ -91,161 +84,98 @@ const newItem = (): ItemDraft => ({
 });
 
 export const PricesEditor = ({ prices }: { prices: Price[] }) => {
-  const [saved, setSaved] = useState(() => prices.map(toDraft));
-  const [drafts, setDrafts] = useState(saved);
-  const [removed, setRemoved] = useState<Removed[]>([]);
+  const [status, setStatus] = useState<EditorStatus>({ kind: 'idle' });
   const [openCategory, setOpenCategory] = useState<string>();
   const [openItem, setOpenItem] = useState<string>();
   // the field to focus once it shows, after adding something
   const [focusKey, setFocusKey] = useState<string>();
-  const [status, setStatus] = useState<EditorStatus>({ kind: 'idle' });
 
-  const dirty =
-    removed.length > 0 ||
-    JSON.stringify(payload(drafts)) !== JSON.stringify(payload(saved));
-  const invalid = drafts.some(x => categoryProblem(x));
+  // Controlled, since every row shows its name, prices and problem while typing
+  const form = useForm<Values>({
+    mode: 'controlled',
+    initialValues: toValues(prices),
+    onValuesChange: () => setStatus({ kind: 'idle' }),
+  });
 
-  useUnsavedWarning(dirty);
+  const categories = form.values.categories;
 
-  const edit = (update: (prev: CategoryDraft[]) => CategoryDraft[]) => {
-    setDrafts(update);
-    setStatus({ kind: 'idle' });
-  };
+  useUnsavedWarning(form.isDirty());
 
-  const changeCategory = (
-    key: string,
-    update: (category: CategoryDraft) => CategoryDraft,
-  ) => edit(prev => prev.map(x => (x.key === key ? update(x) : x)));
+  // A dragged key is either a category's or one of its services'
+  const { dragKey, startDrag } = useDragReorder((key, to) => {
+    const from = categories.findIndex(x => x.key === key);
+    if (from !== -1) return form.reorderListItem('categories', { from, to });
 
-  const changeItem = (
-    categoryKey: string,
-    key: string,
-    patch: Partial<ItemDraft>,
-  ) =>
-    changeCategory(categoryKey, category => ({
-      ...category,
-      items: category.items.map(x => (x.key === key ? { ...x, ...patch } : x)),
-    }));
+    categories.forEach((category, index) => {
+      const item = category.items.findIndex(x => x.key === key);
 
-  // A key is either a category's or one of its services'
-  const move = (key: string, to: (from: number) => number) =>
-    edit(prev => {
-      const from = prev.findIndex(x => x.key === key);
-      if (from !== -1) return moveItem(prev, from, to(from));
-
-      return prev.map(category => {
-        const index = category.items.findIndex(x => x.key === key);
-        return index === -1
-          ? category
-          : { ...category, items: moveItem(category.items, index, to(index)) };
-      });
+      if (item !== -1) {
+        form.reorderListItem(`categories.${index}.items`, { from: item, to });
+      }
     });
-
-  const { dragKey, startDrag } = useDragReorder((key, to) =>
-    move(key, () => to),
-  );
+  });
 
   const addCategory = () => {
     const key = crypto.randomUUID();
     const item = newItem();
-    edit(prev => [...prev, { key, mainTitle: '', items: [item] }]);
+
+    form.insertListItem('categories', { key, mainTitle: '', items: [item] });
     setOpenCategory(key);
     setOpenItem(item.key);
     setFocusKey(key);
   };
 
-  const addItem = (categoryKey: string) => {
+  const addItem = (index: number) => {
     const item = newItem();
-    changeCategory(categoryKey, category => ({
-      ...category,
-      items: [...category.items, item],
-    }));
+
+    form.insertListItem(`categories.${index}.items`, item);
     setOpenItem(item.key);
     setFocusKey(item.key);
   };
 
-  const removeCategory = (key: string) => {
-    const index = drafts.findIndex(x => x.key === key);
-    const draft = drafts[index];
-    if (!draft) return;
-
-    setRemoved(prev => [...prev, { kind: 'category', draft, index }]);
-    edit(prev => prev.toSpliced(index, 1));
-  };
-
-  const removeItem = (categoryKey: string, key: string) => {
-    const category = drafts.find(x => x.key === categoryKey);
-    const index = category?.items.findIndex(x => x.key === key) ?? -1;
-    const item = category?.items[index];
-    if (!item) return;
-
-    setRemoved(prev => [...prev, { kind: 'item', categoryKey, item, index }]);
-    changeCategory(categoryKey, x => ({
-      ...x,
-      items: x.items.toSpliced(index, 1),
-    }));
-  };
-
-  const undo = () => {
-    const last = removed.at(-1);
-    if (!last) return;
-
-    setRemoved(prev => prev.slice(0, -1));
-
-    if (last.kind === 'category') {
-      edit(prev => prev.toSpliced(last.index, 0, last.draft));
-    } else {
-      changeCategory(last.categoryKey, x => ({
-        ...x,
-        items: x.items.toSpliced(last.index, 0, last.item),
-      }));
-    }
-  };
-
-  const submit = async (e: Event) => {
-    e.preventDefault();
-    setStatus({ kind: 'saving' });
-
-    const result = await saveRequest('/api/prices', {
-      categories: payload(drafts),
-      deleted: removed.flatMap(x =>
-        x.kind === 'category' && x.draft.id ? [x.draft.id] : [],
-      ),
-    });
+  // Saving replaces the stored list. New categories only get their id now, so
+  // the stored list is the new starting point.
+  const submit = form.onSubmit(async values => {
+    const result = await saveRequest(
+      '/api/prices',
+      values.categories.map(({ id, mainTitle, items }) => ({
+        id,
+        mainTitle,
+        prices: items.map(toPriceItem),
+      })),
+    );
 
     if (!result.ok) {
       setStatus(result.status);
+
       return;
     }
 
-    // New categories only get their id now, so take the list as stored
-    const next = (result.data as Price[]).map(toDraft);
-    setSaved(next);
-    setDrafts(next);
-    setRemoved([]);
+    form.setInitialValues(toValues(result.data as Price[]));
+    form.reset();
     setOpenItem(undefined);
     setStatus({ kind: 'saved' });
-  };
+  });
 
-  const lastRemoved = removed.at(-1);
+  const shown: EditorStatus = form.submitting ? { kind: 'saving' } : status;
 
   return (
-    <form onSubmit={e => void submit(e)} autocomplete="off" noValidate>
+    <form onSubmit={submit} autoComplete="off" noValidate>
       <StatusBanner
-        status={status}
+        status={shown}
         savedText="Preise gespeichert"
         onClose={() => setStatus({ kind: 'idle' })}
       />
 
-      <div className="panel">
+      <fieldset className="panel" disabled={form.submitting}>
         <DragHint />
 
-        {drafts.length === 0 && (
+        {categories.length === 0 && (
           <p className="list-empty">Noch keine Kategorien.</p>
         )}
 
         <ol className="reorder-list" data-reorder>
-          {drafts.map(category => (
+          {categories.map((category, index) => (
             <ReorderItem
               key={category.key}
               itemKey={category.key}
@@ -264,22 +194,27 @@ export const PricesEditor = ({ prices }: { prices: Price[] }) => {
                 )
               }
               onDragStart={e => startDrag(category.key, e)}
-              onStep={by => move(category.key, from => from + by)}
+              index={index}
+              count={categories.length}
+              onMove={to =>
+                form.reorderListItem('categories', { from: index, to })
+              }
             >
               <NameField
                 id={'category-' + category.key}
-                value={category.mainTitle}
+                invalid={!category.mainTitle.trim()}
                 focus={focusKey === category.key}
-                onInput={mainTitle =>
-                  changeCategory(category.key, x => ({ ...x, mainTitle }))
-                }
+                inputProps={form.getInputProps(
+                  `categories.${index}.mainTitle`,
+                  { withError: false },
+                )}
               />
 
               <div>
                 <p className="label">Leistungen</p>
 
                 <ol className="reorder-list nested" data-reorder>
-                  {category.items.map(item => (
+                  {category.items.map((item, itemIndex) => (
                     <ReorderItem
                       key={item.key}
                       itemKey={item.key}
@@ -294,15 +229,26 @@ export const PricesEditor = ({ prices }: { prices: Price[] }) => {
                         )
                       }
                       onDragStart={e => startDrag(item.key, e)}
-                      onStep={by => move(item.key, from => from + by)}
+                      index={itemIndex}
+                      count={category.items.length}
+                      onMove={to =>
+                        form.reorderListItem(`categories.${index}.items`, {
+                          from: itemIndex,
+                          to,
+                        })
+                      }
                     >
                       <ItemFields
+                        form={form}
+                        path={`categories.${index}.items.${itemIndex}`}
                         item={item}
                         focus={focusKey === item.key}
-                        onChange={patch =>
-                          changeItem(category.key, item.key, patch)
+                        onRemove={() =>
+                          form.removeListItem(
+                            `categories.${index}.items`,
+                            itemIndex,
+                          )
                         }
-                        onRemove={() => removeItem(category.key, item.key)}
                       />
                     </ReorderItem>
                   ))}
@@ -311,7 +257,7 @@ export const PricesEditor = ({ prices }: { prices: Price[] }) => {
                 <button
                   type="button"
                   className="button button-secondary add-nested"
-                  onClick={() => addItem(category.key)}
+                  onClick={() => addItem(index)}
                 >
                   <PlusIcon />
                   Leistung hinzufügen
@@ -321,7 +267,7 @@ export const PricesEditor = ({ prices }: { prices: Price[] }) => {
               <button
                 type="button"
                 className="button button-secondary button-danger"
-                onClick={() => removeCategory(category.key)}
+                onClick={() => form.removeListItem('categories', index)}
               >
                 <TrashIcon />
                 Kategorie entfernen
@@ -342,43 +288,30 @@ export const PricesEditor = ({ prices }: { prices: Price[] }) => {
         </div>
 
         <SaveBar
-          status={status}
-          dirty={dirty}
-          invalid={invalid}
+          status={shown}
+          dirty={form.isDirty()}
+          invalid={categories.some(x => categoryProblem(x))}
           onDiscard={() => {
-            setDrafts(saved);
-            setRemoved([]);
+            form.reset();
             setOpenCategory(undefined);
             setOpenItem(undefined);
-            setStatus({ kind: 'idle' });
           }}
-        >
-          {lastRemoved && (
-            <UndoNote
-              label={
-                lastRemoved.kind === 'category'
-                  ? lastRemoved.draft.mainTitle
-                  : lastRemoved.item.title
-              }
-              onUndo={undo}
-            />
-          )}
-        </SaveBar>
-      </div>
+        />
+      </fieldset>
     </form>
   );
 };
 
 const NameField = ({
   id,
-  value,
+  invalid,
   focus,
-  onInput,
+  inputProps,
 }: {
   id: string;
-  value: string;
+  invalid: boolean;
   focus: boolean;
-  onInput: (value: string) => void;
+  inputProps: object;
 }) => {
   const input = useRef<HTMLInputElement>(null);
 
@@ -395,27 +328,32 @@ const NameField = ({
         id={id}
         ref={input}
         className="input"
-        value={value}
-        aria-invalid={!value.trim()}
-        onInput={e => onInput(e.currentTarget.value)}
+        aria-invalid={invalid}
+        {...inputProps}
       />
     </div>
   );
 };
 
 const ItemFields = ({
+  form,
+  path,
   item,
   focus,
-  onChange,
   onRemove,
 }: {
-  item: ItemDraft;
+  form: PricesForm;
+  /** Where the service sits in the form, e.g. `categories.0.items.2` */
+  path: `categories.${number}.items.${number}`;
+  item: Item;
   focus: boolean;
-  onChange: (patch: Partial<ItemDraft>) => void;
   onRemove: () => void;
 }) => {
   const id = 'service-' + item.key;
   const title = useRef<HTMLInputElement>(null);
+
+  const field = (name: 'title' | 'min' | 'max') =>
+    form.getInputProps(`${path}.${name}`, { withError: false });
 
   useEffect(() => {
     if (focus) title.current?.focus();
@@ -431,9 +369,8 @@ const ItemFields = ({
           id={id + '-title'}
           ref={title}
           className="input"
-          value={item.title}
           aria-invalid={!item.title.trim()}
-          onInput={e => onChange({ title: e.currentTarget.value })}
+          {...field('title')}
         />
       </div>
 
@@ -447,9 +384,8 @@ const ItemFields = ({
             className="input"
             inputMode="decimal"
             placeholder="z. B. 36"
-            value={item.min}
             disabled={item.salon}
-            onInput={e => onChange({ min: e.currentTarget.value })}
+            {...field('min')}
           />
         </div>
 
@@ -461,9 +397,8 @@ const ItemFields = ({
             id={id + '-max'}
             className="input"
             inputMode="decimal"
-            value={item.max}
             disabled={item.salon}
-            onInput={e => onChange({ max: e.currentTarget.value })}
+            {...field('max')}
           />
         </div>
       </div>
@@ -472,8 +407,10 @@ const ItemFields = ({
         <input
           type="checkbox"
           className="checkbox"
-          checked={item.salon}
-          onChange={e => onChange({ salon: e.currentTarget.checked })}
+          {...form.getInputProps(`${path}.salon`, {
+            type: 'checkbox',
+            withError: false,
+          })}
         />
         Absprache im Salon
       </label>

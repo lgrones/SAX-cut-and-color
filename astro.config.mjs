@@ -1,13 +1,15 @@
 import { env } from 'node:process';
 
 import node from '@astrojs/node';
-import preact from '@astrojs/preact';
+import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import sentry from '@sentry/astro';
 import { defineConfig, envField, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
+  // Pages render on request unless they opt into prerendering, as the 404 does
+  output: 'server',
   adapter: node({ mode: 'standalone' }),
   site: 'https://www.sax-cut-and-colour.at',
   // One URL per page: canonical, sitemap and links all go without the slash,
@@ -21,7 +23,7 @@ export default defineConfig({
     sitemap({
       filter: page => !/^\/(admin|signin)(\/|$)/.test(new URL(page).pathname),
     }),
-    preact(),
+    react(),
     // Errors from the browser and the server; the options, which collect no
     // personal data, are in the init files
     sentry({

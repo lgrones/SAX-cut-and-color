@@ -23,12 +23,3 @@ export const dragTarget = (
 
   return target;
 };
-
-/** The list with the item at `from` moved to `to`, kept within the list */
-export const moveItem = <T>(list: T[], from: number, to: number): T[] => {
-  const item = list[from];
-  const target = Math.max(0, Math.min(list.length - 1, to));
-  if (item === undefined || from === target) return list;
-
-  return list.toSpliced(from, 1).toSpliced(target, 0, item);
-};

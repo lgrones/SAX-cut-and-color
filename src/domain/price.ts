@@ -1,3 +1,5 @@
+import { z } from 'astro/zod';
+
 /** A price category, e.g. "Damen", with its individual services */
 export interface Price {
   id: string;
@@ -30,19 +32,40 @@ const label = (item: PriceItem): string =>
     ? 'nach Absprache'
     : formatRange(item.priceMin, item.priceMax);
 
-/** Why a service can't be saved, if it can't */
-const itemProblem = (item: PriceItem): string | undefined => {
-  if (!item.title.trim()) return 'Bezeichnung fehlt';
-  if (item.salon) return undefined;
-  if (item.priceMin === undefined) return 'Preis fehlt';
-  if (!(item.priceMin > 0)) return 'Ungültiger Preis';
-  if (item.priceMax !== undefined && !(item.priceMax >= item.priceMin))
-    return '„bis“ liegt unter „von“';
+// Not a number when typed as something else, see the admin's amount fields
+const amount = z
+  .number({ error: 'Ungültiger Preis' })
+  .positive('Ungültiger Preis')
+  .optional();
 
-  return undefined;
-};
+// The checks run in this order and the first that fails names the problem. A
+// service priced at the salon needs no amount.
+const itemSchema = z
+  .object({
+    title: z.string().trim().min(1, 'Bezeichnung fehlt'),
+    priceMin: amount,
+    priceMax: amount,
+    salon: z.boolean().optional(),
+  })
+  .refine(x => x.salon === true || x.priceMin !== undefined, 'Preis fehlt')
+  .refine(
+    x =>
+      x.priceMin === undefined ||
+      x.priceMax === undefined ||
+      x.priceMax >= x.priceMin,
+    '„bis“ liegt unter „von“',
+  );
+
+/** Why a service can't be saved, if it can't */
+const itemProblem = (item: PriceItem): string | undefined =>
+  itemSchema.safeParse(item).error?.issues[0]?.message;
 
 export const PriceItem = { label, problem: itemProblem };
+
+const schema = z.object({
+  mainTitle: z.string().trim().min(1, 'Name fehlt'),
+  prices: z.array(z.unknown()).min(1, 'Mindestens eine Leistung'),
+});
 
 /**
  * Why a category can't be saved, if it can't. Its services are checked on their
@@ -50,12 +73,7 @@ export const PriceItem = { label, problem: itemProblem };
  */
 const problem = (
   price: Pick<Price, 'mainTitle' | 'prices'>,
-): string | undefined => {
-  if (!price.mainTitle.trim()) return 'Name fehlt';
-  if (price.prices.length === 0) return 'Mindestens eine Leistung';
-
-  return undefined;
-};
+): string | undefined => schema.safeParse(price).error?.issues[0]?.message;
 
 /**
  * The lowest to the highest fixed price of all categories, e.g. "9,50–120 €".

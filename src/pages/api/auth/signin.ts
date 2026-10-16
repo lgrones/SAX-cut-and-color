@@ -2,8 +2,6 @@ import { startSession } from '@business/auth/startSession';
 import { SESSION_COOKIE } from '@infrastructure/sessionCookie';
 import type { APIRoute } from 'astro';
 
-export const prerender = false;
-
 export const POST: APIRoute = async ({ request, cookies }) => {
   const idToken = request.headers.get('Authorization')?.split('Bearer ')[1];
   if (!idToken) {

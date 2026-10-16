@@ -1,3 +1,5 @@
+import { z } from 'astro/zod';
+
 /** How customers reach the salon, as the admin keeps it */
 export interface Contact {
   /** As shown, with the country code, e.g. "+43 664 421 384 9" */
@@ -14,7 +16,7 @@ export interface Contact {
 const NAME = 'SAX Cut + Colour';
 
 /** The phone number without separators, e.g. "+436644213849" */
-const dialNumber = (contact: Contact) =>
+const dialNumber = (contact: Pick<Contact, 'phone'>) =>
   contact.phone.replaceAll(/[\s/()-]/g, '');
 
 const phoneHref = (contact: Contact) => 'tel:' + dialNumber(contact);
@@ -47,18 +49,29 @@ const mapHref = (contact: Contact) =>
   'https://www.google.com/maps/search/?api=1&query=' +
   encodeURIComponent(`${NAME}, ${address(contact)}`);
 
-type Field = Exclude<keyof Contact, 'whatsapp'>;
+const required = (message: string) => z.string().trim().min(1, message);
+
+const schema = z.object({
+  phone: z
+    .string()
+    .refine(
+      phone => /^\+[1-9]\d{6,14}$/.test(dialNumber({ phone })),
+      'Mit Ländervorwahl angeben, z. B. +43 664 …',
+    ),
+  email: z.string().trim().pipe(z.email('Keine gültige E-Mail-Adresse')),
+  street: required('Straße fehlt'),
+  town: required('PLZ und Ort fehlen'),
+});
+
+type Field = keyof typeof schema.shape;
 
 /** Why each field can't be saved, for the fields that can't */
 const problems = (contact: Contact): Partial<Record<Field, string>> => {
   const found: Partial<Record<Field, string>> = {};
 
-  if (!/^\+[1-9]\d{6,14}$/.test(dialNumber(contact)))
-    found.phone = 'Mit Ländervorwahl angeben, z. B. +43 664 …';
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email.trim()))
-    found.email = 'Keine gültige E-Mail-Adresse';
-  if (!contact.street.trim()) found.street = 'Straße fehlt';
-  if (!contact.town.trim()) found.town = 'PLZ und Ort fehlen';
+  for (const issue of schema.safeParse(contact).error?.issues ?? []) {
+    found[issue.path[0] as Field] ??= issue.message;
+  }
 
   return found;
 };

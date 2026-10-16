@@ -237,6 +237,14 @@ svg {
   }
 }
 
+/* An editor's panel is a fieldset, so a running save disables it at once */
+fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
 .panel {
   background-color: var(--admin-surface);
   border: 1px solid var(--admin-border);
@@ -370,12 +378,6 @@ svg {
 
 .button-danger {
   color: var(--admin-error);
-}
-
-.link-button {
-  font-weight: 600;
-  text-decoration: underline;
-  color: var(--admin-accent);
 }
 
 /* feedback */

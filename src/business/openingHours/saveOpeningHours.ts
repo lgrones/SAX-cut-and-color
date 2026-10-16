@@ -1,5 +1,5 @@
 import { OpeningHours } from '@domain/openingHours';
-import { Firebase } from '@services/firebase';
+import { Collection, Firebase } from '@services/firebase';
 import { z } from 'astro/zod';
 
 import { mapOpeningHours } from './mapOpeningHours';
@@ -44,7 +44,7 @@ export const saveOpeningHours = async (
   const problem = week.map(OpeningHours.problem).find(x => x);
   if (problem) return { ok: false, message: problem };
 
-  const documents = await Firebase.getDocuments('openingHours');
+  const documents = await Firebase.getDocuments(Collection.openingHours);
   const stored = new Map(
     documents.map(x => [mapOpeningHours(x).index, x.id] as const),
   );
@@ -54,9 +54,9 @@ export const saveOpeningHours = async (
 
     if (id) {
       const { day: _day, index: _index, ...times } = day;
-      await Firebase.updateDocument('openingHours', id, times);
+      await Firebase.updateDocument(Collection.openingHours, id, times);
     } else {
-      await Firebase.addDocument('openingHours', day);
+      await Firebase.addDocument(Collection.openingHours, day);
     }
   }
 

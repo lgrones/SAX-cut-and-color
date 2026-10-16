@@ -1,7 +1,6 @@
-import type { ComponentChildren } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { type ReactNode, useEffect, useState } from 'react';
 
-const hasFiles = (e: DragEvent) =>
+const hasFiles = (e: Pick<DragEvent, 'dataTransfer'>) =>
   e.dataTransfer?.types.includes('Files') ?? false;
 
 // some systems report no type for photos the browser can't name, like HEIC;
@@ -21,7 +20,7 @@ export const DropZone = ({
   className?: string;
   disabled: boolean;
   onFiles: (files: File[]) => void;
-  children: ComponentChildren;
+  children: ReactNode;
 }) => {
   const [over, setOver] = useState(false);
 
@@ -33,8 +32,7 @@ export const DropZone = ({
         if (!hasFiles(e)) return;
 
         e.preventDefault();
-        if (e.dataTransfer)
-          e.dataTransfer.dropEffect = disabled ? 'none' : 'copy';
+        e.dataTransfer.dropEffect = disabled ? 'none' : 'copy';
         setOver(!disabled);
       }}
       onDragLeave={e => {
@@ -49,7 +47,7 @@ export const DropZone = ({
         e.preventDefault();
         setOver(false);
 
-        const files = [...(e.dataTransfer?.files ?? [])].filter(isImage);
+        const files = [...e.dataTransfer.files].filter(isImage);
         if (!disabled && files.length > 0) onFiles(files);
       }}
     >
@@ -77,6 +75,7 @@ export const useNoFileNavigation = () => {
 
     window.addEventListener('dragover', refuse);
     window.addEventListener('drop', stop);
+
     return () => {
       window.removeEventListener('dragover', refuse);
       window.removeEventListener('drop', stop);

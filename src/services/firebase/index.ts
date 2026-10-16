@@ -4,6 +4,7 @@ import {
   verifyIdToken,
   verifySessionCookie,
 } from './auth';
+import { Collection, FixedDocument } from './collections';
 import {
   addDocument,
   deleteDocument,
@@ -37,6 +38,8 @@ export const Firebase = {
   deleteFile,
   listFiles,
 };
+
+export { Collection, FixedDocument };
 
 export type * from './auth';
 export type * from './firestore';

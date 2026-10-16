@@ -1,5 +1,5 @@
 import { Price, PriceItem } from '@domain/price';
-import { Firebase } from '@services/firebase';
+import { Collection, Firebase } from '@services/firebase';
 import { z } from 'astro/zod';
 
 import { getPrices } from './getPrices';
@@ -11,18 +11,14 @@ const item = z.object({
   salon: z.boolean().optional(),
 });
 
-// The whole list in its new order. A category without an id is new. Deletions
-// are explicit, so a category added elsewhere since the list was loaded survives.
-const schema = z.object({
-  categories: z.array(
-    z.object({
-      id: z.string().min(1).optional(),
-      mainTitle: z.string(),
-      prices: z.array(item),
-    }),
-  ),
-  deleted: z.array(z.string().min(1)),
-});
+// The whole list in its new order. A category without an id is new.
+const schema = z.array(
+  z.object({
+    id: z.string().min(1).optional(),
+    mainTitle: z.string(),
+    prices: z.array(item),
+  }),
+);
 
 export type SavePricesResult =
   | { ok: true; prices: Price[] }
@@ -43,23 +39,20 @@ const storedItem = ({
         ...(priceMax !== undefined && { priceMax }),
       };
 
-/** Applies the admin's list and returns all categories as now stored */
+/**
+ * Replaces the stored categories with the admin's list: what is missing from it
+ * is deleted. Returns the categories as now stored.
+ */
 export const savePrices = async (input: unknown): Promise<SavePricesResult> => {
   const parsed = schema.safeParse(input);
+
   if (!parsed.success) return { ok: false, message: 'Ungültige Eingabe' };
 
-  const { deleted } = parsed.data;
-  const categories = parsed.data.categories.map(
-    ({ id, mainTitle, prices }) => ({
-      id,
-      mainTitle,
-      prices: prices.map(storedItem),
-    }),
-  );
-
-  if (categories.some(x => x.id && deleted.includes(x.id))) {
-    return { ok: false, message: 'Ungültige Eingabe' };
-  }
+  const categories = parsed.data.map(({ id, mainTitle, prices }) => ({
+    id,
+    mainTitle,
+    prices: prices.map(storedItem),
+  }));
 
   const problem =
     categories.map(Price.problem).find(x => x) ??
@@ -69,15 +62,17 @@ export const savePrices = async (input: unknown): Promise<SavePricesResult> => {
       .find(x => x);
   if (problem) return { ok: false, message: problem };
 
-  for (const id of deleted) {
-    await Firebase.deleteDocument('prices', id);
+  const kept = new Set(categories.map(x => x.id));
+
+  for (const { id } of await getPrices()) {
+    if (!kept.has(id)) await Firebase.deleteDocument(Collection.prices, id);
   }
 
   for (const [index, { id, mainTitle, prices }] of categories.entries()) {
     const data = { mainTitle: mainTitle.trim(), index, prices };
 
-    if (id) await Firebase.updateDocument('prices', id, data);
-    else await Firebase.addDocument('prices', data);
+    if (id) await Firebase.updateDocument(Collection.prices, id, data);
+    else await Firebase.addDocument(Collection.prices, data);
   }
 
   return { ok: true, prices: await getPrices() };

@@ -1,12 +1,19 @@
 import '../admin.css';
 
 import { OpeningHours } from '@domain/openingHours';
-import { useState } from 'preact/hooks';
+import { type UseFormReturnType, useForm } from '@mantine/form';
+import { useState } from 'react';
 
 import { MinusCircleIcon, PlusCircleIcon } from '../editor/icons';
 import { SaveBar, StatusBanner } from '../editor/saveBar';
 import { type EditorStatus, saveRequest } from '../editor/saveRequest';
 import { useUnsavedWarning } from '../editor/useUnsavedWarning';
+
+interface Values {
+  days: OpeningHours[];
+}
+
+type HoursForm = UseFormReturnType<Values>;
 
 // Absent times are edited as empty strings, which is also how they are stored
 const editable = (day: OpeningHours): OpeningHours => ({
@@ -22,80 +29,90 @@ export const OpeningHoursEditor = ({
 }: {
   openingHours: OpeningHours[];
 }) => {
-  const [saved, setSaved] = useState(() => openingHours.map(editable));
-  const [days, setDays] = useState(saved);
   const [status, setStatus] = useState<EditorStatus>({ kind: 'idle' });
   // bumped on discard so rows drop their local "afternoon shown" state
   const [revision, setRevision] = useState(0);
 
-  const dirty = JSON.stringify(days) !== JSON.stringify(saved);
-  const invalid = days.some(x => OpeningHours.problem(x));
+  // Controlled, since the problems show while typing
+  const form = useForm<Values>({
+    mode: 'controlled',
+    initialValues: { days: openingHours.map(editable) },
+    onValuesChange: () => setStatus({ kind: 'idle' }),
+  });
 
-  useUnsavedWarning(dirty);
+  const days = form.values.days;
 
-  const change = (index: number, patch: Partial<OpeningHours>) => {
-    setDays(prev =>
-      prev.map(x => (x.index === index ? { ...x, ...patch } : x)),
-    );
-    setStatus({ kind: 'idle' });
-  };
+  useUnsavedWarning(form.isDirty());
 
-  const submit = async (e: Event) => {
-    e.preventDefault();
-    setStatus({ kind: 'saving' });
-
+  // The server stores the times as sent, so they are the new starting point
+  const submit = form.onSubmit(async values => {
     const result = await saveRequest(
       '/api/openingHours',
-      days.map(({ day: _day, index: _index, ...times }) => times),
+      values.days.map(({ day: _day, index: _index, ...times }) => times),
     );
-    if (result.ok) setSaved(days);
-    setStatus(result.ok ? { kind: 'saved' } : result.status);
-  };
+
+    if (!result.ok) {
+      setStatus(result.status);
+      return;
+    }
+
+    form.setInitialValues(values);
+    form.reset();
+    setStatus({ kind: 'saved' });
+  });
+
+  const shown: EditorStatus = form.submitting ? { kind: 'saving' } : status;
 
   return (
-    <form onSubmit={e => void submit(e)} autocomplete="off" noValidate>
+    <form onSubmit={submit} autoComplete="off" noValidate>
       <StatusBanner
-        status={status}
+        status={shown}
         savedText="Öffnungszeiten gespeichert"
         onClose={() => setStatus({ kind: 'idle' })}
       />
 
-      <div className="panel">
+      <fieldset className="panel" disabled={form.submitting}>
         <div className="hours">
-          {days.map(day => (
+          {days.map((day, index) => (
             <DayRow
               key={day.index + '-' + revision}
+              form={form}
+              index={index}
               day={day}
-              onChange={patch => change(day.index, patch)}
             />
           ))}
         </div>
 
         <SaveBar
-          status={status}
-          dirty={dirty}
-          invalid={invalid}
+          status={shown}
+          dirty={form.isDirty()}
+          invalid={days.some(x => OpeningHours.problem(x))}
           onDiscard={() => {
-            setDays(saved);
+            form.reset();
             setRevision(prev => prev + 1);
-            setStatus({ kind: 'idle' });
           }}
         />
-      </div>
+      </fieldset>
     </form>
   );
 };
 
 const DayRow = ({
+  form,
+  index,
   day,
-  onChange,
 }: {
+  form: HoursForm;
+  index: number;
   day: OpeningHours;
-  onChange: (patch: Partial<OpeningHours>) => void;
 }) => {
   const [showPm, setShowPm] = useState(!!day.timePmStart || !!day.timePmEnd);
   const problem = OpeningHours.problem(day);
   const problemId = 'day-' + day.index + '-problem';
+
+  const time = (
+    name: 'timeAmStart' | 'timeAmEnd' | 'timePmStart' | 'timePmEnd',
+  ) => form.getInputProps(`days.${index}.${name}`, { withError: false });
 
   return (
     <div className="hours-row" data-closed={day.closed}>
@@ -105,13 +122,10 @@ const DayRow = ({
         <div className="hours-range">
           <TimeRange
             label={day.day + ' Vormittag'}
-            start={day.timeAmStart ?? ''}
-            end={day.timeAmEnd ?? ''}
+            start={time('timeAmStart')}
+            end={time('timeAmEnd')}
             disabled={day.closed}
             problemId={problem ? problemId : undefined}
-            onChange={(timeAmStart, timeAmEnd) =>
-              onChange({ timeAmStart, timeAmEnd })
-            }
           />
 
           {!showPm && (
@@ -132,13 +146,10 @@ const DayRow = ({
           <div className="hours-range">
             <TimeRange
               label={day.day + ' Nachmittag'}
-              start={day.timePmStart ?? ''}
-              end={day.timePmEnd ?? ''}
+              start={time('timePmStart')}
+              end={time('timePmEnd')}
               disabled={day.closed}
               problemId={problem ? problemId : undefined}
-              onChange={(timePmStart, timePmEnd) =>
-                onChange({ timePmStart, timePmEnd })
-              }
             />
 
             <button
@@ -149,7 +160,8 @@ const DayRow = ({
               disabled={day.closed}
               onClick={() => {
                 setShowPm(false);
-                onChange({ timePmStart: '', timePmEnd: '' });
+                form.setFieldValue(`days.${index}.timePmStart`, '');
+                form.setFieldValue(`days.${index}.timePmEnd`, '');
               }}
             >
               <MinusCircleIcon />
@@ -161,9 +173,11 @@ const DayRow = ({
       <label className="hours-closed">
         <input
           type="checkbox"
-          checked={day.closed}
-          onChange={e => onChange({ closed: e.currentTarget.checked })}
           className="checkbox"
+          {...form.getInputProps(`days.${index}.closed`, {
+            type: 'checkbox',
+            withError: false,
+          })}
         />
         Geschlossen
       </label>
@@ -183,34 +197,31 @@ const TimeRange = ({
   end,
   disabled,
   problemId,
-  onChange,
 }: {
   label: string;
-  start: string;
-  end: string;
+  /** The input props of the start and end time */
+  start: object;
+  end: object;
   disabled: boolean;
   problemId: string | undefined;
-  onChange: (start: string, end: string) => void;
 }) => (
   <>
     <input
       type="time"
       aria-label={label + ' Beginn'}
       aria-describedby={problemId}
-      value={start}
       disabled={disabled}
-      onInput={e => onChange(e.currentTarget.value, end)}
       className="input hours-time"
+      {...start}
     />
     <span aria-hidden="true">–</span>
     <input
       type="time"
       aria-label={label + ' Ende'}
       aria-describedby={problemId}
-      value={end}
       disabled={disabled}
-      onInput={e => onChange(start, e.currentTarget.value)}
       className="input hours-time"
+      {...end}
     />
   </>
 );

@@ -1,50 +1,54 @@
 import { getFirestore } from 'firebase-admin/firestore';
 
 import { app } from './app';
+import type { Collection, FixedDocument } from './collections';
 
 export interface FirestoreDocument {
   id: string;
   data: Record<string, unknown>;
 }
 
-const collection = (name: string) => getFirestore(app).collection(name);
+const collection = (name: Collection) => getFirestore(app).collection(name);
 
 export const getDocuments = async (
-  name: string,
+  name: Collection,
 ): Promise<FirestoreDocument[]> => {
   const snapshot = await collection(name).get();
 
   return snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
 };
 
-export const addDocument = async (name: string, data: object) => {
+export const addDocument = async (name: Collection, data: object) => {
   await collection(name).add(data);
 };
 
 export const updateDocument = async (
-  name: string,
+  name: Collection,
   id: string,
   data: object,
 ) => {
   await collection(name).doc(id).update(data);
 };
 
-export const deleteDocument = async (name: string, id: string) => {
+export const deleteDocument = async (name: Collection, id: string) => {
   await collection(name).doc(id).delete();
 };
 
-/** One document by id, `undefined` if it doesn't exist */
-export const getDocument = async (
-  name: string,
-  id: string,
-): Promise<FirestoreDocument | undefined> => {
+/** A fixed document, `undefined` if it doesn't exist */
+export const getDocument = async ({
+  collection: name,
+  id,
+}: FixedDocument): Promise<FirestoreDocument | undefined> => {
   const snapshot = await collection(name).doc(id).get();
   const data = snapshot.data();
 
   return data ? { id: snapshot.id, data } : undefined;
 };
 
-/** Creates or replaces a document under a known id */
-export const setDocument = async (name: string, id: string, data: object) => {
+/** Creates or replaces a fixed document */
+export const setDocument = async (
+  { collection: name, id }: FixedDocument,
+  data: object,
+) => {
   await collection(name).doc(id).set(data);
 };

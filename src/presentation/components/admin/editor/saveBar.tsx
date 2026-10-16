@@ -1,4 +1,4 @@
-import type { ComponentChildren } from 'preact';
+import type { ReactNode } from 'react';
 
 import { CheckCircleIcon, CloseIcon } from './icons';
 import type { EditorStatus } from './saveRequest';
@@ -52,7 +52,7 @@ export const SaveBar = ({
   invalid: boolean;
   onDiscard: () => void;
   /** Replaces the "unsaved changes" note, e.g. with an undo */
-  children?: ComponentChildren;
+  children?: ReactNode;
 }) => {
   const saving = status.kind === 'saving';
 
@@ -81,19 +81,3 @@ export const SaveBar = ({
     </div>
   );
 };
-
-/** "„X“ entfernt · Rückgängig", for the save bar */
-export const UndoNote = ({
-  label,
-  onUndo,
-}: {
-  label: string;
-  onUndo: () => void;
-}) => (
-  <span className="undo">
-    „{label.trim() || 'Ohne Titel'}“ entfernt
-    <button type="button" className="link-button" onClick={onUndo}>
-      Rückgängig
-    </button>
-  </span>
-);

@@ -1,9 +1,8 @@
-const all = ['hours', 'prices', 'offers'] as const;
+const names = { hours: 'hours', prices: 'prices', offers: 'offers' } as const;
 
 /** A part of the start page the admin can take off the page */
-export type PageSection = (typeof all)[number];
+export type PageSection = (typeof names)[keyof typeof names];
 
-const is = (value: unknown): value is PageSection =>
-  all.includes(value as PageSection);
+const all = Object.values(names);
 
-export const PageSection = { all, is };
+export const PageSection = { ...names, all };

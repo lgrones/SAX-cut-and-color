@@ -18,6 +18,7 @@ export const renderVariants = async (
 ) => {
   for (const width of widths) {
     const image = sharp(source);
+
     if (region) image.extract(region);
 
     const data = await image

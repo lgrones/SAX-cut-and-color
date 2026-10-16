@@ -6,8 +6,10 @@ import { getOffers } from '@business/offers/getOffers';
 import { getOpeningHours } from '@business/openingHours/getOpeningHours';
 import { getHiddenSections } from '@business/pageSections/getHiddenSections';
 import { getPrices } from '@business/prices/getPrices';
+import { ImageSlot } from '@domain/image';
 import type { Offer } from '@domain/offer';
 import { OpeningHours } from '@domain/openingHours';
+import { PageSection } from '@domain/pageSection';
 import type { Price } from '@domain/price';
 
 /**
@@ -36,12 +38,16 @@ export const getStartPage = async (): Promise<StartPage> => {
   ]);
 
   return {
-    prices: hidden.includes('prices') ? [] : prices,
-    offers: hidden.includes('offers') ? [] : offers,
+    prices: hidden.includes(PageSection.prices) ? [] : prices,
+    offers: hidden.includes(PageSection.offers) ? [] : offers,
     gallery: mapGallery(images.gallery),
-    hero: images.hero && getSlotImage('hero', images.hero),
-    portrait: images.portrait && getSlotImage('portrait', images.portrait),
-    map: images.map && getSlotImage('map', images.map),
-    hours: hidden.includes('hours') || !OpeningHours.anyOpen(week) ? [] : week,
+    hero: images.hero && getSlotImage(ImageSlot.hero, images.hero),
+    portrait:
+      images.portrait && getSlotImage(ImageSlot.portrait, images.portrait),
+    map: images.map && getSlotImage(ImageSlot.map, images.map),
+    hours:
+      hidden.includes(PageSection.hours) || !OpeningHours.anyOpen(week)
+        ? []
+        : week,
   };
 };

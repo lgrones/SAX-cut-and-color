@@ -1,7 +1,7 @@
 import '../admin.css';
 
 import type { PageSection } from '@domain/pageSection';
-import { useState } from 'preact/hooks';
+import { useState } from 'react';
 
 import { type EditorStatus, saveRequest } from '../editor/saveRequest';
 

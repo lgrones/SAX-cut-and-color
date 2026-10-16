@@ -33,6 +33,7 @@ export const uploadFile = async (
 
 export const downloadFile = async (path: string): Promise<Buffer> => {
   const [data] = await bucket().file(path).download();
+
   return data;
 };
 

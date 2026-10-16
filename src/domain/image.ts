@@ -17,10 +17,16 @@ export interface GalleryImage extends SiteImage {
   alt: string;
 }
 
-const slotNames = ['hero', 'portrait', 'map'] as const;
-
 /** A fixed place on the page that shows one image */
-export type ImageSlot = (typeof slotNames)[number];
+export const ImageSlot = {
+  hero: 'hero',
+  portrait: 'portrait',
+  map: 'map',
+} as const;
+
+export type ImageSlot = (typeof ImageSlot)[keyof typeof ImageSlot];
+
+const slotNames = Object.values(ImageSlot);
 
 /** The images of the page: the fixed slots and a gallery in display order */
 export type SiteImages = Partial<Record<ImageSlot, SiteImage>> & {

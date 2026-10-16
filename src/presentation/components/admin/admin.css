@@ -214,13 +214,6 @@
   }
 }
 
-.undo {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  color: var(--admin-text);
-}
-
 /* a list inside an open item, e.g. a category's services */
 .reorder-list.nested {
   margin-top: 0.25rem;
