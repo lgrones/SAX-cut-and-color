@@ -62,7 +62,7 @@ export const hairSalon = (
     '@context': 'https://schema.org',
     '@type': 'HairSalon',
     '@id': `${url}#salon`,
-    name: 'SAX Cut + Colour by Petra Zangerl',
+    name: 'SAX Cut + Colour by Petra Otti',
     url,
     telephone: Contact.dialNumber(contact),
     email: contact.email,

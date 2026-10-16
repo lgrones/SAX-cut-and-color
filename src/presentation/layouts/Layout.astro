@@ -23,7 +23,7 @@ const {
   title,
   startPage,
   contact,
-  description = 'Friseursalon SAX Cut + Colour by Petra Zangerl: Schnitt, Farbe und Pflege' +
+  description = 'Friseursalon SAX Cut + Colour by Petra Otti: Schnitt, Farbe und Pflege' +
     (contact ? `. ${Contact.address(contact)}.` : ' in Lochau.'),
   noindex,
   disableScrollSmooth,
@@ -51,7 +51,7 @@ const socialImage = new URL('/og-image.jpg', Astro.site).toString();
       <link rel="canonical" href={canonicalUrl} />
     )}
     <link rel="icon" href="/favicon.png" />
-    <meta name="author" content="Petra Zangerl" />
+    <meta name="author" content="Petra Otti" />
     <meta name="apple-mobile-web-app-title" content={SITE_NAME} />
 
     <!-- Link previews. X reads the og: tags too, it only needs its card type -->
@@ -83,15 +83,8 @@ const socialImage = new URL('/og-image.jpg', Astro.site).toString();
     </main>
 
     <footer>
-      <a
-        href="/"
-        aria-label="SAX Cut + Colour by Petra Zangerl – zur Startseite"
-      >
-        <Image
-          src={logo}
-          alt="SAX Cut + Colour by Petra Zangerl"
-          class="logo"
-        />
+      <a href="/" aria-label="SAX Cut + Colour by Petra Otti – zur Startseite">
+        <Image src={logo} alt="SAX Cut + Colour by Petra Otti" class="logo" />
       </a>
       <nav aria-label="Rechtliches">
         <a href="/legal-notice">Impressum</a>

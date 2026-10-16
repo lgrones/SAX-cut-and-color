@@ -42,12 +42,7 @@ const slots: Record<
     aspect: 4 / 5,
     optional: false,
   },
-  portrait: {
-    label: 'Porträt',
-    alt: 'Petra Zangerl',
-    aspect: 1,
-    optional: false,
-  },
+  portrait: { label: 'Porträt', alt: 'Petra Otti', aspect: 1, optional: false },
   map: {
     label: 'Karte',
     alt: 'Karte mit dem Weg zum Salon',
