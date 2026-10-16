@@ -1,0 +1,35 @@
+---
+import type { OpeningHours } from '@domain/openingHours';
+import Days from './days.astro';
+
+interface Props {
+  week: OpeningHours[];
+}
+
+const { week } = Astro.props;
+---
+
+<div id="zeiten" class="column">
+  <div class="heading">
+    <p class="eyebrow">
+      <span class="eyebrow-numbered">Zeiten</span>
+    </p>
+    <h2 class="heading-column">Öffnungszeiten</h2>
+  </div>
+
+  <Days week={week} />
+</div>
+
+<style>
+  .column {
+    display: flex;
+    flex-direction: column;
+    row-gap: 32px;
+  }
+
+  .heading {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+  }
+</style>

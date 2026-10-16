@@ -1,71 +1,22 @@
-import type { APIRoute } from "astro";
-import { app } from "../../../firebase/server";
-import { getFirestore } from "firebase-admin/firestore";
-import { error as logError } from "firebase-functions/logger";
-import type { Offer } from "../../../types";
-// import data from "../../../../backups/offers.json";
+import { saveOffers } from '@business/offers/saveOffers';
+import { Sentry } from '@services/sentry';
+import type { APIRoute } from 'astro';
 
-const db = getFirestore(app);
-const ref = db.collection("offers");
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    // malformed JSON fails validation like any other bad input
+    const body: unknown = await request.json().catch(() => undefined);
+    const result = await saveOffers(body);
 
-// const populate = () => {
-//   for (const d of data) {
-//     ref.add(d);
-//   }
-// };
+    return result.ok
+      ? Response.json(result.offers)
+      : Response.json({ message: result.message }, { status: 400 });
+  } catch (error) {
+    Sentry.reportError('offers', error);
 
-export const POST: APIRoute = async ({ redirect, request }) => {
-  // populate();
-  // return redirect("/admin#offers");
-
-  let formData: any;
-
-  if (process.env.NODE_ENV === "development") {
-    formData = await request.formData();
-  } else {
-    // firebase cloud functions parse the request to json before sending it to Astro
-    // so we need to use the json content here instead of formData
-    // took me an entire day to figure out, so fuck you firebase
-    const obj = await request.json();
-    delete obj.message;
-    formData = Object.entries(obj);
+    return Response.json(
+      { message: 'Speichern fehlgeschlagen' },
+      { status: 500 },
+    );
   }
-
-  const offers = new Map<string, Partial<Offer>>();
-
-  for (const [key, value] of formData) {
-    const keyParts = key.split("-");
-    const id = keyParts[0];
-    const field = keyParts[1];
-
-    offers.set(id, {
-      ...offers.get(id),
-      [field]: value.toString(),
-    });
-  }
-
-  const validOffers = [...offers].filter(
-    ([id, data]) =>
-      !id.startsWith("new") ||
-      !Object.keys(data).find((x) => x.includes("delete"))
-  );
-
-  for (const [id, data] of validOffers) {
-    try {
-      if (id.startsWith("new")) {
-        await ref.add(data);
-      } else if (Object.keys(data).find((x) => x.includes("delete"))) {
-        await ref.doc(id).delete();
-      } else {
-        await ref.doc(id).update(data);
-      }
-    } catch (error) {
-      logError("offers", "id", id, "data", data, error);
-      return new Response("Something went wrong", {
-        status: 500,
-      });
-    }
-  }
-
-  return redirect("/admin#offers");
 };

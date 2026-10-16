@@ -1,0 +1,6 @@
+---
+import { AdminSection } from '@presentation/layouts/adminSection';
+
+// Access is checked by the auth middleware
+return Astro.redirect('/admin/' + AdminSection.hours);
+---

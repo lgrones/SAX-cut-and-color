@@ -1,0 +1,27 @@
+---
+import { OpeningHours } from '@domain/openingHours';
+
+interface Props {
+  /** Empty while the opening hours aren't shown, and then so is today */
+  week: OpeningHours[];
+}
+
+const { week } = Astro.props;
+const today = week[OpeningHours.todayIndex(new Date())];
+const ranges = today ? OpeningHours.ranges(today) : [];
+---
+
+{today && (
+  <div class="fact">
+    <span class="fact-label">Heute · {today.day}</span>
+    {ranges.length > 0 ? (
+      ranges.map(([start, end]) => (
+        <span>
+          {start}–{end} Uhr
+        </span>
+      ))
+    ) : (
+      <span>geschlossen</span>
+    )}
+  </div>
+)}

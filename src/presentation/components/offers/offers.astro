@@ -1,0 +1,89 @@
+---
+import { Contact } from '@domain/contact';
+import type { Offer } from '@domain/offer';
+import Icon from '../icon/icon.astro';
+import OfferList from './offerList.astro';
+
+interface Props {
+  offers: Offer[];
+  contact: Contact;
+}
+
+const { offers, contact } = Astro.props;
+---
+
+<section id="angebote" class="band">
+  <div class="section offers">
+    <div class="heading">
+      <p class="eyebrow">
+        <span class="eyebrow-numbered">Angebote</span>
+      </p>
+      <h2 class="heading-section">
+        Marken, denen ich <em class="accent">vertraue</em>
+      </h2>
+    </div>
+
+    <OfferList offers={offers} />
+
+    <!-- outside the grid on purpose, so it never sits in a card slot -->
+    <div class="consult">
+      <div class="consult-text">
+        <h3 class="serif accent">Unsicher, was zu Ihnen passt?</h3>
+        <p>
+          Rufen Sie an – gemeinsam finden wir die richtige Behandlung für Ihr
+          Haar.
+        </p>
+      </div>
+      <a class="btn btn-sm btn-ghost" href={Contact.phoneHref(contact)}>
+        <Icon name="phone" size={16} strokeWidth={1.6} />
+        Beratung anfragen
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .offers {
+    display: flex;
+    flex-direction: column;
+    row-gap: 56px;
+  }
+
+  .heading {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+
+    & h2 {
+      max-width: 14em;
+    }
+  }
+
+  .consult {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px 48px;
+    padding: 32px 36px;
+    background-color: var(--bg);
+    border: 1px solid var(--gold-medium);
+  }
+
+  .consult-text {
+    display: flex;
+    flex: 1 1 320px;
+    flex-direction: column;
+    row-gap: 8px;
+
+    & h3 {
+      font-size: 30px;
+      line-height: 1.15;
+    }
+
+    & p {
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+  }
+</style>

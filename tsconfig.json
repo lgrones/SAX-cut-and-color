@@ -1,7 +1,18 @@
 {
-  "extends": "astro/tsconfigs/strict",
+  "extends": "astro/tsconfigs/strictest",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"],
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "react"
+    "jsxImportSource": "react",
+    "useDefineForClassFields": true,
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      "@domain/*": ["./src/domain/*"],
+      "@business/*": ["./src/business/*"],
+      "@services/*": ["./src/services/*"],
+      "@infrastructure/*": ["./src/infrastructure/*"],
+      "@presentation/*": ["./src/presentation/*"]
+    }
   }
 }

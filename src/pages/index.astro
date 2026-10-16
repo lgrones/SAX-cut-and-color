@@ -1,42 +1,83 @@
 ---
-import Contact from "../components/contact/contact.astro";
-import Offers from "../components/offers/offers.astro";
-import OpeningHours from "../components/openingHours/openingHours.astro";
-import Prices from "../components/prices/prices.astro";
-import Salon from "../components/salon/salon.astro";
-import Layout from "../layouts/Layout.astro";
+import { getContact } from '@business/contact/getContact';
+import { getStartPage } from '@business/startPage/getStartPage';
+import { CACHE_CONTROL } from '@infrastructure/cacheControl';
+import { SESSION_COOKIE } from '@infrastructure/sessionCookie';
+import Closing from '@presentation/components/closing/closing.astro';
+import Contact from '@presentation/components/contact/contact.astro';
+import Hero from '@presentation/components/hero/hero.astro';
+import Offers from '@presentation/components/offers/offers.astro';
+import OpeningHours from '@presentation/components/openingHours/openingHours.astro';
+import Prices from '@presentation/components/prices/prices.astro';
+import Salon from '@presentation/components/salon/salon.astro';
+import StructuredData from '@presentation/components/structuredData/structuredData.astro';
+import Welcome from '@presentation/components/welcome/welcome.astro';
+import Layout from '@presentation/layouts/Layout.astro';
+
+// Rendered on request and kept briefly by the CDN, so admin edits and the day
+// change show up within a minute (for the signed in admin on the next view). A
+// failed load throws before the header is set, so the error page is never cached
+const [startPage, contact] = await Promise.all([getStartPage(), getContact()]);
+const { prices, offers, gallery, hours, hero, portrait, map } = startPage;
+
+Astro.response.headers.set(
+  'Cache-Control',
+  Astro.cookies.has(SESSION_COOKIE)
+    ? CACHE_CONTROL.signedIn
+    : CACHE_CONTROL.startPage,
+);
+
+// The hero is the largest paint, so the connection to its storage host opens
+// while the browser still reads the head. No crossorigin: the image is fetched
+// without CORS, and a CORS preconnect would be a second connection.
+const imageOrigin = hero && new URL(hero.src, Astro.site).origin;
+const preconnect = imageOrigin !== Astro.site?.origin ? imageOrigin : undefined;
 ---
 
-<Layout title="SAX Cut + Colour">
-  <div class="pt-[103px] md:pt-[120px] text-sax-tan">
-    <h1
-      class="font-cormorant text-5xl md:text-7xl lg:text-8xl uppercase tracking-wide max-w-[400px] sm:max-w-[550px] md:max-w-[800px] lg:max-w-[1100px]"
-    >
-      Schönheit beginnt bei den Haaren
-    </h1>
-    <p class="pt-14 leading-7">
-      Herzlich willkommen in meinem Salon SAX, wo Ihre Haare meine Leidenschaft
-      sind. Seit vielen Jahren bin ich als erfahrene Friseurin tätig und freue
-      mich darauf, Sie persönlich zu betreuen und Ihre individuellen Haarträume
-      zu verwirklichen. Bei SAX dreht sich alles um Sie und Ihre Bedürfnisse.
-      Egal, ob Sie nach einem neuen Look, einer perfekten Haarfarbe oder einer
-      besonderen Frisur für einen besonderen Anlass suchen - ich stehe Ihnen mit
-      meinem Fachwissen und meiner Kreativität zur Seite, um Ihren perfekten
-      Stil zu finden. Ich lege großen Wert auf Qualität und persönlichen
-      Service. Deshalb verwende ich ausschließlich hochwertige Produkte und
-      nehme mir Zeit, um Ihre Wünsche genau zu verstehen und umzusetzen.
-    </p>
-  </div>
+<Layout
+  title="SAX Cut + Colour – Friseursalon in Lochau"
+  startPage={startPage}
+  contact={contact}
+>
+  <Fragment slot="head">
+    {preconnect && <link rel="preconnect" href={preconnect} />}
+    <StructuredData startPage={startPage} contact={contact} />
+  </Fragment>
 
-  <div class="flex justify-between flex-wrap gap-x-24 gap-y-12 md:gap-y-20">
-    <OpeningHours />
+  <Hero
+    photo={hero}
+    week={hours}
+    hasPrices={prices.length > 0}
+    contact={contact}
+  />
+  <Welcome photo={portrait} />
 
-    <Contact />
-  </div>
+  <!-- A section the admin switched off or that has no content is left out -->
+  {prices.length > 0 && <Prices categories={prices} />}
+  {offers.length > 0 && <Offers offers={offers} contact={contact} />}
+  {gallery.length > 0 && <Salon images={gallery} />}
 
-  <Prices />
+  <section class="visit">
+    <div class="section visit-grid">
+      {hours.length > 0 && <OpeningHours week={hours} />}
+      <Contact contact={contact} map={map} />
+    </div>
+  </section>
 
-  <Offers />
-
-  <Salon />
+  <Closing contact={contact} />
 </Layout>
+
+<style>
+  .visit {
+    background-color: var(--bg-alt);
+    border-top: 1px solid var(--gold-faint);
+  }
+
+  /* auto-fill keeps the empty column, so the contact stays half wide without
+     the opening hours */
+  .visit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(460px, 100%), 1fr));
+    gap: 72px 96px;
+  }
+</style>

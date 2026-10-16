@@ -1,0 +1,160 @@
+---
+import type { ImageSource } from '@business/images/imageSource';
+import { Contact } from '@domain/contact';
+import type { OpeningHours } from '@domain/openingHours';
+import Icon from '../icon/icon.astro';
+import Today from '../openingHours/today.astro';
+
+interface Props {
+  /** Left out while the admin has no hero image */
+  photo: ImageSource | undefined;
+  week: OpeningHours[];
+  /** Whether the page has a price list to jump to */
+  hasPrices: boolean;
+  contact: Contact;
+}
+
+const { photo, week, hasPrices, contact } = Astro.props;
+
+// The photo is its frame, at most 534px, less the frame's 22px. Two columns from
+// 1024px, where 2 × 440px and the 6vw gap fit beside the 4vw gutters, reaching
+// the cap at 1240px; one column reaches it from 581px.
+const sizes = [
+  '(min-width: 1240px) 512px',
+  '(min-width: 1024px) calc(43vw - 22px)',
+  '(min-width: 581px) 512px',
+  '(min-width: 400px) calc(92vw - 22px)',
+  'calc(100vw - 54px)',
+].join(', ');
+---
+
+<section class:list={['hero', !photo && 'text-only']}>
+  <div class="text">
+    <p class="eyebrow">Friseursalon in Lochau</p>
+    <h1 class="serif">
+      Schönheit beginnt <em class="accent">bei den Haaren.</em>
+    </h1>
+    <p class="lead">
+      Schnitt, Farbe und Pflege – mit Zeit für Ihre Wünsche und persönlich
+      betreut von Petra Otti.
+    </p>
+    <div class="button-row">
+      <a class="btn btn-gold" href={Contact.phoneHref(contact)}>
+        <Icon name="phone" size={16} strokeWidth={1.6} />
+        Termin vereinbaren
+      </a>
+      {hasPrices && (
+        <a class="btn btn-ghost" href="#preise">
+          Preise ansehen
+        </a>
+      )}
+    </div>
+    <div class="facts">
+      <Today week={week} />
+      <div class="fact">
+        <span class="fact-label">Adresse</span>
+        <span>
+          {contact.street}, {contact.town}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  {photo && (
+    <div class="frame">
+      <img
+        src={photo.src}
+        srcset={photo.srcset}
+        sizes={sizes}
+        width={photo.width}
+        height={photo.height}
+        alt={photo.alt}
+        fetchpriority="high"
+        class="photo"
+      />
+    </div>
+  )}
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr));
+    gap: clamp(48px, 6vw, 96px);
+    align-items: center;
+    max-width: 1240px;
+    margin-inline: auto;
+    padding: clamp(56px, 8vw, 120px) var(--gutter);
+  }
+
+  /* without a photo the text keeps a readable measure instead of stretching */
+  .text-only {
+    grid-template-columns: minmax(0, 760px);
+  }
+
+  .text {
+    display: flex;
+    flex-direction: column;
+    row-gap: 32px;
+  }
+
+  h1 {
+    font-size: clamp(52px, 7vw, 104px);
+    line-height: 0.98;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .lead {
+    max-width: 30em;
+    font-size: 19px;
+    color: var(--text-muted);
+    text-wrap: pretty;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 40px;
+    padding-top: 28px;
+    font-size: 14px;
+    color: var(--text-subtle);
+    border-top: 1px solid var(--gold-soft);
+
+    & :global(.fact) {
+      display: flex;
+      flex-direction: column;
+      row-gap: 2px;
+    }
+
+    & :global(.fact-label) {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+  }
+
+  /* offset gold frame behind the photo, in one column no larger than in two */
+  .frame {
+    position: relative;
+    width: 100%;
+    max-width: 534px;
+    padding: 0 22px 22px 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 22px 0 0 22px;
+      border: 1px solid var(--gold);
+    }
+  }
+
+  .photo {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+</style>

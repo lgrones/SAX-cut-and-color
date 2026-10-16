@@ -1,0 +1,137 @@
+---
+import type { ImageSource } from '@business/images/imageSource';
+import { Contact } from '@domain/contact';
+import Icon from '../icon/icon.astro';
+
+interface Props {
+  contact: Contact;
+  /** Left out while the admin has no map */
+  map: ImageSource | undefined;
+}
+
+const { contact, map } = Astro.props;
+const mapHref = Contact.mapHref(contact);
+
+// The map is its column less the 1px border. Two columns from 1105px, where
+// 2 × 460px and the 96px gap fit beside the 4vw gutters.
+const mapSizes = [
+  '(min-width: 1240px) 522px',
+  '(min-width: 1105px) calc(46vw - 50px)',
+  '(min-width: 400px) calc(92vw - 2px)',
+  'calc(100vw - 34px)',
+].join(', ');
+---
+
+<div id="kontakt" class="column">
+  <div class="heading">
+    <p class="eyebrow">
+      <span class="eyebrow-numbered">Kontakt</span>
+    </p>
+    <h2 class="heading-column">So finden Sie mich</h2>
+  </div>
+
+  <div class="rows">
+    <a class="row" href={Contact.phoneHref(contact)}>
+      <Icon name="phone" size={22} strokeWidth={1.5} />
+      {contact.phone}
+    </a>
+    {contact.whatsapp && (
+      <a
+        class="row"
+        href={Contact.whatsappHref(contact)}
+        target="_blank"
+        rel="noopener"
+      >
+        <Icon name="chat" size={22} strokeWidth={1.5} />
+        Gerne auch per WhatsApp
+      </a>
+    )}
+    <a class="row" href={Contact.emailHref(contact)}>
+      <Icon name="mail" size={22} strokeWidth={1.5} />
+      {contact.email}
+    </a>
+    <a class="row" href={mapHref} target="_blank" rel="noopener">
+      <Icon name="pin" size={22} strokeWidth={1.5} />
+      {Contact.address(contact)}
+    </a>
+  </div>
+
+  {map && (
+    <div class="map">
+      <img
+        src={map.src}
+        srcset={map.srcset}
+        sizes={mapSizes}
+        width={map.width}
+        height={map.height}
+        alt={`Karte: SAX Cut + Colour, ${Contact.address(contact)}`}
+        loading="lazy"
+        class="map-image"
+      />
+      <a
+        class="btn btn-sm btn-ghost map-link"
+        href={mapHref}
+        target="_blank"
+        rel="noopener"
+      >
+        Zur Karte
+      </a>
+    </div>
+  )}
+</div>
+
+<style>
+  .column {
+    display: flex;
+    flex-direction: column;
+    row-gap: 32px;
+  }
+
+  .heading {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+  }
+
+  .rows {
+    display: flex;
+    flex-direction: column;
+    row-gap: 18px;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    column-gap: 16px;
+    min-height: 44px;
+    font-size: 19px;
+    overflow-wrap: anywhere;
+
+    & svg {
+      flex-shrink: 0;
+      color: var(--gold);
+    }
+  }
+
+  a.row:hover {
+    color: var(--gold-light);
+  }
+
+  .map {
+    position: relative;
+    border: 1px solid var(--gold-soft);
+  }
+
+  .map-image {
+    width: 100%;
+    aspect-ratio: 8 / 5;
+    object-fit: cover;
+  }
+
+  .map-link {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    background-color: var(--bg);
+  }
+</style>

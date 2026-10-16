@@ -1,0 +1,35 @@
+---
+import type { ImageSource } from '@business/images/imageSource';
+import GalleryList from './galleryList.astro';
+
+interface Props {
+  images: ImageSource[];
+}
+
+const { images } = Astro.props;
+---
+
+<section id="salon" class="section salon">
+  <div class="heading">
+    <p class="eyebrow">
+      <span class="eyebrow-numbered">Salon</span>
+    </p>
+    <h2 class="heading-section">Einblicke</h2>
+  </div>
+
+  <GalleryList images={images} />
+</section>
+
+<style>
+  .salon {
+    display: flex;
+    flex-direction: column;
+    row-gap: 56px;
+  }
+
+  .heading {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+  }
+</style>

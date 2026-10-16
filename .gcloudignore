@@ -1,0 +1,2 @@
+# Without this file gcloud falls back to .gitignore, which drops dist/
+#!include:.dockerignore

@@ -1,0 +1,45 @@
+---
+import { Contact } from '@domain/contact';
+import Icon from '../icon/icon.astro';
+
+interface Props {
+  contact: Contact;
+}
+
+const { contact } = Astro.props;
+---
+
+<!-- Who runs the salon, for the legal notice and the privacy policy alike -->
+<address>
+  SAX Cut + Colour by Petra Otti [TODO Inhaberin: Firmenwortlaut exakt laut
+  Firmenbuch]
+  <br />
+  [TODO Inhaberin: Rechtsform laut Firmenbuch, z. B. „e.U.“]
+  <br />
+  Inhaberin: Petra Otti
+  <br />
+  {contact.street}
+  <br />
+  {contact.town}
+  <br />
+  Österreich
+  <br />
+  Telefon:{' '}
+  <a href={Contact.phoneHref(contact)} class="text-link phone">
+    <Icon name="phone" size={16} strokeWidth={1.6} />
+    {contact.phone}
+  </a>
+  <br />
+  E-Mail:{' '}
+  <a href={Contact.emailHref(contact)} class="text-link">
+    {contact.email}
+  </a>
+</address>
+
+<style>
+  .phone {
+    display: inline-flex;
+    align-items: center;
+    column-gap: 8px;
+  }
+</style>

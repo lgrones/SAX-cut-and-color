@@ -1,0 +1,59 @@
+// Starts Sentry with the server, not with the first page, so API errors before
+// it are reported too
+import '@infrastructure/sentryServer';
+
+import { SENTRY_TUNNEL } from '@infrastructure/sentryOptions';
+import { SESSION_COOKIE } from '@infrastructure/sessionCookie';
+import { defineMiddleware } from 'astro:middleware';
+
+// Matched against the resolved route instead of the raw URL, so variants like
+// `/admin/` or `/%61dmin` can't slip past the check
+const PUBLIC_API_ROUTES = new Set([
+  '/api/auth/signin',
+  '/api/auth/signout',
+  SENTRY_TUNNEL,
+]);
+
+const isProtected = (route: string) =>
+  route === '/admin' ||
+  route.startsWith('/admin/') ||
+  (route.startsWith('/api/') && !PUBLIC_API_ROUTES.has(route));
+
+// Routes that read the session but stay reachable without one
+const usesSession = (route: string) =>
+  route === '/signin' || route === '/api/auth/signout';
+
+export const onRequest = defineMiddleware(async (context, next) => {
+  const route = context.routePattern;
+
+  if (context.isPrerendered || !(isProtected(route) || usesSession(route))) {
+    return next();
+  }
+
+  const sessionCookie = context.cookies.get(SESSION_COOKIE)?.value;
+
+  if (sessionCookie) {
+    // Loaded here, not on import: astro:env/server checks the Firebase
+    // secrets as soon as it loads, and the build runs this module to
+    // prerender the 404, so CI would need the secrets just to build
+    const { Firebase } = await import('@services/firebase');
+
+    try {
+      context.locals.user = await Firebase.verifySessionCookie(sessionCookie);
+    } catch {
+      context.cookies.delete(SESSION_COOKIE, { path: '/' });
+    }
+  }
+
+  if (route === '/signin') {
+    return context.locals.user ? context.redirect('/admin') : next();
+  }
+
+  if (!context.locals.user && isProtected(route)) {
+    return route.startsWith('/api/')
+      ? new Response('Unauthorized', { status: 401 })
+      : context.redirect('/signin');
+  }
+
+  return next();
+});
