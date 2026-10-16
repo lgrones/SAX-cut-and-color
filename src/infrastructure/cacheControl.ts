@@ -6,8 +6,9 @@
 export const CACHE_CONTROL = {
   // Admin edits and the "Heute" marker after midnight lag at most a minute
   startPage: 'public, max-age=0, s-maxage=60',
-  // Only the contact details on it are edited, and rarely
-  legalNotice: 'public, max-age=0, s-maxage=600',
+  // Impressum and privacy policy: only the contact details on them are edited,
+  // and rarely
+  legalPages: 'public, max-age=0, s-maxage=600',
   // Hosting would cache a 404 without a header for 10 minutes anyway; said
   // here, so the signed in admin can be exempted. A URL only starts to exist
   // with a deploy, which clears the cache.

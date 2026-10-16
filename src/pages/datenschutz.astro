@@ -1,0 +1,159 @@
+---
+export const prerender = false;
+
+import { getContact } from '@business/contact/getContact';
+import { getStartPage } from '@business/startPage/getStartPage';
+import { Contact } from '@domain/contact';
+import { CACHE_CONTROL } from '@infrastructure/cacheControl';
+import { SESSION_COOKIE } from '@infrastructure/sessionCookie';
+import LegalPage from '@presentation/components/legal/legalPage.astro';
+import OwnerAddress from '@presentation/components/legal/ownerAddress.astro';
+import Layout from '@presentation/layouts/Layout.astro';
+
+// Rendered on request like the legal notice: the controller's contact details
+// and whether WhatsApp is offered come from the admin
+const [startPage, contact] = await Promise.all([getStartPage(), getContact()]);
+Astro.response.headers.set(
+  'Cache-Control',
+  Astro.cookies.has(SESSION_COOKIE)
+    ? CACHE_CONTROL.signedIn
+    : CACHE_CONTROL.legalPages,
+);
+---
+
+<Layout
+  title="SAX Cut + Colour Datenschutz"
+  description="Datenschutzerklärung von SAX Cut + Colour by Petra Zangerl"
+  startPage={startPage}
+  contact={contact}
+>
+  <LegalPage title="Datenschutzerklärung">
+    <p>
+      Diese Erklärung informiert Sie gemäß Art 13 DSGVO darüber, welche
+      personenbezogenen Daten beim Besuch dieser Website und bei einer
+      Kontaktaufnahme verarbeitet werden.
+    </p>
+
+    <h2>Verantwortliche</h2>
+    <OwnerAddress contact={contact} />
+
+    <h2>Hosting und Server-Logs</h2>
+    <p>
+      Die Website läuft auf Firebase Hosting und Google Cloud Run (Region
+      europe-west1, Belgien). Anbieterin ist Google Ireland Limited, Gordon
+      House, Barrow Street, Dublin 4, Irland, die als Auftragsverarbeiterin
+      gemäß Art 28 DSGVO tätig ist.
+    </p>
+    <p>
+      Bei jedem Seitenaufruf verarbeitet der Server technisch notwendige Daten
+      und speichert sie in Server-Logs: Ihre IP-Adresse, Datum und Uhrzeit, die
+      aufgerufene Adresse, die zuvor besuchte Seite (Referrer) sowie Browser und
+      Betriebssystem. Das dient der Auslieferung der Website, ihrer Sicherheit
+      und der Fehlersuche. Rechtsgrundlage ist unser berechtigtes Interesse an
+      einem sicheren und funktionierenden Betrieb (Art 6 Abs 1 lit f DSGVO). Die
+      Logs werden nach [TODO Betreiber: Aufbewahrungsdauer der Logs in Google
+      Cloud Logging prüfen] gelöscht.
+    </p>
+    <p>
+      Firebase Hosting liefert die Website über ein weltweites Netz von Servern
+      aus. Dabei ist eine Übermittlung von Daten an Google LLC in den USA
+      möglich. Google LLC ist unter dem EU-US Data Privacy Framework
+      zertifiziert; die Übermittlung stützt sich auf den
+      Angemessenheitsbeschluss der EU-Kommission (Art 45 DSGVO).
+    </p>
+
+    <h2>Bilder</h2>
+    <p>
+      Die Fotos und die Karte auf dieser Website liegen in Firebase Storage und
+      werden von Ihrem Browser direkt von firebasestorage.googleapis.com
+      geladen. Dabei erhält Google, ebenfalls als unsere Auftragsverarbeiterin,
+      Ihre IP-Adresse und die oben genannten technischen Daten. Speicherort der
+      Bilder: [TODO Betreiber: Region des Storage-Buckets prüfen].
+    </p>
+
+    <h2>Schriftarten</h2>
+    <p>
+      Die Schriftarten werden von unserem eigenen Server ausgeliefert. Ihr
+      Browser stellt dafür keine Verbindung zu Google Fonts oder anderen
+      Anbietern her.
+    </p>
+
+    <h2>Keine Analyse, kein Tracking</h2>
+    <p>
+      Wir setzen keine Analyse- oder Tracking-Werkzeuge, keine Werbung und keine
+      Social-Media-Plugins ein.
+    </p>
+
+    <h2>Cookies</h2>
+    <p>
+      Beim Besuch der öffentlichen Seiten werden keine Cookies gesetzt. Das
+      einzige Cookie, <code>__session</code>, entsteht erst, wenn sich die
+      Inhaberin im geschützten Verwaltungsbereich anmeldet. Es hält die
+      Anmeldung aufrecht und wird nach fünf Tagen oder beim Abmelden gelöscht.
+      Dieses Cookie ist für den vom Nutzer ausdrücklich gewünschten Dienst
+      unbedingt erforderlich (§ 165 Abs 3 TKG 2021) und bedarf daher keiner
+      Einwilligung. Die Anmeldung selbst läuft über Firebase Authentication von
+      Google.
+    </p>
+
+    <h2>Kontakt per Telefon und E-Mail</h2>
+    <p>
+      Wenn Sie uns anrufen oder schreiben, verarbeiten wir die Angaben, die Sie
+      uns dabei mitteilen (etwa Name, Telefonnummer, E-Mail-Adresse und Ihr
+      Anliegen), um Ihre Anfrage zu beantworten und Termine zu vereinbaren.
+      Rechtsgrundlage ist die Durchführung vorvertraglicher Maßnahmen bzw. des
+      Vertrags (Art 6 Abs 1 lit b DSGVO), sonst unser berechtigtes Interesse an
+      der Beantwortung von Anfragen (Art 6 Abs 1 lit f DSGVO). Wir löschen diese
+      Daten [TODO Inhaberin: Speicherdauer von Anfragen und Terminen angeben].
+      E-Mails werden über [TODO Inhaberin: E-Mail-Anbieter angeben] empfangen.
+    </p>
+
+    {contact.whatsapp && (
+      <>
+        <h2>Kontakt per WhatsApp</h2>
+        <p>
+          Der Link „Gerne auch per WhatsApp“ führt zu wa.me, einem Dienst von
+          WhatsApp Ireland Limited (Meta). Allein das Anzeigen dieser Website
+          überträgt keine Daten an WhatsApp. Erst wenn Sie den Link öffnen und
+          WhatsApp nutzen, verarbeitet WhatsApp Ihre Daten als eigenständig
+          Verantwortliche nach deren eigener Datenschutzerklärung; dabei ist
+          eine Übermittlung in die USA möglich. Ihre Nachricht an uns
+          verarbeiten wir wie eine Anfrage per Telefon oder E-Mail. Wenn Sie
+          WhatsApp nicht nutzen möchten, erreichen Sie uns telefonisch oder per
+          E-Mail.
+        </p>
+      </>
+    )}
+
+    <h2>Link zu Google Maps</h2>
+    <p>
+      Unsere Adresse ist mit Google Maps verlinkt. Die Karte auf dieser Website
+      ist ein Bild aus unserem eigenen Speicher; Google Maps ist nicht
+      eingebunden. Erst wenn Sie den Link öffnen, gelangen Sie zu Google und
+      Google verarbeitet Ihre Daten als eigenständig Verantwortliche nach der
+      eigenen Datenschutzerklärung.
+    </p>
+
+    <h2>Ihre Rechte</h2>
+    <p>
+      Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung
+      der Verarbeitung und Datenübertragbarkeit (Art 15 bis 20 DSGVO). Einer
+      Verarbeitung auf Grundlage unseres berechtigten Interesses können Sie
+      widersprechen (Art 21 DSGVO). Wenden Sie sich dafür an{' '}
+      <a href={Contact.emailHref(contact)} class="text-link">
+        {contact.email}
+      </a>
+      .
+    </p>
+    <p>
+      Wenn Sie meinen, dass die Verarbeitung Ihrer Daten gegen das
+      Datenschutzrecht verstößt, können Sie sich bei der Aufsichtsbehörde
+      beschweren: Österreichische Datenschutzbehörde, Barichgasse 40–42, 1030
+      Wien,{' '}
+      <a href="https://www.dsb.gv.at" class="text-link">
+        www.dsb.gv.at
+      </a>
+      .
+    </p>
+  </LegalPage>
+</Layout>
