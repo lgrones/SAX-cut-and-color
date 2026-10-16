@@ -4,22 +4,28 @@ import { Contact } from '@domain/contact';
 import { Font, Image } from 'astro:assets';
 import logo from '../assets/logo.png';
 import Navigation from '../components/navigation/Navigation.astro';
-import { SEOMetadata } from 'astro-seo-metadata';
 import '../styles/global.css';
 
 interface Props {
   title: string;
-  startPage: StartPage;
-  contact: Contact;
+  /** For the header's links and call button; a static page has neither */
+  startPage?: StartPage;
+  contact?: Contact;
   description?: string;
+  /** Keeps the page out of search results, e.g. the 404 */
+  noindex?: boolean;
   disableScrollSmooth?: boolean;
 }
+
+const SITE_NAME = 'SAX Cut + Colour';
 
 const {
   title,
   startPage,
   contact,
-  description = `Friseursalon SAX Cut + Colour by Petra Zangerl: Schnitt, Farbe und Pflege. ${Contact.address(contact)}.`,
+  description = 'Friseursalon SAX Cut + Colour by Petra Zangerl: Schnitt, Farbe und Pflege' +
+    (contact ? `. ${Contact.address(contact)}.` : ' in Lochau.'),
+  noindex,
   disableScrollSmooth,
 } = Astro.props;
 
@@ -37,23 +43,34 @@ const socialImage = new URL('/og-image.jpg', Astro.site).toString();
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <SEOMetadata
-      siteName="Sax Cut + Colour"
-      title={title}
-      description={description}
-      favicon="/favicon.png"
-      author="Petra Zangerl"
-      astroSitemap
-      canonicalUrl={canonicalUrl}
-      image={socialImage}
-      type="website"
-      astroGenerator
-    />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? (
+      <meta name="robots" content="noindex" />
+    ) : (
+      <link rel="canonical" href={canonicalUrl} />
+    )}
+    <link rel="icon" href="/favicon.png" />
+    <meta name="author" content="Petra Zangerl" />
+    <meta name="apple-mobile-web-app-title" content={SITE_NAME} />
+
+    <!-- Link previews. X reads the og: tags too, it only needs its card type -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content="de_AT" />
+    {!noindex && <meta property="og:url" content={canonicalUrl} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/jpeg" />
-    <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:locale" content="de_AT" />
+    <meta
+      property="og:image:alt"
+      content="Zwei Frisierplätze im Salon SAX Cut + Colour mit Spiegeln und Pop-Art-Bildern"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+
     <Font cssVariable="--font-serif" preload />
     <Font cssVariable="--font-sans" preload />
     <slot name="head" />

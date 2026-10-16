@@ -178,9 +178,6 @@ importers:
       astro:
         specifier: ^7.3.8
         version: 7.3.8(@types/node@26.6.5)(yaml@2.9.1)
-      astro-seo-metadata:
-        specifier: ^0.6.0
-        version: 0.6.0
       firebase:
         specifier: ^13.0.0
         version: 13.0.0
@@ -1843,9 +1840,6 @@ packages:
   astral-regex@2.0.0:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
     engines: {node: '>=8'}
-
-  astro-seo-metadata@0.6.0:
-    resolution: {integrity: sha512-2wN3kHy4KOorieZxvzYdnXl8h3imUrZdKE+N5xLA3T9/fxHXqNXtXEuJSYFSLU+EfpUcdS6jMncuBC4nQpAIuA==}
 
   astro@7.3.8:
     resolution: {integrity: sha512-LHzDHSaV+YzZiR3EFndDYTLLeNeuMtP1qX1FLcCNUUHOCqTTIWPczy2UV3zpA5VqvJe5cWZolqM9Z8JFqR2i9w==}
@@ -5506,8 +5500,6 @@ snapshots:
   aria-query@5.3.2: {}
 
   astral-regex@2.0.0: {}
-
-  astro-seo-metadata@0.6.0: {}
 
   astro@7.3.8(@types/node@26.6.5)(yaml@2.9.1):
     dependencies:

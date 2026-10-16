@@ -6,21 +6,26 @@ import { Contact } from '@domain/contact';
 import Icon from '../icon/icon.astro';
 
 interface Props {
-  /** Links only go to the sections the start page shows */
-  startPage: StartPage;
-  contact: Contact;
+  /**
+   * Links only go to the sections the start page shows. A static page has
+   * neither, its header shows only the logo.
+   */
+  startPage?: StartPage | undefined;
+  contact?: Contact | undefined;
 }
 
 const { startPage, contact } = Astro.props;
 
 // in page order, so the highlighted link moves along while scrolling down
-const links = [
-  { name: 'Preise', id: 'preise', shown: startPage.prices.length > 0 },
-  { name: 'Angebote', id: 'angebote', shown: startPage.offers.length > 0 },
-  { name: 'Salon', id: 'salon', shown: startPage.gallery.length > 0 },
-  { name: 'Zeiten', id: 'zeiten', shown: startPage.hours.length > 0 },
-  { name: 'Kontakt', id: 'kontakt', shown: true },
-].filter(x => x.shown);
+const links = startPage
+  ? [
+      { name: 'Preise', id: 'preise', shown: startPage.prices.length > 0 },
+      { name: 'Angebote', id: 'angebote', shown: startPage.offers.length > 0 },
+      { name: 'Salon', id: 'salon', shown: startPage.gallery.length > 0 },
+      { name: 'Zeiten', id: 'zeiten', shown: startPage.hours.length > 0 },
+      { name: 'Kontakt', id: 'kontakt', shown: true },
+    ].filter(x => x.shown)
+  : [];
 ---
 
 <header id="site-header">
@@ -38,62 +43,71 @@ const links = [
       />
     </a>
 
-    <nav class="nav desk-only" aria-label="Hauptnavigation">
-      {links.map(({ name, id }) => (
-        <a href={`/#${id}`} data-spy={id}>
-          {name}
-          <span class="nav-bar" aria-hidden="true" />
+    {contact && (
+      <>
+        <nav class="nav desk-only" aria-label="Hauptnavigation">
+          {links.map(({ name, id }) => (
+            <a href={`/#${id}`} data-spy={id}>
+              {name}
+              <span class="nav-bar" aria-hidden="true" />
+            </a>
+          ))}
+        </nav>
+
+        <a
+          class="btn btn-gold call desk-only"
+          href={Contact.phoneHref(contact)}
+        >
+          <Icon name="phone" size={16} strokeWidth={1.6} />
+          <span>
+            Termin<span class="call-rest"> vereinbaren</span>
+          </span>
         </a>
-      ))}
-    </nav>
 
-    <a class="btn btn-gold call desk-only" href={Contact.phoneHref(contact)}>
-      <Icon name="phone" size={16} strokeWidth={1.6} />
-      <span>
-        Termin<span class="call-rest"> vereinbaren</span>
-      </span>
-    </a>
-
-    <div class="actions mob-only">
-      <a
-        class="icon-btn"
-        href={Contact.phoneHref(contact)}
-        aria-label={`Anrufen: ${contact.phone}`}
-      >
-        <Icon name="phone" size={20} strokeWidth={1.6} />
-      </a>
-      <button
-        type="button"
-        class="icon-btn menu-toggle"
-        aria-label="Menü öffnen"
-        aria-expanded="false"
-        aria-controls="mobile-menu"
-      >
-        <span class="icon-menu">
-          <Icon name="menu" size={20} strokeWidth={1.6} />
-        </span>
-        <span class="icon-close">
-          <Icon name="close" size={20} strokeWidth={1.6} />
-        </span>
-      </button>
-    </div>
+        <div class="actions mob-only">
+          <a
+            class="icon-btn"
+            href={Contact.phoneHref(contact)}
+            aria-label={`Anrufen: ${contact.phone}`}
+          >
+            <Icon name="phone" size={20} strokeWidth={1.6} />
+          </a>
+          <button
+            type="button"
+            class="icon-btn menu-toggle"
+            aria-label="Menü öffnen"
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+          >
+            <span class="icon-menu">
+              <Icon name="menu" size={20} strokeWidth={1.6} />
+            </span>
+            <span class="icon-close">
+              <Icon name="close" size={20} strokeWidth={1.6} />
+            </span>
+          </button>
+        </div>
+      </>
+    )}
   </div>
 
-  <nav
-    id="mobile-menu"
-    class="mobile-menu mob-only"
-    aria-label="Hauptnavigation"
-    hidden
-  >
-    {links.map(({ name, id }) => (
-      <a class="mobile-link" href={`/#${id}`} data-spy={id}>
-        {name}
+  {contact && (
+    <nav
+      id="mobile-menu"
+      class="mobile-menu mob-only"
+      aria-label="Hauptnavigation"
+      hidden
+    >
+      {links.map(({ name, id }) => (
+        <a class="mobile-link" href={`/#${id}`} data-spy={id}>
+          {name}
+        </a>
+      ))}
+      <a class="btn btn-gold mobile-call" href={Contact.phoneHref(contact)}>
+        Termin vereinbaren
       </a>
-    ))}
-    <a class="btn btn-gold mobile-call" href={Contact.phoneHref(contact)}>
-      Termin vereinbaren
-    </a>
-  </nav>
+    </nav>
+  )}
 </header>
 
 <style>
@@ -351,7 +365,9 @@ const links = [
 
     window.addEventListener('scroll', scheduleUpdate, { passive: true });
     window.addEventListener('resize', scheduleUpdate);
-    updateActive();
+    // in the next frame, as measuring now would force a layout while the page
+    // is still loading
+    scheduleUpdate();
 
     const toggle = header.querySelector('.menu-toggle');
     const menu = document.getElementById('mobile-menu');

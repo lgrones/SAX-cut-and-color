@@ -1,34 +1,16 @@
 ---
-export const prerender = false;
-
-import { getContact } from '@business/contact/getContact';
-import { getStartPage } from '@business/startPage/getStartPage';
 import Layout from '@presentation/layouts/Layout.astro';
-import { Contact } from '@domain/contact';
-import Icon from '@presentation/components/icon/icon.astro';
-import { CACHE_CONTROL } from '@infrastructure/cacheControl';
-import { SESSION_COOKIE } from '@infrastructure/sessionCookie';
 
-// Rendered on request like the other pages, so the navigation links only the
-// sections the start page shows. A failed load throws before the header is set,
-// so the error page is never cached.
-const [startPage, contact] = await Promise.all([getStartPage(), getContact()]);
-Astro.response.headers.set(
-  'Cache-Control',
-  Astro.cookies.has(SESSION_COOKIE)
-    ? CACHE_CONTROL.signedIn
-    : CACHE_CONTROL.notFound,
-);
+// Static, so a request for a missing page (often a bot probing for
+// /wp-admin and the like) never reads the database. Without the start page's
+// data the header shows only the logo; the page links home instead.
 ---
 
 <Layout
   title="Seite nicht gefunden – SAX Cut + Colour"
   description="Diese Seite gibt es nicht (mehr)."
-  startPage={startPage}
-  contact={contact}
+  noindex
 >
-  <meta name="robots" content="noindex" slot="head" />
-
   <section class="section not-found">
     <p class="eyebrow">Fehler 404</p>
     <h1 class="heading-section">
@@ -41,10 +23,6 @@ Astro.response.headers.set(
     <div class="button-row">
       <a class="btn btn-gold" href="/">
         Zur Startseite
-      </a>
-      <a class="btn btn-ghost" href={Contact.phoneHref(contact)}>
-        <Icon name="phone" size={16} strokeWidth={1.6} />
-        Anrufen
       </a>
     </div>
   </section>
