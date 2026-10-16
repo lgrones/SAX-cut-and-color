@@ -43,15 +43,25 @@
   gap: 0.5rem;
 }
 
+/* the last column keeps its room in a range without a button, so the times
+   of all ranges shrink alike on a phone and stay one width */
 .hours-range {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 8.5rem) auto minmax(0, 8.5rem) 2.25rem;
   align-items: center;
   gap: 0.5rem;
   color: var(--admin-muted);
 }
 
+/* iOS sizes a time input by its value, so an empty one comes out smaller */
 .hours-time {
-  width: 8.5rem;
+  min-width: 0;
+  appearance: none;
+
+  &::-webkit-date-and-time-value {
+    min-height: 1lh;
+    text-align: left;
+  }
 }
 
 .hours-closed {
