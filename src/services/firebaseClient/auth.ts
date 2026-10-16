@@ -10,8 +10,10 @@ import { app } from './app';
 
 const auth = getAuth(app);
 
+// Through the dev server, which proxies to the emulator, so it also works
+// from a phone on the LAN
 if (import.meta.env.DEV) {
-  connectAuthEmulator(auth, 'http://127.0.0.1:9099');
+  connectAuthEmulator(auth, location.origin);
 }
 
 // This will prevent the browser from storing session data

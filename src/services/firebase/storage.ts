@@ -11,9 +11,10 @@ export interface StoredFile {
 const bucket = () => getStorage(app).bucket(STORAGE_BUCKET);
 
 // Files are served through the Firebase Storage API, where storage.rules
-// decide what is public, rather than through bucket IAM
+// decide what is public, rather than through bucket IAM. In dev the URL is
+// relative and the dev server proxies it to the emulator
 const host = import.meta.env.DEV
-  ? 'http://127.0.0.1:9199'
+  ? ''
   : 'https://firebasestorage.googleapis.com';
 
 /** The public URL of a file, readable if storage.rules allow it */

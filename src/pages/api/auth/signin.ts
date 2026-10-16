@@ -17,7 +17,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     path: '/',
     maxAge: session.maxAge,
     httpOnly: true,
-    secure: true,
+    // A phone reaches the dev server over plain http, where browsers drop a
+    // secure cookie and the sign-in would end back on /signin
+    secure: import.meta.env.PROD,
     sameSite: 'strict',
   });
 

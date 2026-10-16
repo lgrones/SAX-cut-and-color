@@ -36,9 +36,23 @@ export default defineConfig({
       telemetry: false,
     }),
   ],
-  // Leaves Sentry's tracing and debug logging out of the bundles, with or
-  // without the upload, which would otherwise do it
-  vite: { define: { __SENTRY_TRACING__: false, __SENTRY_DEBUG__: false } },
+  // Off for `pnpm dev:mobile`, where the toolbar covers the bottom of the page
+  devToolbar: { enabled: env.ASTRO_DEV_TOOLBAR !== 'off' },
+  vite: {
+    // Leaves Sentry's tracing and debug logging out of the bundles, with or
+    // without the upload, which would otherwise do it
+    define: { __SENTRY_TRACING__: false, __SENTRY_DEBUG__: false },
+    // In dev the browser reaches the storage and auth emulators through the
+    // dev server, so a phone on the LAN gets them too instead of looking on
+    // its own localhost
+    server: {
+      proxy: {
+        '/v0': 'http://127.0.0.1:9199',
+        '/identitytoolkit.googleapis.com': 'http://127.0.0.1:9099',
+        '/securetoken.googleapis.com': 'http://127.0.0.1:9099',
+      },
+    },
+  },
   // Downloaded at build time and served from our own domain, so visitors
   // never contact Google (GDPR)
   fonts: [
