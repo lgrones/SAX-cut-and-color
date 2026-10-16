@@ -13,9 +13,10 @@ interface Props {
 
 const { startPage, contact } = Astro.props;
 
+// in page order, so the highlighted link moves along while scrolling down
 const links = [
-  { name: 'Angebote', id: 'angebote', shown: startPage.offers.length > 0 },
   { name: 'Preise', id: 'preise', shown: startPage.prices.length > 0 },
+  { name: 'Angebote', id: 'angebote', shown: startPage.offers.length > 0 },
   { name: 'Salon', id: 'salon', shown: startPage.gallery.length > 0 },
   { name: 'Zeiten', id: 'zeiten', shown: startPage.hours.length > 0 },
   { name: 'Kontakt', id: 'kontakt', shown: true },
@@ -37,129 +38,266 @@ const links = [
       />
     </a>
 
-    <nav aria-label="Hauptnavigation">
+    <nav class="nav desk-only" aria-label="Hauptnavigation">
       {links.map(({ name, id }) => (
-        <a href={`/#${id}`}>{name}</a>
+        <a href={`/#${id}`} data-spy={id}>
+          {name}
+          <span class="nav-bar" aria-hidden="true" />
+        </a>
       ))}
     </nav>
 
-    <a class="btn btn-gold call" href={Contact.phoneHref(contact)}>
+    <a class="btn btn-gold call desk-only" href={Contact.phoneHref(contact)}>
       <Icon name="phone" size={16} strokeWidth={1.6} />
       <span>
         Termin<span class="call-rest"> vereinbaren</span>
       </span>
     </a>
+
+    <div class="actions mob-only">
+      <a
+        class="icon-btn"
+        href={Contact.phoneHref(contact)}
+        aria-label={`Anrufen: ${contact.phone}`}
+      >
+        <Icon name="phone" size={20} strokeWidth={1.6} />
+      </a>
+      <button
+        type="button"
+        class="icon-btn menu-toggle"
+        aria-label="Menü öffnen"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <span class="icon-menu">
+          <Icon name="menu" size={20} strokeWidth={1.6} />
+        </span>
+        <span class="icon-close">
+          <Icon name="close" size={20} strokeWidth={1.6} />
+        </span>
+      </button>
+    </div>
   </div>
+
+  <nav
+    id="mobile-menu"
+    class="mobile-menu mob-only"
+    aria-label="Hauptnavigation"
+    hidden
+  >
+    {links.map(({ name, id }) => (
+      <a class="mobile-link" href={`/#${id}`} data-spy={id}>
+        {name}
+      </a>
+    ))}
+    <a class="btn btn-gold mobile-call" href={Contact.phoneHref(contact)}>
+      Termin vereinbaren
+    </a>
+  </nav>
 </header>
 
 <style>
-  /* sticky, slides away while scrolling down and back on scrolling up */
+  /* sticky at all widths, 108px tall on desktop and 85px on mobile */
   header {
     position: sticky;
     top: 0;
     z-index: 50;
-    background-color: var(--bg);
+    background-color: rgb(13 12 10 / 94%);
+    backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--gold-soft);
-    transition: translate 0.3s ease;
+  }
 
-    &.hidden {
-      translate: 0 -100%;
-    }
+  /* section headings land below the header after jumping to them */
+  :global(#preise),
+  :global(#angebote),
+  :global(#salon),
+  :global(#zeiten),
+  :global(#kontakt) {
+    scroll-margin-top: 96px;
 
-    @media (prefers-reduced-motion: reduce) {
-      transition: none;
+    @media (width >= 760px) {
+      scroll-margin-top: 110px;
     }
   }
 
-  /* one row on wide screens; below that logo and call button share the first
-     row and the links get a row of their own instead of wrapping */
   .bar {
-    display: grid;
-    grid-template-areas: 'logo nav call';
-    grid-template-columns: auto 1fr auto;
+    display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 12px 32px;
     max-width: 1240px;
     margin-inline: auto;
     padding: 18px var(--gutter);
-
-    @media (width < 1000px) {
-      grid-template-areas:
-        'logo call'
-        'nav nav';
-
-      /* minmax(0, …) keeps a too wide nav row from widening the grid past
-         the viewport */
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 4px 16px;
-      padding-block: 12px 0;
-    }
   }
 
   .home {
-    grid-area: logo;
-    justify-self: start;
+    display: flex;
+    align-items: center;
   }
 
   .logo {
     width: auto;
-    height: 72px;
+    height: 48px;
 
-    @media (width < 1000px) {
-      height: 56px;
+    @media (width >= 760px) {
+      height: 72px;
     }
   }
 
-  nav {
+  /* desktop nav, the link of the section in view gets a gold underline */
+  .nav {
     display: flex;
-    grid-area: nav;
-    justify-content: center;
+    flex-wrap: wrap;
     column-gap: 28px;
     font-size: 14px;
+    white-space: nowrap;
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    white-space: nowrap;
-
-    @media (width < 1000px) {
-      justify-content: flex-start;
-      min-width: 0;
-
-      /* last resort on very narrow screens: scroll instead of wrapping */
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    @media (width < 560px) {
-      justify-content: space-between;
-      column-gap: 8px;
-      font-size: clamp(11px, 3.2vw, 14px);
-      letter-spacing: 0.04em;
-    }
 
     & a {
+      position: relative;
       padding-block: 12px;
       transition: color 0.2s;
 
-      &:hover {
+      &:hover,
+      &.is-active {
         color: var(--gold-light);
       }
     }
   }
 
-  .call {
-    grid-area: call;
-    min-height: 44px;
-    padding-inline: 22px;
-    font-size: 12px;
+  .nav-bar {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 6px;
+    height: 2px;
+    background-color: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.35s ease;
 
-    @media (width < 480px) {
-      padding-inline: 16px;
+    .is-active > & {
+      transform: scaleX(1);
     }
   }
 
-  .call-rest {
-    @media (width < 360px) {
+  .call {
+    min-height: 44px;
+    padding-inline: 22px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  /* keeps the header on one row down to 760px, so it stays 108px tall */
+  @media (width < 1000px) {
+    .bar,
+    .nav {
+      column-gap: 20px;
+    }
+
+    .call-rest {
+      display: none;
+    }
+  }
+
+  /* mobile bar: call and menu buttons */
+  .actions {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+  }
+
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--gold-strong);
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: rgb(201 164 92 / 12%);
+    }
+  }
+
+  .menu-toggle {
+    & .icon-close {
+      display: none;
+    }
+
+    &[aria-expanded='true'] {
+      & .icon-menu {
+        display: none;
+      }
+
+      & .icon-close {
+        display: block;
+      }
+    }
+  }
+
+  /* scrolls on its own when it is taller than the screen, e.g. in landscape */
+  .mobile-menu {
+    display: flex;
+    flex-direction: column;
+    max-width: 1240px;
+    max-height: calc(100dvh - 85px);
+    margin-inline: auto;
+    padding: 0 var(--gutter) 24px;
+    overflow-y: auto;
+    border-top: 1px solid var(--gold-soft);
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  /* the link of the section in view gets a gold dash */
+  .mobile-link {
+    display: flex;
+    align-items: center;
+    column-gap: 14px;
+    min-height: 52px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--divider);
+
+    &::before {
+      content: '';
+      width: 0;
+      height: 2px;
+      background-color: currentcolor;
+      transition: width 0.3s ease;
+    }
+
+    &.is-active {
+      color: var(--gold-light);
+
+      &::before {
+        width: 24px;
+      }
+    }
+  }
+
+  .mobile-call {
+    flex-shrink: 0;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  /* last, so they win over the display of the elements they sit on */
+  .desk-only {
+    @media (width < 760px) {
+      display: none;
+    }
+  }
+
+  .mob-only {
+    @media (width >= 760px) {
       display: none;
     }
   }
@@ -169,57 +307,81 @@ const links = [
   const header = document.getElementById('site-header');
 
   if (header) {
-    // ignore small jitter, e.g. from momentum scrolling
-    const THRESHOLD = 8;
-    let lastY = window.scrollY;
-    // while jumping to a section the header stays out of the way, also when
-    // the jump goes up
-    let jumping = false;
+    const links = [...header.querySelectorAll<HTMLElement>('[data-spy]')];
+    const ids = [...new Set(links.map(a => a.dataset.spy ?? ''))];
 
-    const setHidden = (hidden: boolean) =>
-      header.classList.toggle('hidden', hidden);
+    // a section counts as in view once its top passes a line a bit below the
+    // header; sections side by side (Zeiten and Kontakt) share a top and are
+    // highlighted together
+    const updateActive = () => {
+      const line =
+        header.getBoundingClientRect().bottom +
+        Math.min(window.innerHeight * 0.3, 200);
+      const tops = ids.flatMap(id => {
+        const section = document.getElementById(id);
+        return section
+          ? [{ id, top: section.getBoundingClientRect().top }]
+          : [];
+      });
 
-    window.addEventListener(
-      'scroll',
-      () => {
-        const y = window.scrollY;
+      // at the bottom the last sections may never reach the line
+      const page = document.documentElement;
+      const atBottom =
+        page.scrollTop + page.clientHeight >= page.scrollHeight - 2;
+      const passed = atBottom ? tops : tops.filter(x => x.top <= line);
+      const lastTop = Math.max(...passed.map(x => x.top));
+      const active = passed.filter(x => x.top >= lastTop - 4).map(x => x.id);
 
-        if (jumping) {
-          lastY = y;
-          return;
-        }
-
-        if (y <= header.offsetHeight) {
-          setHidden(false);
-        } else if (Math.abs(y - lastY) > THRESHOLD) {
-          setHidden(y > lastY);
-        } else {
-          return;
-        }
-
-        lastY = y;
-      },
-      { passive: true },
-    );
-
-    const endJump = () => {
-      jumping = false;
-      lastY = window.scrollY;
+      for (const link of links) {
+        const on = active.includes(link.dataset.spy ?? '');
+        link.classList.toggle('is-active', on);
+        if (on) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      }
     };
 
-    document.addEventListener('click', e => {
-      const link = (e.target as Element | null)?.closest('a[href*="#"]');
-      if (!(link instanceof HTMLAnchorElement)) return;
-      if (link.pathname !== window.location.pathname || !link.hash) return;
+    let frame = 0;
+    const scheduleUpdate = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        updateActive();
+      });
+    };
 
-      jumping = true;
-      setHidden(true);
-      // scrollend is missing in older Safari
-      window.addEventListener('scrollend', endJump, { once: true });
-      setTimeout(endJump, 1500);
-    });
+    window.addEventListener('scroll', scheduleUpdate, { passive: true });
+    window.addEventListener('resize', scheduleUpdate);
+    updateActive();
 
-    // keyboard users tabbing into the header always see it
-    header.addEventListener('focusin', () => setHidden(false));
+    const toggle = header.querySelector('.menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+
+    if (toggle && menu) {
+      const setOpen = (open: boolean) => {
+        menu.hidden = !open;
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute(
+          'aria-label',
+          open ? 'Menü schließen' : 'Menü öffnen',
+        );
+        // the open menu moves the header bottom
+        scheduleUpdate();
+      };
+
+      toggle.addEventListener('click', () =>
+        setOpen(toggle.getAttribute('aria-expanded') !== 'true'),
+      );
+      menu.addEventListener('click', e => {
+        if ((e.target as Element).closest('a')) setOpen(false);
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key !== 'Escape' || menu.hidden) return;
+        setOpen(false);
+        if (toggle instanceof HTMLElement) toggle.focus();
+      });
+      window.matchMedia('(width >= 760px)').addEventListener('change', e => {
+        if (e.matches) setOpen(false);
+      });
+    }
   }
 </script>
