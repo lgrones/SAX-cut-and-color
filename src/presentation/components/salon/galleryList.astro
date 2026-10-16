@@ -1,5 +1,6 @@
 ---
 import type { ImageSource } from '@business/images/imageSource';
+import { gallerySizes, type TileShape } from './gallerySizes';
 
 interface Props {
   images: ImageSource[];
@@ -9,29 +10,24 @@ const { images } = Astro.props;
 
 // From 760px every four images fill the 4-column grid as wide (2×2), tall
 // (1×2) and two regular tiles stacked beside them
-const shapes = [
-  { shape: 'wide', sizes: '(min-width: 760px) 600px, 100vw' },
-  { shape: 'tall', sizes: '(min-width: 760px) 300px, 100vw' },
-  { shape: undefined, sizes: '(min-width: 760px) 300px, 100vw' },
-  { shape: undefined, sizes: '(min-width: 760px) 300px, 100vw' },
-];
+const shapes: TileShape[] = ['wide', 'tall', 'regular', 'regular'];
 ---
 
 <div class="gallery">
   {images.map((image, i) => {
-    const { shape, sizes } = shapes[i % shapes.length]!;
+    const shape = shapes[i % shapes.length]!;
 
     return (
       <img
         src={image.src}
         srcset={image.srcset}
-        sizes={sizes}
+        sizes={gallerySizes(shape, image.width / image.height)}
         width={image.width}
         height={image.height}
         alt={image.alt}
         loading="lazy"
         decoding="async"
-        class:list={['photo', shape]}
+        class:list={['photo', shape !== 'regular' && shape]}
         style={{ objectPosition: image.objectPosition }}
       />
     );

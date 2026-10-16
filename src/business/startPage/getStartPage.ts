@@ -39,9 +39,9 @@ export const getStartPage = async (): Promise<StartPage> => {
     prices: hidden.includes('prices') ? [] : prices,
     offers: hidden.includes('offers') ? [] : offers,
     gallery: mapGallery(images.gallery),
-    hero: images.hero && getSlotImage('hero'),
-    portrait: images.portrait && getSlotImage('portrait'),
-    map: images.map && getSlotImage('map'),
+    hero: images.hero && getSlotImage('hero', images.hero),
+    portrait: images.portrait && getSlotImage('portrait', images.portrait),
+    map: images.map && getSlotImage('map', images.map),
     hours: hidden.includes('hours') || !OpeningHours.anyOpen(week) ? [] : week,
   };
 };

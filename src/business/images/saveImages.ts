@@ -15,10 +15,11 @@ import {
   galleryWidths,
   LONG_CACHE,
   originalPath,
-  SHORT_CACHE,
+  slotFolder,
   slotPath,
   slotPrefix,
   slotWidths,
+  variantWidths,
 } from './imageFiles';
 import { renderVariants } from './renderVariants';
 
@@ -60,22 +61,25 @@ const saveSlot = async (
   next: Ref | null,
   stored: SiteImage | undefined,
 ): Promise<SiteImage | undefined> => {
-  if (!next) {
-    // an optional slot taken off the page
-    if (stored) await deleteFiles(slotPrefix(slot));
-    return undefined;
-  }
+  // an optional slot taken off the page, its files go in the clean up
+  if (!next) return undefined;
 
-  if (stored?.id === next.id && sameFocus(stored.focus, next.focus))
+  // files stored before slots were named by id are rendered on the next save
+  if (
+    stored?.id === next.id &&
+    sameFocus(stored.focus, next.focus) &&
+    (await Firebase.listFiles(slotFolder(slot, stored))).length > 0
+  )
     return stored;
 
   const { source, image } = await loadOriginal(next);
+  const region = SiteImage.crop(image, SiteImage.slots[slot].aspect);
   await renderVariants(
     source,
-    slotWidths,
-    width => slotPath(slot, width),
-    SHORT_CACHE,
-    SiteImage.crop(image, SiteImage.slots[slot].aspect),
+    variantWidths(slotWidths, region.width),
+    width => slotPath(slot, image, width),
+    LONG_CACHE,
+    region,
   );
 
   return image;
@@ -92,7 +96,7 @@ const saveGalleryImage = async (
   const { source, image } = await loadOriginal(next);
   await renderVariants(
     source,
-    galleryWidths,
+    variantWidths(galleryWidths, image.width),
     width => galleryPath(image.id, width),
     LONG_CACHE,
   );
@@ -111,7 +115,10 @@ const allImages = (images: SiteImages) => [
   ...images.gallery,
 ];
 
-/** Deletes the files of images no longer used, and long abandoned uploads */
+/**
+ * Deletes the files of images no longer used or no longer cropped that way, and
+ * long abandoned uploads
+ */
 const cleanUp = async (images: SiteImages, previous: SiteImages) => {
   const used = new Set(allImages(images).map(x => x.id));
   const replaced = new Set(
@@ -129,6 +136,17 @@ const cleanUp = async (images: SiteImages, previous: SiteImages) => {
 
   for (const id of replaced) {
     await deleteFiles(galleryPrefix(id));
+  }
+
+  for (const slot of SiteImage.slotNames) {
+    const image = images[slot];
+    const current = image && slotFolder(slot, image);
+
+    for (const file of await Firebase.listFiles(slotPrefix(slot))) {
+      if (!current || !file.path.startsWith(current)) {
+        await Firebase.deleteFile(file.path);
+      }
+    }
   }
 };
 

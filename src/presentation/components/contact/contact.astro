@@ -11,6 +11,15 @@ interface Props {
 
 const { contact, map } = Astro.props;
 const mapHref = Contact.mapHref(contact);
+
+// The map is its column less the 1px border. Two columns from 1105px, where
+// 2 × 460px and the 96px gap fit beside the 4vw gutters.
+const mapSizes = [
+  '(min-width: 1240px) 522px',
+  '(min-width: 1105px) calc(46vw - 50px)',
+  '(min-width: 400px) calc(92vw - 2px)',
+  'calc(100vw - 34px)',
+].join(', ');
 ---
 
 <div id="kontakt" class="column">
@@ -52,7 +61,7 @@ const mapHref = Contact.mapHref(contact);
       <img
         src={map.src}
         srcset={map.srcset}
-        sizes="(min-width: 1100px) 520px, 100vw"
+        sizes={mapSizes}
         width={map.width}
         height={map.height}
         alt={`Karte: SAX Cut + Colour, ${Contact.address(contact)}`}

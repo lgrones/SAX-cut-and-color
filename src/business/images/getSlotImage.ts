@@ -2,22 +2,25 @@ import { type ImageSlot, SiteImage } from '@domain/image';
 import { Firebase } from '@services/firebase';
 
 import { slotPath, slotWidths } from './imageFiles';
-import type { ImageSource } from './imageSource';
+import { type ImageSource, variantSources } from './imageSource';
 
 /**
- * A fixed slot's image. Needs no database: the files are stored already cropped
- * under fixed URLs, so a replaced image shows up within the short cache time.
- * Whether an optional slot has an image at all only the stored images know.
+ * A fixed slot's image, from files stored already cropped, so it fills its
+ * place as it is
  */
-export const getSlotImage = (slot: ImageSlot): ImageSource => {
+export const getSlotImage = (
+  slot: ImageSlot,
+  image: SiteImage,
+): ImageSource => {
   const { aspect, alt } = SiteImage.slots[slot];
-  const url = (width: number) => Firebase.fileUrl(slotPath(slot, width));
+  const { width, height } = SiteImage.crop(image, aspect);
 
   return {
-    src: url(1280),
-    srcset: slotWidths.map(x => `${url(x)} ${x}w`).join(', '),
-    width: 1280,
-    height: Math.round(1280 / aspect),
+    ...variantSources(slotWidths, width, x =>
+      Firebase.fileUrl(slotPath(slot, image, x)),
+    ),
+    width,
+    height,
     alt,
     objectPosition: '50% 50%',
   };

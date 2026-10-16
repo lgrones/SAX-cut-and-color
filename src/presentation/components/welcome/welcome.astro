@@ -7,6 +7,16 @@ interface Props {
 }
 
 const { photo } = Astro.props;
+
+// The photo is its frame, at most 482px, less the frame's 22px. One column
+// below 900px, two from there, each wide enough for the whole frame from 1120px.
+const sizes = [
+  '(min-width: 1120px) 460px',
+  '(min-width: 900px) calc(43vw - 22px)',
+  '(min-width: 524px) 460px',
+  '(min-width: 400px) calc(92vw - 22px)',
+  'calc(100vw - 54px)',
+].join(', ');
 ---
 
 <section class="band">
@@ -35,7 +45,7 @@ const { photo } = Astro.props;
         <img
           src={photo.src}
           srcset={photo.srcset}
-          sizes="(min-width: 540px) 460px, 100vw"
+          sizes={sizes}
           width={photo.width}
           height={photo.height}
           alt={photo.alt}

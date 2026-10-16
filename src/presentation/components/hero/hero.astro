@@ -15,6 +15,15 @@ interface Props {
 }
 
 const { photo, week, hasPrices, contact } = Astro.props;
+
+// The photo is its column less the frame's 22px. Two columns from 1024px, where
+// 2 × 440px and the 6vw gap fit beside the 4vw gutters; the 1240px page caps it.
+const sizes = [
+  '(min-width: 1240px) 512px',
+  '(min-width: 1024px) calc(43vw - 22px)',
+  '(min-width: 400px) calc(92vw - 22px)',
+  'calc(100vw - 54px)',
+].join(', ');
 ---
 
 <section class:list={['hero', !photo && 'text-only']}>
@@ -53,7 +62,7 @@ const { photo, week, hasPrices, contact } = Astro.props;
       <img
         src={photo.src}
         srcset={photo.srcset}
-        sizes="(min-width: 1000px) 560px, 100vw"
+        sizes={sizes}
         width={photo.width}
         height={photo.height}
         alt={photo.alt}
