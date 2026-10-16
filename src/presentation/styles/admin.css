@@ -62,10 +62,12 @@ svg {
 
 .admin {
   display: grid;
+  grid-template-rows: auto 1fr;
   grid-template-columns: minmax(0, 1fr);
   min-height: 100dvh;
 
   @media (min-width: 768px) {
+    grid-template-rows: none;
     grid-template-columns: 15rem minmax(0, 1fr);
   }
 }
@@ -117,14 +119,21 @@ svg {
   }
 }
 
+/* on phones the sections scroll sideways in one row, bleeding to the edges */
 .nav {
   display: flex;
-  flex-wrap: wrap;
   gap: 0.25rem;
+  margin-inline: -1rem;
+  padding-inline: 1rem;
+  overflow-x: auto;
   list-style: none;
+  scrollbar-width: none;
 
   @media (min-width: 768px) {
     flex-direction: column;
+    margin-inline: 0;
+    padding-inline: 0;
+    overflow-x: visible;
   }
 }
 
@@ -175,6 +184,18 @@ svg {
     margin-left: 0;
     padding-top: 1rem;
     border-top: 1px solid var(--admin-border);
+  }
+}
+
+/* on phones the actions are icons beside the brand, named for screen readers */
+.nav-action-label {
+  @media (max-width: 767.98px) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    white-space: nowrap;
+    clip-path: inset(50%);
   }
 }
 

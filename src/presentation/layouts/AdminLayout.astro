@@ -105,7 +105,7 @@ const email = Astro.locals.user?.email;
             >
               <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path>
             </svg>
-            Website ansehen
+            <span class="nav-action-label">Website ansehen</span>
           </a>
 
           <form method="post" action="/api/auth/signout">
@@ -123,7 +123,7 @@ const email = Astro.locals.user?.email;
               >
                 <path d="M9 20H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h4M16 16l4-4-4-4M20 12H9"></path>
               </svg>
-              Abmelden
+              <span class="nav-action-label">Abmelden</span>
             </button>
           </form>
         </div>
@@ -140,3 +140,16 @@ const email = Astro.locals.user?.email;
     </div>
   </body>
 </html>
+
+<script>
+  // On phones the sections scroll sideways, so later ones start out of view:
+  // centre the current one. Only the strip scrolls, never the page.
+  const nav = document.querySelector<HTMLElement>('.nav');
+  const current = nav?.querySelector('[aria-current="page"]');
+
+  if (nav && current) {
+    const strip = nav.getBoundingClientRect();
+    const link = current.getBoundingClientRect();
+    nav.scrollLeft += link.left - strip.left - (strip.width - link.width) / 2;
+  }
+</script>
