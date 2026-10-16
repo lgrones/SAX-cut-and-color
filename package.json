@@ -15,7 +15,8 @@
     "format:fix": "oxfmt && prettier --write \"**/*.astro\"",
     "astro:check": "astro check",
     "astro": "astro",
-    "release": "pnpm build && pnpm release:server && pnpm release:hosting",
+    "release": "pnpm build && pnpm release:rules && pnpm release:server && pnpm release:hosting",
+    "release:rules": "firebase deploy --only firestore:rules,storage",
     "release:server": "gcloud run deploy web --source . --project sax-cut-and-color --region europe-west1 --allow-unauthenticated --set-secrets PROJECT_ID=PROJECT_ID:latest,CLIENT_EMAIL=CLIENT_EMAIL:latest,PRIVATE_KEY=PRIVATE_KEY:latest",
     "release:hosting": "firebase deploy --only hosting"
   },

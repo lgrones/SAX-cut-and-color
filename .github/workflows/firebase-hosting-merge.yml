@@ -17,12 +17,16 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm i --frozen-lockfile && pnpm validate && pnpm build
-      # Server first: its pages link the new hashed assets, which the server
-      # also ships, so they load from it until Hosting has them
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SAX_CUT_AND_COLOR }}'
       - uses: google-github-actions/setup-gcloud@v2
+      # Rules first: the server's pages link Storage images that only the
+      # storage rules make public. The Firebase CLI picks up the credentials
+      # the auth step exported.
+      - run: npm install -g firebase-tools@15 && pnpm release:rules
+      # Server before Hosting: its pages link the new hashed assets, which the
+      # server also ships, so they load from it until Hosting has them
       - run: pnpm release:server
       - uses: FirebaseExtended/action-hosting-deploy@v0.11
         with:

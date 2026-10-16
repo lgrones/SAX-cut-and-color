@@ -44,6 +44,22 @@ done
 
 `storage.admin` covers the bucket `gcloud run deploy --source` uploads the source to.
 
+CI also deploys `firestore.rules` and `storage.rules` (`pnpm release:rules`),
+which needs three more roles:
+
+```sh
+for role in roles/firebaserules.admin roles/firebasestorage.viewer \
+  roles/serviceusage.serviceUsageConsumer; do
+  gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:$CI_SA --role $role
+done
+```
+
+- `firebaserules.admin` creates and releases the rulesets.
+- `firebasestorage.viewer` lets the CLI look up the default bucket the storage
+  rules apply to.
+- `serviceUsageConsumer` lets the CLI check that the Firestore and Storage APIs
+  are enabled before it deploys.
+
 ## 4. First deploy
 
 ```sh
