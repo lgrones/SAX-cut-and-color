@@ -16,11 +16,13 @@ interface Props {
 
 const { photo, week, hasPrices, contact } = Astro.props;
 
-// The photo is its column less the frame's 22px. Two columns from 1024px, where
-// 2 × 440px and the 6vw gap fit beside the 4vw gutters; the 1240px page caps it.
+// The photo is its frame, at most 534px, less the frame's 22px. Two columns from
+// 1024px, where 2 × 440px and the 6vw gap fit beside the 4vw gutters, reaching
+// the cap at 1240px; one column reaches it from 581px.
 const sizes = [
   '(min-width: 1240px) 512px',
   '(min-width: 1024px) calc(43vw - 22px)',
+  '(min-width: 581px) 512px',
   '(min-width: 400px) calc(92vw - 22px)',
   'calc(100vw - 54px)',
 ].join(', ');
@@ -51,8 +53,9 @@ const sizes = [
       <Today week={week} />
       <div class="fact">
         <span class="fact-label">Adresse</span>
-        <span>{contact.street}</span>
-        <span>{contact.town}</span>
+        <span>
+          {contact.street}, {contact.town}
+        </span>
       </div>
     </div>
   </div>
@@ -133,9 +136,11 @@ const sizes = [
     }
   }
 
-  /* offset gold frame behind the photo */
+  /* offset gold frame behind the photo, in one column no larger than in two */
   .frame {
     position: relative;
+    width: 100%;
+    max-width: 534px;
     padding: 0 22px 22px 0;
 
     &::before {
