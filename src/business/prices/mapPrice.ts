@@ -8,6 +8,15 @@ const amount = (value: unknown): number | undefined => {
   return typeof number === 'number' && number > 0 ? number : undefined;
 };
 
+// Without a usable place the category goes after all placed ones
+const place = (value: unknown): number => {
+  const number =
+    typeof value === 'string' && value.trim() ? Number(value) : value;
+  return typeof number === 'number' && Number.isFinite(number)
+    ? number
+    : Number.POSITIVE_INFINITY;
+};
+
 const mapItem = (value: unknown): PriceItem => {
   const item = (value ?? {}) as Record<string, unknown>;
   const priceMin = amount(item.priceMin);
@@ -27,6 +36,6 @@ export const mapPrice = ({
 }: FirestoreDocument): Price => ({
   id,
   mainTitle: typeof mainTitle === 'string' ? mainTitle : '',
-  index: Number(index),
+  index: place(index),
   prices: Array.isArray(prices) ? prices.map(mapItem) : [],
 });
