@@ -2,11 +2,16 @@
 export const prerender = false;
 
 import { getOpeningHours } from '@business/openingHours/getOpeningHours';
+import { getHiddenSections } from '@business/pageSections/getHiddenSections';
 import AdminLayout from '@presentation/layouts/AdminLayout.astro';
+import { SectionToggle } from '@presentation/components/admin/pageSections/sectionToggle';
 import { OpeningHoursEditor } from '@presentation/components/admin/openingHours/openingHoursEditor';
 
 // Access is checked by the auth middleware
-const openingHours = await getOpeningHours();
+const [openingHours, hidden] = await Promise.all([
+  getOpeningHours(),
+  getHiddenSections(),
+]);
 ---
 
 <AdminLayout
@@ -14,5 +19,10 @@ const openingHours = await getOpeningHours();
   title="Öffnungszeiten"
   description="Erscheinen auf der Startseite unter „Zeiten“."
 >
+  <SectionToggle
+    section="hours"
+    shown={!hidden.includes('hours')}
+    client:load
+  />
   <OpeningHoursEditor openingHours={openingHours} client:load />
 </AdminLayout>

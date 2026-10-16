@@ -17,8 +17,8 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm i --frozen-lockfile && pnpm validate && pnpm build
-      # Server first: the new pages reference server islands only the new
-      # server can decrypt
+      # Server first: its pages link the new hashed assets, which the server
+      # also ships, so they load from it until Hosting has them
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SAX_CUT_AND_COLOR }}'

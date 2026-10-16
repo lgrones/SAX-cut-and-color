@@ -7,7 +7,13 @@ import { defineConfig, envField, fontProviders } from 'astro/config';
 export default defineConfig({
   adapter: node({ mode: 'standalone' }),
   site: 'https://www.sax-cut-and-colour.at',
-  integrations: [sitemap(), preact()],
+  integrations: [
+    // the back office has nothing to index
+    sitemap({
+      filter: page => !/^\/(admin|signin)(\/|$)/.test(new URL(page).pathname),
+    }),
+    preact(),
+  ],
   // Downloaded at build time and served from our own domain, so visitors
   // never contact Google (GDPR)
   fonts: [

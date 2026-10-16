@@ -1,17 +1,23 @@
 ---
-import Loading from '../loading/loading.astro';
+import type { OpeningHours } from '@domain/openingHours';
 import Days from './days.astro';
+
+interface Props {
+  week: OpeningHours[];
+}
+
+const { week } = Astro.props;
 ---
 
 <div id="zeiten" class="column">
   <div class="heading">
-    <p class="eyebrow">05 — Zeiten</p>
+    <p class="eyebrow">
+      <span class="eyebrow-numbered">Zeiten</span>
+    </p>
     <h2 class="heading-column">Öffnungszeiten</h2>
   </div>
 
-  <Days server:defer>
-    <Loading slot="fallback" minHeight="30rem" />
-  </Days>
+  <Days week={week} />
 </div>
 
 <style>

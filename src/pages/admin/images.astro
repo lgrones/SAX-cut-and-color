@@ -3,6 +3,7 @@ export const prerender = false;
 
 import { getImages } from '@business/images/getImages';
 import { originalUrl } from '@business/images/imageFiles';
+import { SiteImage } from '@domain/image';
 import AdminLayout from '@presentation/layouts/AdminLayout.astro';
 import {
   type EditorImages,
@@ -10,19 +11,21 @@ import {
 } from '@presentation/components/admin/images/imagesEditor';
 
 // Access is checked by the auth middleware
-const { hero, portrait, gallery } = await getImages();
+const stored = await getImages();
 
 const images: EditorImages = {
-  ...(hero && { hero: { ...hero, src: originalUrl(hero.id) } }),
-  ...(portrait && { portrait: { ...portrait, src: originalUrl(portrait.id) } }),
-  gallery: gallery.map(x => ({ ...x, src: originalUrl(x.id) })),
+  gallery: stored.gallery.map(x => ({ ...x, src: originalUrl(x.id) })),
 };
+for (const slot of SiteImage.slotNames) {
+  const image = stored[slot];
+  if (image) images[slot] = { ...image, src: originalUrl(image.id) };
+}
 ---
 
 <AdminLayout
   section="images"
   title="Bilder"
-  description="Startbild, Porträt und Galerie der Startseite. Neue Bilder sind nach dem Speichern innerhalb weniger Minuten zu sehen."
+  description="Startbild, Porträt, Karte und Galerie der Startseite. Neue Bilder sind nach dem Speichern innerhalb weniger Minuten zu sehen."
 >
   <ImagesEditor images={images} client:load />
 </AdminLayout>

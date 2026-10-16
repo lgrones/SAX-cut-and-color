@@ -1,14 +1,14 @@
 ---
-import { getOpeningHours } from '@business/openingHours/getOpeningHours';
 import { OpeningHours } from '@domain/openingHours';
 
-const week = await getOpeningHours();
+interface Props {
+  /** Empty while the opening hours aren't shown, and then so is today */
+  week: OpeningHours[];
+}
+
+const { week } = Astro.props;
 const today = week[OpeningHours.todayIndex(new Date())];
 const ranges = today ? OpeningHours.ranges(today) : [];
-
-// Always fetch fresh data so admin edits and the day change show up on the
-// next page view
-Astro.response.headers.set('Cache-Control', 'no-store');
 ---
 
 {today && (

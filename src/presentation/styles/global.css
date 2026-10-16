@@ -151,6 +151,11 @@ textarea {
   border-block: 1px solid var(--gold-faint);
 }
 
+/* sections are numbered in page order, so a hidden one leaves no gap */
+main {
+  counter-reset: section;
+}
+
 /* "02 — Preise" above a heading */
 .eyebrow {
   display: flex;
@@ -168,6 +173,11 @@ textarea {
     height: 1px;
     background-color: var(--gold);
   }
+}
+
+.eyebrow-numbered::before {
+  content: counter(section, decimal-leading-zero) ' — ';
+  counter-increment: section;
 }
 
 .serif {

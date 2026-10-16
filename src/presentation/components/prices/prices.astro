@@ -1,17 +1,23 @@
 ---
-import Loading from '../loading/loading.astro';
+import type { Price } from '@domain/price';
 import PriceList from './priceList.astro';
+
+interface Props {
+  categories: Price[];
+}
+
+const { categories } = Astro.props;
 ---
 
 <section id="preise" class="section prices">
   <div class="heading">
-    <p class="eyebrow">02 — Preise</p>
+    <p class="eyebrow">
+      <span class="eyebrow-numbered">Preise</span>
+    </p>
     <h2 class="heading-section">Preisliste</h2>
   </div>
 
-  <PriceList server:defer>
-    <Loading slot="fallback" minHeight="40rem" />
-  </PriceList>
+  <PriceList categories={categories} />
 
   <div class="note">
     <span class="line" aria-hidden="true"></span>

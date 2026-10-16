@@ -6,8 +6,8 @@ import type { ImageSource } from './imageSource';
 
 /**
  * A fixed slot's image. Needs no database: the files are stored already cropped
- * under fixed URLs, so a prerendered page can link them and a replaced image
- * shows up within the short cache time.
+ * under fixed URLs, so a replaced image shows up within the short cache time.
+ * Whether an optional slot has an image at all only the stored images know.
  */
 export const getSlotImage = (slot: ImageSlot): ImageSource => {
   const { aspect, alt } = SiteImage.slots[slot];

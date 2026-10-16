@@ -1,10 +1,18 @@
 ---
 import { getSlotImage } from '@business/images/getSlotImage';
-import { contact } from '@domain/contact';
+import { Contact } from '@domain/contact';
+import type { OpeningHours } from '@domain/openingHours';
 import Icon from '../icon/icon.astro';
-import Loading from '../loading/loading.astro';
 import Today from '../openingHours/today.astro';
 
+interface Props {
+  week: OpeningHours[];
+  /** Whether the page has a price list to jump to */
+  hasPrices: boolean;
+  contact: Contact;
+}
+
+const { week, hasPrices, contact } = Astro.props;
 const photo = getSlotImage('hero');
 ---
 
@@ -19,22 +27,22 @@ const photo = getSlotImage('hero');
       betreut von Petra Zangerl.
     </p>
     <div class="button-row">
-      <a class="btn btn-gold" href={contact.phone.href}>
+      <a class="btn btn-gold" href={Contact.phoneHref(contact)}>
         <Icon name="phone" size={16} strokeWidth={1.6} />
         Termin vereinbaren
       </a>
-      <a class="btn btn-ghost" href="#preise">
-        Preise ansehen
-      </a>
+      {hasPrices && (
+        <a class="btn btn-ghost" href="#preise">
+          Preise ansehen
+        </a>
+      )}
     </div>
     <div class="facts">
-      <Today server:defer>
-        <Loading slot="fallback" minHeight="4.5rem" />
-      </Today>
+      <Today week={week} />
       <div class="fact">
         <span class="fact-label">Adresse</span>
-        <span>Landstraße 46</span>
-        <span>6911 Lochau</span>
+        <span>{contact.street}</span>
+        <span>{contact.town}</span>
       </div>
     </div>
   </div>

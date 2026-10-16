@@ -22,11 +22,9 @@ import { type UploadedImage, uploadPhoto } from './uploadPhoto';
 
 type GalleryDraft = UploadedImage & { alt: string };
 
-export interface EditorImages {
-  hero?: UploadedImage;
-  portrait?: UploadedImage;
+export type EditorImages = Partial<Record<ImageSlot, UploadedImage>> & {
   gallery: GalleryDraft[];
-}
+};
 
 interface Removed {
   draft: GalleryDraft;
@@ -36,11 +34,20 @@ interface Removed {
 // The shapes a gallery tile takes in the page grid, across breakpoints
 const galleryAspects = [1, 2, 1 / 2, 3 / 2];
 
-const payload = ({ hero, portrait, gallery }: EditorImages) => ({
-  hero: hero ? { id: hero.id, focus: hero.focus } : null,
-  portrait: portrait ? { id: portrait.id, focus: portrait.focus } : null,
-  gallery: gallery.map(({ id, focus, alt }) => ({ id, focus, alt })),
+const payload = (images: EditorImages) => ({
+  ...Object.fromEntries(
+    SiteImage.slotNames.map(slot => {
+      const image = images[slot];
+      return [slot, image ? { id: image.id, focus: image.focus } : null];
+    }),
+  ),
+  gallery: images.gallery.map(({ id, focus, alt }) => ({ id, focus, alt })),
 });
+
+const allImages = (images: EditorImages) => [
+  ...SiteImage.slotNames.flatMap(slot => images[slot] ?? []),
+  ...images.gallery,
+];
 
 export const ImagesEditor = ({ images }: { images: EditorImages }) => {
   const [saved, setSaved] = useState(images);
@@ -133,20 +140,16 @@ export const ImagesEditor = ({ images }: { images: EditorImages }) => {
 
     // the server answers with the stored images; their originals are known
     const stored = result.data as SiteImages;
-    const src = new Map(
-      [draft.hero, draft.portrait, ...draft.gallery].flatMap(x =>
-        x ? [[x.id, x.src] as const] : [],
-      ),
-    );
+    const src = new Map(allImages(draft).map(x => [x.id, x.src] as const));
     const withSrc = <T extends SiteImage>(image: T) => ({
       ...image,
       src: src.get(image.id) ?? '',
     });
-    const next: EditorImages = {
-      ...(stored.hero && { hero: withSrc(stored.hero) }),
-      ...(stored.portrait && { portrait: withSrc(stored.portrait) }),
-      gallery: stored.gallery.map(withSrc),
-    };
+    const next: EditorImages = { gallery: stored.gallery.map(withSrc) };
+    for (const slot of SiteImage.slotNames) {
+      const image = stored[slot];
+      if (image) next[slot] = withSrc(image);
+    }
 
     setSaved(next);
     setDraft(next);
@@ -157,6 +160,7 @@ export const ImagesEditor = ({ images }: { images: EditorImages }) => {
   const lastRemoved = removed.at(-1);
   const slot = (name: ImageSlot) => (
     <SlotCard
+      key={name}
       slot={name}
       image={draft[name]}
       uploading={uploading > 0}
@@ -169,6 +173,7 @@ export const ImagesEditor = ({ images }: { images: EditorImages }) => {
       onReplace={file =>
         void upload([file], image => edit(prev => ({ ...prev, [name]: image })))
       }
+      onRemove={() => edit(({ [name]: _removed, ...rest }) => rest)}
     />
   );
 
@@ -181,10 +186,7 @@ export const ImagesEditor = ({ images }: { images: EditorImages }) => {
       />
 
       <div className="panel">
-        <div className="slots">
-          {slot('hero')}
-          {slot('portrait')}
-        </div>
+        <div className="slots">{SiteImage.slotNames.map(slot)}</div>
 
         <div className="gallery-head">
           <h2>Galerie</h2>
@@ -303,14 +305,17 @@ const SlotCard = ({
   uploading,
   onFocus,
   onReplace,
+  onRemove,
 }: {
   slot: ImageSlot;
   image: UploadedImage | undefined;
   uploading: boolean;
   onFocus: (focus: Focus) => void;
   onReplace: (file: File) => void;
+  /** Only an optional slot can be left without an image */
+  onRemove: () => void;
 }) => {
-  const { label, aspect } = SiteImage.slots[slot];
+  const { label, aspect, optional } = SiteImage.slots[slot];
   const [editing, setEditing] = useState(false);
 
   const replace = ([file]: File[]) => {
@@ -321,7 +326,10 @@ const SlotCard = ({
 
   return (
     <DropZone className="slot" disabled={uploading} onFiles={replace}>
-      <h2>{label}</h2>
+      <h2>
+        {label}
+        {optional && <span className="slot-optional"> (optional)</span>}
+      </h2>
 
       {image ? (
         editing ? (
@@ -360,6 +368,20 @@ const SlotCard = ({
             onClick={() => setEditing(prev => !prev)}
           >
             {editing ? 'Fertig' : 'Ausschnitt'}
+          </button>
+        )}
+
+        {image && optional && (
+          <button
+            type="button"
+            className="button button-secondary button-danger"
+            onClick={() => {
+              setEditing(false);
+              onRemove();
+            }}
+          >
+            <TrashIcon />
+            Entfernen
           </button>
         )}
       </div>

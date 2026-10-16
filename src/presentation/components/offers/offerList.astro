@@ -1,10 +1,11 @@
 ---
-import { getOffers } from '@business/offers/getOffers';
+import type { Offer } from '@domain/offer';
 
-const offers = await getOffers();
+interface Props {
+  offers: Offer[];
+}
 
-// Always fetch fresh data so admin edits show up on the next page view
-Astro.response.headers.set('Cache-Control', 'no-store');
+const { offers } = Astro.props;
 ---
 
 <div class="grid">

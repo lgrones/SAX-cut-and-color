@@ -1,50 +1,74 @@
 ---
-import { Image } from 'astro:assets';
-import { contact } from '@domain/contact';
-import map from '../../assets/map.png';
+import type { ImageSource } from '@business/images/imageSource';
+import { Contact } from '@domain/contact';
 import Icon from '../icon/icon.astro';
+
+interface Props {
+  contact: Contact;
+  /** Left out while the admin has no map */
+  map: ImageSource | undefined;
+}
+
+const { contact, map } = Astro.props;
+const mapHref = Contact.mapHref(contact);
 ---
 
 <div id="kontakt" class="column">
   <div class="heading">
-    <p class="eyebrow">06 — Kontakt</p>
+    <p class="eyebrow">
+      <span class="eyebrow-numbered">Kontakt</span>
+    </p>
     <h2 class="heading-column">So finden Sie mich</h2>
   </div>
 
   <div class="rows">
-    <a class="row" href={contact.phone.href}>
+    <a class="row" href={Contact.phoneHref(contact)}>
       <Icon name="phone" size={22} strokeWidth={1.5} />
-      {contact.phone.label}
+      {contact.phone}
     </a>
-    <a class="row" href={contact.whatsapp.href} target="_blank" rel="noopener">
-      <Icon name="chat" size={22} strokeWidth={1.5} />
-      {contact.whatsapp.label}
-    </a>
-    <a class="row" href={contact.email.href}>
+    {contact.whatsapp && (
+      <a
+        class="row"
+        href={Contact.whatsappHref(contact)}
+        target="_blank"
+        rel="noopener"
+      >
+        <Icon name="chat" size={22} strokeWidth={1.5} />
+        Gerne auch per WhatsApp
+      </a>
+    )}
+    <a class="row" href={Contact.emailHref(contact)}>
       <Icon name="mail" size={22} strokeWidth={1.5} />
-      {contact.email.label}
+      {contact.email}
     </a>
-    <div class="row">
+    <a class="row" href={mapHref} target="_blank" rel="noopener">
       <Icon name="pin" size={22} strokeWidth={1.5} />
-      {contact.address.label}
-    </div>
+      {Contact.address(contact)}
+    </a>
   </div>
 
-  <div class="map">
-    <Image
-      src={map}
-      alt="Karte: SAX Cut + Colour in Lochau, zwischen Bregenz und Lindau"
-      class="map-image"
-    />
-    <a
-      class="btn btn-sm btn-ghost map-link"
-      href={contact.address.href}
-      target="_blank"
-      rel="noopener"
-    >
-      Zur Karte
-    </a>
-  </div>
+  {map && (
+    <div class="map">
+      <img
+        src={map.src}
+        srcset={map.srcset}
+        sizes="(min-width: 1100px) 520px, 100vw"
+        width={map.width}
+        height={map.height}
+        alt={`Karte: SAX Cut + Colour, ${Contact.address(contact)}`}
+        loading="lazy"
+        class="map-image"
+      />
+      <a
+        class="btn btn-sm btn-ghost map-link"
+        href={mapHref}
+        target="_blank"
+        rel="noopener"
+      >
+        Zur Karte
+      </a>
+    </div>
+  )}
 </div>
 
 <style>
@@ -91,7 +115,7 @@ import Icon from '../icon/icon.astro';
 
   .map-image {
     width: 100%;
-    aspect-ratio: 433 / 265;
+    aspect-ratio: 8 / 5;
     object-fit: cover;
   }
 

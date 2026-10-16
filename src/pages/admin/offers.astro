@@ -2,11 +2,13 @@
 export const prerender = false;
 
 import { getOffers } from '@business/offers/getOffers';
+import { getHiddenSections } from '@business/pageSections/getHiddenSections';
 import AdminLayout from '@presentation/layouts/AdminLayout.astro';
+import { SectionToggle } from '@presentation/components/admin/pageSections/sectionToggle';
 import { OffersEditor } from '@presentation/components/admin/offers/offersEditor';
 
 // Access is checked by the auth middleware
-const offers = await getOffers();
+const [offers, hidden] = await Promise.all([getOffers(), getHiddenSections()]);
 ---
 
 <AdminLayout
@@ -14,5 +16,10 @@ const offers = await getOffers();
   title="Angebote"
   description="Erscheinen auf der Startseite in dieser Reihenfolge. Zum Ändern antippen, zum Verschieben am Griff ziehen."
 >
+  <SectionToggle
+    section="offers"
+    shown={!hidden.includes('offers')}
+    client:load
+  />
   <OffersEditor offers={offers} client:load />
 </AdminLayout>

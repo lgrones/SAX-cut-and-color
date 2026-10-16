@@ -17,25 +17,44 @@ export interface GalleryImage extends SiteImage {
   alt: string;
 }
 
-/** The images of the page: two fixed slots and a gallery in display order */
-export interface SiteImages {
-  hero?: SiteImage;
-  portrait?: SiteImage;
+const slotNames = ['hero', 'portrait', 'map'] as const;
+
+/** A fixed place on the page that shows one image */
+export type ImageSlot = (typeof slotNames)[number];
+
+/** The images of the page: the fixed slots and a gallery in display order */
+export type SiteImages = Partial<Record<ImageSlot, SiteImage>> & {
   gallery: GalleryImage[];
-}
+};
 
-export type ImageSlot = 'hero' | 'portrait';
-
-/** The fixed slots as the page design shows them: aspect is width / height */
-const slots: Record<ImageSlot, { label: string; alt: string; aspect: number }> =
-  {
-    hero: {
-      label: 'Startbild',
-      alt: 'Im Salon SAX Cut + Colour',
-      aspect: 4 / 5,
-    },
-    portrait: { label: 'Porträt', alt: 'Petra Zangerl', aspect: 1 },
-  };
+/**
+ * The fixed slots as the page design shows them: aspect is width / height. The
+ * page leaves an optional slot out while it has no image, a required one it
+ * always shows.
+ */
+const slots: Record<
+  ImageSlot,
+  { label: string; alt: string; aspect: number; optional: boolean }
+> = {
+  hero: {
+    label: 'Startbild',
+    alt: 'Im Salon SAX Cut + Colour',
+    aspect: 4 / 5,
+    optional: false,
+  },
+  portrait: {
+    label: 'Porträt',
+    alt: 'Petra Zangerl',
+    aspect: 1,
+    optional: false,
+  },
+  map: {
+    label: 'Karte',
+    alt: 'Karte mit dem Weg zum Salon',
+    aspect: 8 / 5,
+    optional: true,
+  },
+};
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 
@@ -64,4 +83,4 @@ const objectPosition = ({ x, y }: Focus) =>
 const problem = (image: Pick<GalleryImage, 'alt'>): string | undefined =>
   image.alt.trim() ? undefined : 'Bildbeschreibung fehlt';
 
-export const SiteImage = { slots, crop, objectPosition, problem };
+export const SiteImage = { slotNames, slots, crop, objectPosition, problem };

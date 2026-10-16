@@ -1,10 +1,11 @@
 ---
-import { getGallery } from '@business/images/getGallery';
+import type { ImageSource } from '@business/images/imageSource';
 
-const images = await getGallery();
+interface Props {
+  images: ImageSource[];
+}
 
-// Always fetch fresh data so admin edits show up on the next page view
-Astro.response.headers.set('Cache-Control', 'no-store');
+const { images } = Astro.props;
 
 // From 760px every four images fill the 4-column grid as wide (2×2), tall
 // (1×2) and two regular tiles stacked beside them

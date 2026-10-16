@@ -1,10 +1,23 @@
 ---
+export const prerender = false;
+
+import { getContact } from '@business/contact/getContact';
+import { getStartPage } from '@business/startPage/getStartPage';
 import Layout from '@presentation/layouts/Layout.astro';
-import { contact } from '@domain/contact';
+import { Contact } from '@domain/contact';
 import Icon from '@presentation/components/icon/icon.astro';
+
+// Rendered on request for the contact details, which the admin edits; the
+// navigation also links only the sections the start page shows
+const [startPage, contact] = await Promise.all([getStartPage(), getContact()]);
+Astro.response.headers.set('Cache-Control', 'no-cache');
 ---
 
-<Layout title="SAX Cut + Colour Impressum">
+<Layout
+  title="SAX Cut + Colour Impressum"
+  startPage={startPage}
+  contact={contact}
+>
   <section class="section legal">
     <h1 class="heading-section">Impressum</h1>
 
@@ -12,19 +25,19 @@ import Icon from '@presentation/components/icon/icon.astro';
     <address>
       Sax Cut + Colour by Petra Zangerl
       <br />
-      Landstraße 46
+      {contact.street}
       <br />
-      6911 Lochau
+      {contact.town}
       <br />
       Austria
       <br />
-      <a href={contact.phone.href} class="text-link phone">
+      <a href={Contact.phoneHref(contact)} class="text-link phone">
         <Icon name="phone" size={16} strokeWidth={1.6} />
-        {contact.phone.label}
+        {contact.phone}
       </a>
       <br />
-      <a href={contact.email.href} class="text-link">
-        {contact.email.label}
+      <a href={Contact.emailHref(contact)} class="text-link">
+        {contact.email}
       </a>
       <br />
       ATU 63588237

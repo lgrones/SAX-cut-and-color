@@ -1,22 +1,29 @@
 ---
-import { contact } from '@domain/contact';
+import { Contact } from '@domain/contact';
+import type { Offer } from '@domain/offer';
 import Icon from '../icon/icon.astro';
-import Loading from '../loading/loading.astro';
 import OfferList from './offerList.astro';
+
+interface Props {
+  offers: Offer[];
+  contact: Contact;
+}
+
+const { offers, contact } = Astro.props;
 ---
 
 <section id="angebote" class="band">
   <div class="section offers">
     <div class="heading">
-      <p class="eyebrow">03 — Angebote</p>
+      <p class="eyebrow">
+        <span class="eyebrow-numbered">Angebote</span>
+      </p>
       <h2 class="heading-section">
         Marken, denen ich <em class="accent">vertraue</em>
       </h2>
     </div>
 
-    <OfferList server:defer>
-      <Loading slot="fallback" minHeight="36rem" />
-    </OfferList>
+    <OfferList offers={offers} />
 
     <!-- outside the grid on purpose, so it never sits in a card slot -->
     <div class="consult">
@@ -27,7 +34,7 @@ import OfferList from './offerList.astro';
           Haar.
         </p>
       </div>
-      <a class="btn btn-sm btn-ghost" href={contact.phone.href}>
+      <a class="btn btn-sm btn-ghost" href={Contact.phoneHref(contact)}>
         <Icon name="phone" size={16} strokeWidth={1.6} />
         Beratung anfragen
       </a>

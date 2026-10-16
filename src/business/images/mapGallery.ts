@@ -1,15 +1,12 @@
-import { SiteImage } from '@domain/image';
+import { type GalleryImage, SiteImage } from '@domain/image';
 import { Firebase } from '@services/firebase';
 
-import { getImages } from './getImages';
 import { galleryPath, galleryWidths } from './imageFiles';
 import type { ImageSource } from './imageSource';
 
 /** The gallery in display order, ready for `<img>` with `object-fit: cover` */
-export const getGallery = async (): Promise<ImageSource[]> => {
-  const { gallery } = await getImages();
-
-  return gallery.map(image => {
+export const mapGallery = (gallery: GalleryImage[]): ImageSource[] =>
+  gallery.map(image => {
     const url = (width: number) =>
       Firebase.fileUrl(galleryPath(image.id, width));
     // Variants are never upscaled, so of the widths beyond the original's
@@ -31,4 +28,3 @@ export const getGallery = async (): Promise<ImageSource[]> => {
       objectPosition: SiteImage.objectPosition(image.focus),
     };
   });
-};

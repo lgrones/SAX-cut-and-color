@@ -1,4 +1,6 @@
 ---
+import type { StartPage } from '@business/startPage/getStartPage';
+import { Contact } from '@domain/contact';
 import { Font, Image } from 'astro:assets';
 import logo from '../assets/logo.png';
 import Navigation from '../components/navigation/Navigation.astro';
@@ -7,15 +9,23 @@ import '../styles/global.css';
 
 interface Props {
   title: string;
+  startPage: StartPage;
+  contact: Contact;
   description?: string;
   disableScrollSmooth?: boolean;
 }
 
 const {
   title,
-  description = 'Friseursalon SAX Cut + Colour by Petra Zangerl in Lochau: Schnitt, Farbe und Pflege. Landstraße 46, 6911 Lochau.',
+  startPage,
+  contact,
+  description = `Friseursalon SAX Cut + Colour by Petra Zangerl: Schnitt, Farbe und Pflege. ${Contact.address(contact)}.`,
   disableScrollSmooth,
 } = Astro.props;
+
+// Rendered on Cloud Run behind Hosting, where the request URL carries the
+// service's own host instead of the site's
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 ---
 
 <!doctype html>
@@ -30,7 +40,7 @@ const {
       favicon="/favicon.png"
       author="Petra Zangerl"
       astroSitemap
-      canonicalUrl={Astro.url.toString()}
+      canonicalUrl={canonicalUrl}
       type="website"
       astroGenerator
     />
@@ -38,7 +48,7 @@ const {
     <Font cssVariable="--font-sans" preload />
   </head>
   <body>
-    <Navigation />
+    <Navigation startPage={startPage} contact={contact} />
 
     <main>
       <slot />

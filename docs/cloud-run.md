@@ -1,6 +1,6 @@
 # Cloud Run setup
 
-One-time setup for the `web` service that serves server islands, admin and
+One-time setup for the `web` service that renders the pages, admin and
 `/api`. Firebase Hosting rewrites every non-static path to it (see
 `firebase.json`). Run everything once, before the first `pnpm release`.
 

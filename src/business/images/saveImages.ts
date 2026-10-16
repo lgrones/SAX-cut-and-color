@@ -17,6 +17,7 @@ import {
   originalPath,
   SHORT_CACHE,
   slotPath,
+  slotPrefix,
   slotWidths,
 } from './imageFiles';
 import { renderVariants } from './renderVariants';
@@ -30,6 +31,7 @@ const ref = z.object({ id: z.uuid(), focus });
 const schema = z.object({
   hero: ref.nullable(),
   portrait: ref.nullable(),
+  map: ref.nullable(),
   gallery: z.array(ref.extend({ alt: z.string() })),
 });
 
@@ -58,7 +60,12 @@ const saveSlot = async (
   next: Ref | null,
   stored: SiteImage | undefined,
 ): Promise<SiteImage | undefined> => {
-  if (!next) return stored;
+  if (!next) {
+    // an optional slot taken off the page
+    if (stored) await deleteFiles(slotPrefix(slot));
+    return undefined;
+  }
+
   if (stored?.id === next.id && sameFocus(stored.focus, next.focus))
     return stored;
 
@@ -93,17 +100,22 @@ const saveGalleryImage = async (
   return { ...image, alt };
 };
 
+const deleteFiles = async (prefix: string) => {
+  for (const file of await Firebase.listFiles(prefix)) {
+    await Firebase.deleteFile(file.path);
+  }
+};
+
+const allImages = (images: SiteImages) => [
+  ...SiteImage.slotNames.flatMap(slot => images[slot] ?? []),
+  ...images.gallery,
+];
+
 /** Deletes the files of images no longer used, and long abandoned uploads */
 const cleanUp = async (images: SiteImages, previous: SiteImages) => {
-  const used = new Set(
-    [images.hero, images.portrait, ...images.gallery].flatMap(x =>
-      x ? [x.id] : [],
-    ),
-  );
+  const used = new Set(allImages(images).map(x => x.id));
   const replaced = new Set(
-    [previous.hero, previous.portrait, ...previous.gallery].flatMap(x =>
-      x && !used.has(x.id) ? [x.id] : [],
-    ),
+    allImages(previous).flatMap(x => (used.has(x.id) ? [] : [x.id])),
   );
   const cutoff = Date.now() - ABANDONED_AFTER_MS;
 
@@ -116,9 +128,7 @@ const cleanUp = async (images: SiteImages, previous: SiteImages) => {
   }
 
   for (const id of replaced) {
-    for (const file of await Firebase.listFiles(galleryPrefix(id))) {
-      await Firebase.deleteFile(file.path);
-    }
+    await deleteFiles(galleryPrefix(id));
   }
 };
 
@@ -130,22 +140,24 @@ export const saveImages = async (input: unknown): Promise<SaveImagesResult> => {
   const parsed = schema.safeParse(input);
   if (!parsed.success) return { ok: false, message: 'Ungültige Eingabe' };
 
-  const { hero, portrait, gallery } = parsed.data;
+  const { gallery } = parsed.data;
   const problem = gallery.map(SiteImage.problem).find(x => x);
   if (problem) return { ok: false, message: problem };
 
   const previous = await getImages();
 
-  // a fixed slot can be replaced, but the page always links it
-  if ((previous.hero && !hero) || (previous.portrait && !portrait)) {
-    return { ok: false, message: 'Ungültige Eingabe' };
-  }
+  // a required slot can be replaced, but the page always links it
+  const removesRequired = SiteImage.slotNames.some(
+    slot =>
+      !SiteImage.slots[slot].optional && previous[slot] && !parsed.data[slot],
+  );
+  if (removesRequired) return { ok: false, message: 'Ungültige Eingabe' };
 
   const images: SiteImages = { gallery: [] };
-  const savedHero = await saveSlot('hero', hero, previous.hero);
-  const savedPortrait = await saveSlot('portrait', portrait, previous.portrait);
-  if (savedHero) images.hero = savedHero;
-  if (savedPortrait) images.portrait = savedPortrait;
+  for (const slot of SiteImage.slotNames) {
+    const saved = await saveSlot(slot, parsed.data[slot], previous[slot]);
+    if (saved) images[slot] = saved;
+  }
 
   for (const next of gallery) {
     const stored = previous.gallery.find(x => x.id === next.id);

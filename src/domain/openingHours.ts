@@ -61,6 +61,10 @@ const problem = (day: OpeningHours): string | undefined => {
   return undefined;
 };
 
+/** Whether the salon is open on any day of the week */
+const anyOpen = (week: OpeningHours[]): boolean =>
+  week.some(day => ranges(day).length > 0);
+
 // The salon's clock, whatever time zone the server runs in
 const timeZone = 'Europe/Vienna';
 const weekdayFormat = new Intl.DateTimeFormat('en-US', {
@@ -73,4 +77,11 @@ const shortWeekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const todayIndex = (now: Date): number =>
   shortWeekdays.indexOf(weekdayFormat.format(now));
 
-export const OpeningHours = { weekdays, week, ranges, problem, todayIndex };
+export const OpeningHours = {
+  weekdays,
+  week,
+  ranges,
+  anyOpen,
+  problem,
+  todayIndex,
+};

@@ -1,17 +1,23 @@
 ---
-import Loading from '../loading/loading.astro';
+import type { ImageSource } from '@business/images/imageSource';
 import GalleryList from './galleryList.astro';
+
+interface Props {
+  images: ImageSource[];
+}
+
+const { images } = Astro.props;
 ---
 
 <section id="salon" class="section salon">
   <div class="heading">
-    <p class="eyebrow">04 — Salon</p>
+    <p class="eyebrow">
+      <span class="eyebrow-numbered">Salon</span>
+    </p>
     <h2 class="heading-section">Einblicke</h2>
   </div>
 
-  <GalleryList server:defer>
-    <Loading slot="fallback" minHeight="34rem" />
-  </GalleryList>
+  <GalleryList images={images} />
 </section>
 
 <style>

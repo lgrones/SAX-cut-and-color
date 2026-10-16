@@ -1,16 +1,25 @@
 ---
 import { Image } from 'astro:assets';
 import logo from '../../assets/logo.png';
-import { contact } from '@domain/contact';
+import type { StartPage } from '@business/startPage/getStartPage';
+import { Contact } from '@domain/contact';
 import Icon from '../icon/icon.astro';
 
+interface Props {
+  /** Links only go to the sections the start page shows */
+  startPage: StartPage;
+  contact: Contact;
+}
+
+const { startPage, contact } = Astro.props;
+
 const links = [
-  { name: 'Angebote', id: 'angebote' },
-  { name: 'Preise', id: 'preise' },
-  { name: 'Salon', id: 'salon' },
-  { name: 'Zeiten', id: 'zeiten' },
-  { name: 'Kontakt', id: 'kontakt' },
-];
+  { name: 'Angebote', id: 'angebote', shown: startPage.offers.length > 0 },
+  { name: 'Preise', id: 'preise', shown: startPage.prices.length > 0 },
+  { name: 'Salon', id: 'salon', shown: startPage.gallery.length > 0 },
+  { name: 'Zeiten', id: 'zeiten', shown: startPage.hours.length > 0 },
+  { name: 'Kontakt', id: 'kontakt', shown: true },
+].filter(x => x.shown);
 ---
 
 <header id="site-header">
@@ -34,7 +43,7 @@ const links = [
       ))}
     </nav>
 
-    <a class="btn btn-gold call" href={contact.phone.href}>
+    <a class="btn btn-gold call" href={Contact.phoneHref(contact)}>
       <Icon name="phone" size={16} strokeWidth={1.6} />
       <span>
         Termin<span class="call-rest"> vereinbaren</span>

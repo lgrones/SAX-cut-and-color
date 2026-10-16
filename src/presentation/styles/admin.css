@@ -110,7 +110,6 @@ svg {
   order: 3;
   flex-basis: 100%;
   min-width: 0;
-  overflow-x: auto;
 
   @media (min-width: 768px) {
     order: 0;
@@ -120,6 +119,7 @@ svg {
 
 .nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.25rem;
   list-style: none;
 
@@ -149,7 +149,7 @@ svg {
   }
 }
 
-/* on phones the three sections only fit side by side without icons */
+/* on phones the sections take less room without icons */
 .nav-link svg {
   display: none;
 

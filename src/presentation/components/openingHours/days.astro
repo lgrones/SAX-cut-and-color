@@ -1,8 +1,11 @@
 ---
-import { getOpeningHours } from '@business/openingHours/getOpeningHours';
 import { OpeningHours } from '@domain/openingHours';
 
-const week = await getOpeningHours();
+interface Props {
+  week: OpeningHours[];
+}
+
+const { week } = Astro.props;
 const todayIndex = OpeningHours.todayIndex(new Date());
 
 const days = week.map(day => ({
@@ -10,10 +13,6 @@ const days = week.map(day => ({
   ranges: OpeningHours.ranges(day),
   today: day.index === todayIndex,
 }));
-
-// Always fetch fresh data so admin edits and the day change show up on the
-// next page view
-Astro.response.headers.set('Cache-Control', 'no-store');
 ---
 
 <div class="days">

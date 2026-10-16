@@ -1,6 +1,12 @@
 ---
-import { contact } from '@domain/contact';
+import { Contact } from '@domain/contact';
 import Icon from '../icon/icon.astro';
+
+interface Props {
+  contact: Contact;
+}
+
+const { contact } = Astro.props;
 ---
 
 <section class="closing">
@@ -17,11 +23,11 @@ import Icon from '../icon/icon.astro';
       Termine vereinbaren Sie am einfachsten telefonisch oder per E-Mail.
     </p>
     <div class="button-row">
-      <a class="btn btn-gold" href={contact.phone.href}>
+      <a class="btn btn-gold" href={Contact.phoneHref(contact)}>
         <Icon name="phone" size={16} strokeWidth={1.6} />
         Jetzt anrufen
       </a>
-      <a class="btn btn-ghost" href={contact.email.href}>
+      <a class="btn btn-ghost" href={Contact.emailHref(contact)}>
         E-Mail schreiben
       </a>
     </div>

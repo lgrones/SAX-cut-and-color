@@ -1,4 +1,9 @@
-import type { Focus, GalleryImage, SiteImage, SiteImages } from '@domain/image';
+import {
+  type Focus,
+  type GalleryImage,
+  SiteImage,
+  type SiteImages,
+} from '@domain/image';
 import type { FirestoreDocument } from '@services/firebase';
 
 const number = (value: unknown, fallback: number) =>
@@ -31,13 +36,17 @@ const mapGalleryImage = (value: unknown): GalleryImage[] => {
 export const mapImages = (
   document: FirestoreDocument | undefined,
 ): SiteImages => {
-  const { hero, portrait, gallery } = document?.data ?? {};
-  const heroImage = mapImage(hero);
-  const portraitImage = mapImage(portrait);
-
-  return {
-    ...(heroImage && { hero: heroImage }),
-    ...(portraitImage && { portrait: portraitImage }),
-    gallery: Array.isArray(gallery) ? gallery.flatMap(mapGalleryImage) : [],
+  const data = document?.data ?? {};
+  const images: SiteImages = {
+    gallery: Array.isArray(data.gallery)
+      ? data.gallery.flatMap(mapGalleryImage)
+      : [],
   };
+
+  for (const slot of SiteImage.slotNames) {
+    const image = mapImage(data[slot]);
+    if (image) images[slot] = image;
+  }
+
+  return images;
 };

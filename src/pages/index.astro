@@ -1,4 +1,8 @@
 ---
+export const prerender = false;
+
+import { getContact } from '@business/contact/getContact';
+import { getStartPage } from '@business/startPage/getStartPage';
 import Closing from '@presentation/components/closing/closing.astro';
 import Contact from '@presentation/components/contact/contact.astro';
 import Hero from '@presentation/components/hero/hero.astro';
@@ -8,23 +12,35 @@ import Prices from '@presentation/components/prices/prices.astro';
 import Salon from '@presentation/components/salon/salon.astro';
 import Welcome from '@presentation/components/welcome/welcome.astro';
 import Layout from '@presentation/layouts/Layout.astro';
+
+// Rendered on every request, so admin edits and the day change show up on the
+// next page view
+const [startPage, contact] = await Promise.all([getStartPage(), getContact()]);
+const { prices, offers, gallery, hours, map } = startPage;
+Astro.response.headers.set('Cache-Control', 'no-cache');
 ---
 
-<Layout title="SAX Cut + Colour – Friseursalon in Lochau">
-  <Hero />
+<Layout
+  title="SAX Cut + Colour – Friseursalon in Lochau"
+  startPage={startPage}
+  contact={contact}
+>
+  <Hero week={hours} hasPrices={prices.length > 0} contact={contact} />
   <Welcome />
-  <Prices />
-  <Offers />
-  <Salon />
+
+  <!-- A section the admin switched off or that has no content is left out -->
+  {prices.length > 0 && <Prices categories={prices} />}
+  {offers.length > 0 && <Offers offers={offers} contact={contact} />}
+  {gallery.length > 0 && <Salon images={gallery} />}
 
   <section class="visit">
     <div class="section visit-grid">
-      <OpeningHours />
-      <Contact />
+      {hours.length > 0 && <OpeningHours week={hours} />}
+      <Contact contact={contact} map={map} />
     </div>
   </section>
 
-  <Closing />
+  <Closing contact={contact} />
 </Layout>
 
 <style>
@@ -33,9 +49,11 @@ import Layout from '@presentation/layouts/Layout.astro';
     border-top: 1px solid var(--gold-faint);
   }
 
+  /* auto-fill keeps the empty column, so the contact stays half wide without
+     the opening hours */
   .visit-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(460px, 100%), 1fr));
     gap: 72px 96px;
   }
 </style>
