@@ -1,94 +1,104 @@
 ---
 import { Image } from 'astro:assets';
-import Card from '../card/card.astro';
-import map from '../../assets/map.png';
 import { contact } from '@domain/contact';
-
-const rows = [
-  { title: 'Telefon', ...contact.phone, external: false },
-  { title: 'E-Mail', ...contact.email, external: false },
-  { title: 'Adresse', ...contact.address, external: true },
-];
+import map from '../../assets/map.png';
+import Icon from '../icon/icon.astro';
 ---
 
-<Card title="Kontakt" id="contact">
-  <div class="rows">
-    {rows.map(({ title, href, label, external }) => (
-      <div class="row">
-        <div class="title">{title}</div>
-        <a
-          href={href}
-          target={external ? '_blank' : undefined}
-          class="text-link"
-        >
-          {label}
-        </a>
-      </div>
-    ))}
+<div id="kontakt" class="column">
+  <div class="heading">
+    <p class="eyebrow">06 — Kontakt</p>
+    <h2 class="heading-column">So finden Sie mich</h2>
   </div>
 
-  <div slot="image" class="map">
-    <Image src={map} alt="Karte" loading="eager" class="map-image" />
+  <div class="rows">
+    <a class="row" href={contact.phone.href}>
+      <Icon name="phone" size={22} strokeWidth={1.5} />
+      {contact.phone.label}
+    </a>
+    <a class="row" href={contact.whatsapp.href} target="_blank" rel="noopener">
+      <Icon name="chat" size={22} strokeWidth={1.5} />
+      {contact.whatsapp.label}
+    </a>
+    <a class="row" href={contact.email.href}>
+      <Icon name="mail" size={22} strokeWidth={1.5} />
+      {contact.email.label}
+    </a>
+    <div class="row">
+      <Icon name="pin" size={22} strokeWidth={1.5} />
+      {contact.address.label}
+    </div>
+  </div>
 
-    <a class="map-link text-link" href={contact.address.href} target="_blank">
+  <div class="map">
+    <Image
+      src={map}
+      alt="Karte: SAX Cut + Colour in Lochau, zwischen Bregenz und Lindau"
+      class="map-image"
+    />
+    <a
+      class="btn btn-sm btn-ghost map-link"
+      href={contact.address.href}
+      target="_blank"
+      rel="noopener"
+    >
       Zur Karte
     </a>
   </div>
-</Card>
+</div>
 
 <style>
-  .rows {
-    position: relative;
-    z-index: 20;
+  .column {
     display: flex;
     flex-direction: column;
-    row-gap: 1.5rem;
-    padding-bottom: 240px;
+    row-gap: 32px;
+  }
 
-    @media (min-width: 1280px) {
-      padding-right: 18rem;
-      padding-bottom: 0;
-    }
+  .heading {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+  }
+
+  .rows {
+    display: flex;
+    flex-direction: column;
+    row-gap: 18px;
   }
 
   .row {
     display: flex;
-    justify-content: space-between;
-    column-gap: 2.5rem;
-    text-wrap: nowrap;
+    align-items: center;
+    column-gap: 16px;
+    min-height: 44px;
+    font-size: 19px;
+    overflow-wrap: anywhere;
 
-    @media (min-width: 768px) {
-      column-gap: 6rem;
+    & svg {
+      flex-shrink: 0;
+      color: var(--gold);
     }
   }
 
-  .title {
-    font-weight: 500;
-    letter-spacing: 0.025em;
+  a.row:hover {
+    color: var(--gold-light);
   }
 
   .map {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-
-    @media (min-width: 1280px) {
-      top: 0;
-      bottom: auto;
-    }
+    position: relative;
+    border: 1px solid var(--gold-soft);
   }
 
   .map-image {
-    width: auto;
-    height: 208px;
-    border-radius: 0.25rem;
+    width: 100%;
+    aspect-ratio: 433 / 265;
+    object-fit: cover;
   }
 
   .map-link {
     position: absolute;
-    right: 0.75rem;
-    bottom: 0.75rem;
-    z-index: 20;
-    text-shadow: black 0.1em 0.1em 0.2em;
+    bottom: 16px;
+    left: 16px;
+    background-color: var(--bg);
   }
 </style>

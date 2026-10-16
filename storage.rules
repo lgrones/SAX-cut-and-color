@@ -1,0 +1,11 @@
+rules_version = '2';
+
+// Site images are public; everything is written by the server through the
+// Admin SDK, which bypasses these rules
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /images/{path=**} {
+      allow read: if true;
+    }
+  }
+}

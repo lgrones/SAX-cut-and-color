@@ -1,0 +1,130 @@
+---
+import { getSlotImage } from '@business/images/getSlotImage';
+import { contact } from '@domain/contact';
+import Icon from '../icon/icon.astro';
+import Loading from '../loading/loading.astro';
+import Today from '../openingHours/today.astro';
+
+const photo = getSlotImage('hero');
+---
+
+<section class="hero">
+  <div class="text">
+    <p class="eyebrow">Friseursalon in Lochau</p>
+    <h1 class="serif">
+      Schönheit beginnt <em class="accent">bei den Haaren.</em>
+    </h1>
+    <p class="lead">
+      Schnitt, Farbe und Pflege – mit Zeit für Ihre Wünsche und persönlich
+      betreut von Petra Zangerl.
+    </p>
+    <div class="button-row">
+      <a class="btn btn-gold" href={contact.phone.href}>
+        <Icon name="phone" size={16} strokeWidth={1.6} />
+        Termin vereinbaren
+      </a>
+      <a class="btn btn-ghost" href="#preise">
+        Preise ansehen
+      </a>
+    </div>
+    <div class="facts">
+      <Today server:defer>
+        <Loading slot="fallback" minHeight="4.5rem" />
+      </Today>
+      <div class="fact">
+        <span class="fact-label">Adresse</span>
+        <span>Landstraße 46</span>
+        <span>6911 Lochau</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="frame">
+    <img
+      src={photo.src}
+      srcset={photo.srcset}
+      sizes="(min-width: 1000px) 560px, 100vw"
+      width={photo.width}
+      height={photo.height}
+      alt={photo.alt}
+      fetchpriority="high"
+      class="photo"
+    />
+  </div>
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr));
+    gap: clamp(48px, 6vw, 96px);
+    align-items: center;
+    max-width: 1240px;
+    margin-inline: auto;
+    padding: clamp(56px, 8vw, 120px) var(--gutter);
+  }
+
+  .text {
+    display: flex;
+    flex-direction: column;
+    row-gap: 32px;
+  }
+
+  h1 {
+    font-size: clamp(52px, 7vw, 104px);
+    line-height: 0.98;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .lead {
+    max-width: 30em;
+    font-size: 19px;
+    color: var(--text-muted);
+    text-wrap: pretty;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 40px;
+    padding-top: 28px;
+    font-size: 14px;
+    color: var(--text-subtle);
+    border-top: 1px solid var(--gold-soft);
+
+    & :global(.fact) {
+      display: flex;
+      flex-direction: column;
+      row-gap: 2px;
+    }
+
+    & :global(.fact-label) {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+  }
+
+  /* offset gold frame behind the photo */
+  .frame {
+    position: relative;
+    padding: 0 22px 22px 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 22px 0 0 22px;
+      border: 1px solid var(--gold);
+    }
+  }
+
+  .photo {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+</style>

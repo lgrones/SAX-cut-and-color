@@ -11,6 +11,7 @@ const schema = z.object({
     z.object({
       id: z.string().min(1).optional(),
       title: z.string(),
+      kind: z.string(),
       text: z.string(),
     }),
   ),
@@ -39,8 +40,13 @@ export const saveOffers = async (input: unknown): Promise<SaveOffersResult> => {
     await Firebase.deleteDocument('offers', id);
   }
 
-  for (const [index, { id, title, text }] of offers.entries()) {
-    const data = { title: title.trim(), text: text.trim(), index };
+  for (const [index, { id, title, kind, text }] of offers.entries()) {
+    const data = {
+      title: title.trim(),
+      kind: kind.trim(),
+      text: text.trim(),
+      index,
+    };
 
     if (id) await Firebase.updateDocument('offers', id, data);
     else await Firebase.addDocument('offers', data);

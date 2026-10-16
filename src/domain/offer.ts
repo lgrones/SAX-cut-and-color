@@ -1,6 +1,8 @@
 export interface Offer {
   id: string;
   title: string;
+  /** What kind of treatment it is, e.g. "Coloration". Empty if not set. */
+  kind: string;
   text: string;
   /** Place in the list, first 0 */
   index: number;

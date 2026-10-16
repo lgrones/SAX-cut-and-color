@@ -1,0 +1,73 @@
+---
+import { getPrices } from '@business/prices/getPrices';
+import { PriceItem } from '@domain/price';
+
+const categories = await getPrices();
+
+// Always fetch fresh data so admin edits show up on the next page view
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+
+<div class="columns">
+  {categories.map(({ mainTitle, prices }) => (
+    <div class="group">
+      <h3 class="title serif">{mainTitle}</h3>
+      {prices.map(price => (
+        <div class="row">
+          <span class="name">{price.title}</span>
+          <span class="leader" aria-hidden="true"></span>
+          <span class="price">{PriceItem.label(price)}</span>
+        </div>
+      ))}
+    </div>
+  ))}
+</div>
+
+<style>
+  /* groups flow into two columns from ~940px, one below */
+  .columns {
+    columns: 2 420px;
+    column-gap: 96px;
+  }
+
+  .group {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 56px;
+    break-inside: avoid;
+  }
+
+  .title {
+    margin-bottom: 6px;
+    padding-bottom: 14px;
+    font-size: 32px;
+    line-height: 1.1;
+    border-bottom: 1px solid var(--gold);
+  }
+
+  .row {
+    display: flex;
+    align-items: baseline;
+    column-gap: 14px;
+    padding-block: 13px;
+    border-bottom: 1px solid var(--divider);
+  }
+
+  .name {
+    min-width: 0;
+    font-weight: 500;
+  }
+
+  .leader {
+    flex: 1 1 24px;
+    min-width: 24px;
+    border-bottom: 1px dotted var(--gold-strong);
+    translate: 0 -6px;
+  }
+
+  .price {
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--gold);
+  }
+</style>

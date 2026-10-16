@@ -30,3 +30,6 @@ export const TrashIcon = () => (
 export const GripIcon = () => (
   <Icon d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" />
 );
+export const UploadIcon = () => (
+  <Icon d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" />
+);

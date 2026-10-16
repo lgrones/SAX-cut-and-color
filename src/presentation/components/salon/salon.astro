@@ -1,87 +1,29 @@
 ---
-import Card from '../card/card.astro';
-import salon2 from '../../assets/salon/salon2.jpeg';
-import salon3 from '../../assets/salon/salon3.jpeg';
-import salon4 from '../../assets/salon/salon4.jpeg';
-import salon5 from '../../assets/salon/salon5.jpg';
-import salon7 from '../../assets/salon/salon7.jpeg';
-import salon8 from '../../assets/salon/salon8.jpeg';
-import { Image } from 'astro:assets';
-
-const columns = [
-  [
-    { src: salon2, alt: 'Salon' },
-    { src: salon5, alt: 'Utensilien' },
-  ],
-  [
-    { src: salon3, alt: 'Salon' },
-    { src: salon7, alt: 'Produkte' },
-  ],
-  [
-    { src: salon8, alt: 'Friseurinnen' },
-    { src: salon4, alt: 'Büsten' },
-  ],
-];
+import Loading from '../loading/loading.astro';
+import GalleryList from './galleryList.astro';
 ---
 
-<Card title="Salon" id="salon">
-  <div class="gallery">
-    {columns.map((photos, i) => (
-      <div class={`column column-${i + 1}`}>
-        {photos.map(({ src, alt }) => (
-          <Image src={src} alt={alt} class="photo" />
-        ))}
-      </div>
-    ))}
+<section id="salon" class="section salon">
+  <div class="heading">
+    <p class="eyebrow">04 — Salon</p>
+    <h2 class="heading-section">Einblicke</h2>
   </div>
-</Card>
+
+  <GalleryList server:defer>
+    <Loading slot="fallback" minHeight="34rem" />
+  </GalleryList>
+</section>
 
 <style>
-  .gallery {
+  .salon {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
+    flex-direction: column;
+    row-gap: 56px;
   }
 
-  .column {
-    flex: 1 1 100%;
-    max-width: 100%;
-  }
-
-  .photo {
-    border-radius: 0.25rem;
-
-    & + & {
-      margin-top: 1rem;
-    }
-  }
-
-  @media (min-width: 640px) {
-    .column-1,
-    .column-3 {
-      flex-basis: calc(50% - 2rem);
-      max-width: calc(50% - 2rem);
-    }
-
-    .column-2 {
-      flex-basis: 50%;
-      max-width: 50%;
-    }
-
-    .column-3 {
-      translate: 0 -66.5vw;
-    }
-  }
-
-  @media (min-width: 768px) {
-    .column-2,
-    .column-3 {
-      flex-basis: 25%;
-      max-width: 25%;
-    }
-
-    .column-3 {
-      translate: none;
-    }
+  .heading {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
   }
 </style>

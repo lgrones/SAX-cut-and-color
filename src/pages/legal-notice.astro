@@ -1,10 +1,13 @@
 ---
 import Layout from '@presentation/layouts/Layout.astro';
 import { contact } from '@domain/contact';
+import Icon from '@presentation/components/icon/icon.astro';
 ---
 
 <Layout title="SAX Cut + Colour Impressum">
-  <section class="section">
+  <section class="section legal">
+    <h1 class="heading-section">Impressum</h1>
+
     <h2>Name & Kontaktdaten des Anbieters</h2>
     <address>
       Sax Cut + Colour by Petra Zangerl
@@ -15,7 +18,8 @@ import { contact } from '@domain/contact';
       <br />
       Austria
       <br />
-      <a href={contact.phone.href} class="text-link">
+      <a href={contact.phone.href} class="text-link phone">
+        <Icon name="phone" size={16} strokeWidth={1.6} />
         {contact.phone.label}
       </a>
       <br />
@@ -101,15 +105,28 @@ import { contact } from '@domain/contact';
     font-style: normal;
   }
 
-  h2 {
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    font-family: var(--font-cormorant);
-    font-size: 1.5rem;
-    line-height: 2rem;
+  .phone {
+    display: inline-flex;
+    align-items: center;
+    column-gap: 8px;
+  }
 
-    &:first-child {
-      margin-top: 0;
-    }
+  .legal {
+    max-width: calc(70ch + 2 * var(--gutter));
+    color: var(--text-muted);
+  }
+
+  h1 {
+    margin-bottom: 2.5rem;
+    color: var(--text);
+  }
+
+  h2 {
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    line-height: 1.2;
+    color: var(--gold);
   }
 </style>

@@ -1,134 +1,151 @@
 ---
 export const prerender = false;
 
-import Layout from '@presentation/layouts/Layout.astro';
-import Card from '@presentation/components/card/card.astro';
+import '@presentation/styles/admin.css';
 
 // Signed in users are redirected to /admin by the auth middleware
 ---
 
-<Layout title="Admin Bereich Login">
-  <Card title="Admin Bereich Login" id="login">
-    <!-- post so a failed script never puts the password in the URL -->
-    <form method="post">
-      <div class="fields">
-        <div>
-          <label for="email" class="label">
-            E-Mail
-          </label>
-          <input
-            type="email"
-            name="email"
-            id="email"
-            class="input input-lg"
-            required
-          />
-        </div>
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/favicon.png" />
+    <title>Anmelden · SAX Admin</title>
+  </head>
 
-        <div class="password">
-          <label for="password" class="label">
-            Passwort
-          </label>
-          <input
-            type="password"
-            name="password"
-            id="password"
-            class="input input-lg"
-            required
-          />
-          <button
-            type="button"
-            id="toggle"
-            class="toggle"
-            aria-label="Passwort anzeigen"
-            aria-pressed="false"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              fill="currentColor"
-              class="show"
-            >
-              <path d="m0,10a15,28 0 0,0 20,0 15,28 0 0,0-20,0m14.4 0a4.5,4.5 0 1,1 0-.1zm-2,0a2.4,2.4 0 1,0 0 .1z"></path>
-            </svg>
-
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              fill="currentColor"
-              viewBox="0 0 17 15"
-              class="hide"
-            >
-              <path
-                d="M1.99 1.99a1 1 0 00-.697 1.717l11 11a1 1 0 101.414-1.414l-.912-.912a8 8 0 002.943-4.391A8 8 0 008 2a8 8 0 00-4.303 1.283l-.99-.99a1 1 0 00-.717-.303zM8 4a4 4 0 014 4 4 4 0 01-.977 2.61L5.39 4.973A4 4 0 018 4zM1.273 5.687A8 8 0 00.262 8.01 8 8 0 008 14a8 8 0 001.445-.14l-1.884-1.885a4 4 0 01-3.532-3.531z"
-                style="marker:none"
-              ></path>
-              <path d="M10 8a2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 012 2z"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button type="submit" class="button">
-          Login
-        </button>
-
-        <div role="status" id="loader" hidden>
-          <svg
-            aria-hidden="true"
-            class="spinner"
-            viewBox="0 0 100 101"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-              fill="currentColor"
-            ></path>
-            <path
-              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-              fill="currentFill"
-            ></path>
-          </svg>
-          <span class="sr-only">Loading...</span>
-        </div>
-      </div>
-
-      <p id="validation" class="validation invisible">
-        Falsches Passwort oder E-Mail Adresse
+  <body>
+    <main class="signin">
+      <p class="brand">
+        SAX <span>Admin</span>
       </p>
-    </form>
-  </Card>
-</Layout>
+
+      <div class="panel panel-body">
+        <header class="page-header">
+          <h1>Anmelden</h1>
+          <p>Mit dem Admin-Konto anmelden.</p>
+        </header>
+
+        <p id="validation" class="banner error" role="alert" hidden>
+          Falsches Passwort oder E-Mail Adresse
+        </p>
+
+        <!-- post so a failed script never puts the password in the URL -->
+        <form method="post" class="fields">
+          <div>
+            <label for="email" class="label">
+              E-Mail
+            </label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              class="input"
+              autocomplete="username"
+              required
+            />
+          </div>
+
+          <div>
+            <label for="password" class="label">
+              Passwort
+            </label>
+            <div class="password">
+              <input
+                type="password"
+                name="password"
+                id="password"
+                class="input"
+                autocomplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                id="toggle"
+                class="icon-button toggle"
+                aria-label="Passwort anzeigen"
+                aria-pressed="false"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.75"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  class="show"
+                >
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.75"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  class="hide"
+                >
+                  <path d="M10.6 5.1A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-2.2 3.2M6.6 6.6C3.7 8.4 2 12 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.4-1.6M3 3l18 18M9.9 9.9a3 3 0 0 0 4.2 4.2"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" id="submit" class="button">
+            Anmelden
+          </button>
+        </form>
+      </div>
+    </main>
+  </body>
+</html>
 
 <style>
-  .fields {
-    display: grid;
+  .signin {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     gap: 1.5rem;
-    margin-top: 2.5rem;
-    margin-bottom: 1.5rem;
-
-    @media (min-width: 768px) {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+    width: 100%;
+    max-width: 24rem;
+    min-height: 100dvh;
+    margin: 0 auto;
+    padding: 2rem 1rem;
   }
 
-  .label {
-    margin-bottom: 0.5rem;
+  .brand {
+    text-align: center;
+  }
+
+  .fields {
+    display: grid;
+    gap: 1rem;
   }
 
   .password {
     position: relative;
+
+    & .input {
+      padding-right: 3rem;
+    }
   }
 
   .toggle {
     position: absolute;
-    top: 2.85rem;
-    right: 1rem;
-    color: var(--sax-tan);
+    top: 50%;
+    right: 0.25rem;
+    transform: translateY(-50%);
 
     &[aria-pressed='false'] .hide,
     &[aria-pressed='true'] .show {
@@ -136,33 +153,12 @@ import Card from '@presentation/components/card/card.astro';
     }
   }
 
-  .actions {
-    display: flex;
-    align-items: center;
-    column-gap: 1.5rem;
-  }
-
-  .spinner {
-    width: 2rem;
-    height: 2rem;
-    color: var(--stone-600);
-    fill: var(--sax-tan);
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .validation {
+  .button {
     margin-top: 0.5rem;
-    color: var(--red-500);
   }
 
-  .invisible {
-    visibility: hidden;
+  .banner[hidden] {
+    display: none;
   }
 </style>
 
@@ -172,14 +168,19 @@ import Card from '@presentation/components/card/card.astro';
   const form = document.querySelector('form');
   const password = document.querySelector<HTMLInputElement>('#password');
   const toggle = document.getElementById('toggle');
-  const loader = document.getElementById('loader');
+  const submit = document.querySelector<HTMLButtonElement>('#submit');
   const validation = document.getElementById('validation');
 
   const setLoading = (loading: boolean) => {
-    if (loader) loader.hidden = !loading;
+    if (!submit) return;
+
+    submit.disabled = loading;
+    submit.textContent = loading ? 'Anmelden …' : 'Anmelden';
   };
 
-  form?.addEventListener('input', () => validation?.classList.add('invisible'));
+  form?.addEventListener('input', () => {
+    if (validation) validation.hidden = true;
+  });
 
   toggle?.addEventListener('click', () => {
     if (!password) return;
@@ -214,7 +215,7 @@ import Card from '@presentation/components/card/card.astro';
       window.location.assign('/admin');
     } catch {
       setLoading(false);
-      validation?.classList.remove('invisible');
+      if (validation) validation.hidden = false;
     }
   });
 </script>

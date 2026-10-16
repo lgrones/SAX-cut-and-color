@@ -1,0 +1,59 @@
+---
+import { getOffers } from '@business/offers/getOffers';
+
+const offers = await getOffers();
+
+// Always fetch fresh data so admin edits show up on the next page view
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+
+<div class="grid">
+  {offers.map(({ title, kind, text }, i) => (
+    <article class="offer">
+      <span class="number serif accent">{String(i + 1).padStart(2, '0')}</span>
+      <h3 class="name serif">{title}</h3>
+      {kind && <p class="kind">{kind}</p>}
+      <p class="text">{text}</p>
+    </article>
+  ))}
+</div>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+    gap: 24px;
+  }
+
+  .offer {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    padding: 40px 36px;
+    border: 1px solid var(--gold-soft);
+  }
+
+  .number {
+    font-size: 40px;
+    line-height: 1;
+  }
+
+  .name {
+    font-size: 28px;
+    line-height: 1.15;
+  }
+
+  .kind {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+
+  .text {
+    font-size: 16px;
+    color: var(--text-muted);
+    text-wrap: pretty;
+  }
+</style>

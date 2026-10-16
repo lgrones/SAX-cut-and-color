@@ -15,21 +15,19 @@ export interface PriceItem {
   salon?: boolean;
 }
 
+// "36–48 €", "9,50 €"
 const formatter = new Intl.NumberFormat('de-DE', {
   style: 'currency',
   currency: 'EUR',
-  currencyDisplay: 'code',
   trailingZeroDisplay: 'stripIfInteger',
 });
 
 const formatRange = (min: number, max?: number) =>
-  max && max !== min
-    ? formatter.formatRange(min, max).replace('–', ' - ')
-    : formatter.format(min);
+  max && max !== min ? formatter.formatRange(min, max) : formatter.format(min);
 
 const label = (item: PriceItem): string =>
   item.salon || !item.priceMin
-    ? 'Absprache im Salon'
+    ? 'nach Absprache'
     : formatRange(item.priceMin, item.priceMax);
 
 /** Why a service can't be saved, if it can't */

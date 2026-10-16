@@ -1,0 +1,27 @@
+---
+import { getOpeningHours } from '@business/openingHours/getOpeningHours';
+import { OpeningHours } from '@domain/openingHours';
+
+const week = await getOpeningHours();
+const today = week[OpeningHours.todayIndex(new Date())];
+const ranges = today ? OpeningHours.ranges(today) : [];
+
+// Always fetch fresh data so admin edits and the day change show up on the
+// next page view
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+
+{today && (
+  <div class="fact">
+    <span class="fact-label">Heute · {today.day}</span>
+    {ranges.length > 0 ? (
+      ranges.map(([start, end]) => (
+        <span>
+          {start}–{end} Uhr
+        </span>
+      ))
+    ) : (
+      <span>geschlossen</span>
+    )}
+  </div>
+)}

@@ -32,3 +32,19 @@ export const updateDocument = async (
 export const deleteDocument = async (name: string, id: string) => {
   await collection(name).doc(id).delete();
 };
+
+/** One document by id, `undefined` if it doesn't exist */
+export const getDocument = async (
+  name: string,
+  id: string,
+): Promise<FirestoreDocument | undefined> => {
+  const snapshot = await collection(name).doc(id).get();
+  const data = snapshot.data();
+
+  return data ? { id: snapshot.id, data } : undefined;
+};
+
+/** Creates or replaces a document under a known id */
+export const setDocument = async (name: string, id: string, data: object) => {
+  await collection(name).doc(id).set(data);
+};

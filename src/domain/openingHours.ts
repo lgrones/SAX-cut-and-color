@@ -28,12 +28,17 @@ const week = (stored: OpeningHours[]): OpeningHours[] =>
     index,
   }));
 
-/** The opening time ranges of a day, skipping a half day without both times */
+/**
+ * The opening time ranges of a day, none if it is closed. Skips a half day
+ * without both times.
+ */
 const ranges = (day: OpeningHours): [string, string][] =>
-  [
-    [day.timeAmStart, day.timeAmEnd],
-    [day.timePmStart, day.timePmEnd],
-  ].filter((range): range is [string, string] => !!range[0] && !!range[1]);
+  day.closed
+    ? []
+    : [
+        [day.timeAmStart, day.timeAmEnd],
+        [day.timePmStart, day.timePmEnd],
+      ].filter((range): range is [string, string] => !!range[0] && !!range[1]);
 
 /**
  * Why the times of a day can't be saved, if they can't. The morning is
@@ -56,4 +61,16 @@ const problem = (day: OpeningHours): string | undefined => {
   return undefined;
 };
 
-export const OpeningHours = { weekdays, week, ranges, problem };
+// The salon's clock, whatever time zone the server runs in
+const timeZone = 'Europe/Vienna';
+const weekdayFormat = new Intl.DateTimeFormat('en-US', {
+  timeZone,
+  weekday: 'short',
+});
+const shortWeekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+/** The place in the week of the salon's current day, Monday 0 */
+const todayIndex = (now: Date): number =>
+  shortWeekdays.indexOf(weekdayFormat.format(now));
+
+export const OpeningHours = { weekdays, week, ranges, problem, todayIndex };

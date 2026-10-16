@@ -1,0 +1,116 @@
+---
+import { getSlotImage } from '@business/images/getSlotImage';
+
+const photo = getSlotImage('portrait');
+---
+
+<section class="band">
+  <div class="section welcome">
+    <div class="text">
+      <p class="eyebrow">01 — Willkommen</p>
+      <p class="quote serif">
+        Ob neuer Schnitt, neue Farbe oder die Frisur für einen besonderen Anlass
+        – ich helfe Ihnen, Ihren Look zu finden.
+      </p>
+      <p class="body">
+        Seit vielen Jahren arbeite ich als Friseurin, und eines ist dabei gleich
+        geblieben: Im Mittelpunkt stehen Sie. Ich nehme mir Zeit, Ihre Wünsche
+        zu verstehen, und arbeite ausschließlich mit hochwertigen Produkten.
+      </p>
+      <div class="signature">
+        <span class="name serif accent">Petra Zangerl</span>
+        <span class="role">Inhaberin</span>
+      </div>
+    </div>
+
+    <div class="frame">
+      <img
+        src={photo.src}
+        srcset={photo.srcset}
+        sizes="(min-width: 540px) 460px, 100vw"
+        width={photo.width}
+        height={photo.height}
+        alt={photo.alt}
+        loading="lazy"
+        decoding="async"
+        class="photo"
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  /* text first on small screens, photo beside it on the left once both fit */
+  .welcome {
+    display: grid;
+    grid-template-areas:
+      'text'
+      'photo';
+    gap: clamp(40px, 6vw, 96px);
+    align-items: center;
+
+    @media (width >= 900px) {
+      grid-template-areas: 'photo text';
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* offset gold frame behind the photo, mirrored to the hero's */
+  .frame {
+    position: relative;
+    grid-area: photo;
+    width: 100%;
+    max-width: 482px;
+    padding: 0 0 22px 22px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 22px 22px 0 0;
+      border: 1px solid var(--gold);
+    }
+  }
+
+  .photo {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+
+  .text {
+    display: flex;
+    grid-area: text;
+    flex-direction: column;
+    row-gap: 28px;
+  }
+
+  .quote {
+    font-size: clamp(28px, 3vw, 40px);
+    line-height: 1.25;
+    text-wrap: pretty;
+  }
+
+  .body {
+    max-width: 34em;
+    color: var(--text-muted);
+    text-wrap: pretty;
+  }
+
+  .signature {
+    display: flex;
+    flex-direction: column;
+    row-gap: 2px;
+  }
+
+  .name {
+    font-size: 30px;
+  }
+
+  .role {
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+</style>

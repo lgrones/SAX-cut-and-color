@@ -8,19 +8,14 @@ export type SaveResult =
   | { ok: true; data: unknown }
   | { ok: false; status: EditorStatus };
 
-/**
- * Posts an editor's state as JSON. Resolves to the response body on success and
- * to the status to show otherwise. An expired session goes to the sign-in.
- */
-export const saveRequest = async (
+const send = async (
   url: string,
-  body: unknown,
+  init: RequestInit,
+  failure: string,
 ): Promise<SaveResult> => {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  }).catch(() => undefined);
+  const response = await fetch(url, { method: 'POST', ...init }).catch(
+    () => undefined,
+  );
 
   if (!response) {
     return {
@@ -46,9 +41,24 @@ export const saveRequest = async (
 
   return {
     ok: false,
-    status: {
-      kind: 'error',
-      message: error.message ?? 'Speichern fehlgeschlagen',
-    },
+    status: { kind: 'error', message: error.message ?? failure },
   };
 };
+
+/**
+ * Posts an editor's state as JSON. Resolves to the response body on success and
+ * to the status to show otherwise. An expired session goes to the sign-in.
+ */
+export const saveRequest = (url: string, body: unknown) =>
+  send(
+    url,
+    {
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    },
+    'Speichern fehlgeschlagen',
+  );
+
+/** Posts a multipart form, like `saveRequest` */
+export const uploadRequest = (url: string, form: FormData) =>
+  send(url, { body: form }, 'Hochladen fehlgeschlagen');

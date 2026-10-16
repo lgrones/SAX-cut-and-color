@@ -16,6 +16,7 @@ interface Draft {
   key: string;
   id?: string;
   title: string;
+  kind: string;
   text: string;
 }
 
@@ -28,11 +29,18 @@ const toDraft = (offer: Offer): Draft => ({
   key: offer.id,
   id: offer.id,
   title: offer.title,
+  kind: offer.kind,
   text: offer.text,
 });
 
-const content = (drafts: Draft[]) =>
-  JSON.stringify(drafts.map(({ id, title, text }) => ({ id, title, text })));
+const toInput = ({ id, title, kind, text }: Draft) => ({
+  id,
+  title,
+  kind,
+  text,
+});
+
+const content = (drafts: Draft[]) => JSON.stringify(drafts.map(toInput));
 
 export const OffersEditor = ({ offers }: { offers: Offer[] }) => {
   const [saved, setSaved] = useState(() => offers.map(toDraft));
@@ -66,7 +74,7 @@ export const OffersEditor = ({ offers }: { offers: Offer[] }) => {
 
   const add = () => {
     const key = crypto.randomUUID();
-    edit(prev => [...prev, { key, title: '', text: '' }]);
+    edit(prev => [...prev, { key, title: '', kind: '', text: '' }]);
     setOpenKey(key);
   };
 
@@ -92,7 +100,7 @@ export const OffersEditor = ({ offers }: { offers: Offer[] }) => {
     setStatus({ kind: 'saving' });
 
     const result = await saveRequest('/api/offers', {
-      offers: drafts.map(({ id, title, text }) => ({ id, title, text })),
+      offers: drafts.map(toInput),
       deleted: removed.flatMap(x => (x.draft.id ? [x.draft.id] : [])),
     });
 
@@ -213,6 +221,19 @@ const OfferFields = ({
           value={draft.title}
           aria-invalid={!!Offer.problem(draft)}
           onInput={e => onChange({ title: e.currentTarget.value })}
+        />
+      </div>
+
+      <div>
+        <label className="label" htmlFor={id + '-kind'}>
+          Kategorie (optional)
+        </label>
+        <input
+          id={id + '-kind'}
+          className="input"
+          value={draft.kind}
+          placeholder="z. B. Coloration"
+          onInput={e => onChange({ kind: e.currentTarget.value })}
         />
       </div>
 

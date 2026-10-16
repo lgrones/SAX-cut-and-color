@@ -1,84 +1,41 @@
 ---
+import Closing from '@presentation/components/closing/closing.astro';
 import Contact from '@presentation/components/contact/contact.astro';
+import Hero from '@presentation/components/hero/hero.astro';
 import Offers from '@presentation/components/offers/offers.astro';
 import OpeningHours from '@presentation/components/openingHours/openingHours.astro';
 import Prices from '@presentation/components/prices/prices.astro';
 import Salon from '@presentation/components/salon/salon.astro';
+import Welcome from '@presentation/components/welcome/welcome.astro';
 import Layout from '@presentation/layouts/Layout.astro';
-import Loading from '@presentation/components/loading/loading.astro';
 ---
 
-<Layout title="SAX Cut + Colour">
-  <div class="section">
-    <h1>Schönheit beginnt bei den Haaren</h1>
-    <p class="intro">
-      Herzlich willkommen in meinem Salon SAX, wo Ihre Haare meine Leidenschaft
-      sind. Seit vielen Jahren bin ich als erfahrene Friseurin tätig und freue
-      mich darauf, Sie persönlich zu betreuen und Ihre individuellen Haarträume
-      zu verwirklichen. Bei SAX dreht sich alles um Sie und Ihre Bedürfnisse.
-      Egal, ob Sie nach einem neuen Look, einer perfekten Haarfarbe oder einer
-      besonderen Frisur für einen besonderen Anlass suchen - ich stehe Ihnen mit
-      meinem Fachwissen und meiner Kreativität zur Seite, um Ihren perfekten
-      Stil zu finden. Ich lege großen Wert auf Qualität und persönlichen
-      Service. Deshalb verwende ich ausschließlich hochwertige Produkte und
-      nehme mir Zeit, um Ihre Wünsche genau zu verstehen und umzusetzen.
-    </p>
-  </div>
-
-  <div class="info">
-    <OpeningHours />
-
-    <Contact />
-  </div>
-
+<Layout title="SAX Cut + Colour – Friseursalon in Lochau">
+  <Hero />
+  <Welcome />
   <Prices />
-
-  <div id="offers">
-    <Offers server:defer>
-      <Loading slot="fallback" minHeight="24rem" />
-    </Offers>
-  </div>
-
+  <Offers />
   <Salon />
+
+  <section class="visit">
+    <div class="section visit-grid">
+      <OpeningHours />
+      <Contact />
+    </div>
+  </section>
+
+  <Closing />
 </Layout>
 
 <style>
-  h1 {
-    max-width: 400px;
-    font-family: var(--font-cormorant);
-    font-size: 3rem;
-    line-height: 1;
-    letter-spacing: 0.025em;
-    text-transform: uppercase;
-
-    @media (min-width: 640px) {
-      max-width: 550px;
-    }
-
-    @media (min-width: 768px) {
-      max-width: 800px;
-      font-size: 4.5rem;
-    }
-
-    @media (min-width: 1024px) {
-      max-width: 1100px;
-      font-size: 6rem;
-    }
+  .visit {
+    background-color: var(--bg-alt);
+    border-top: 1px solid var(--gold-faint);
   }
 
-  .intro {
-    padding-top: 3.5rem;
-    line-height: 1.75rem;
-  }
-
-  .info {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 3rem 6rem;
-
-    @media (min-width: 768px) {
-      row-gap: 5rem;
-    }
+  .visit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
+    gap: 72px 96px;
   }
 </style>

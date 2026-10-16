@@ -24,6 +24,7 @@ export const ReorderItem = ({
   onToggle,
   onDragStart,
   onStep,
+  media,
   children,
 }: {
   itemKey: string;
@@ -36,6 +37,8 @@ export const ReorderItem = ({
   onDragStart: (e: PointerEvent) => void;
   /** Moves the item up (-1) or down (1) */
   onStep: (by: number) => void;
+  /** Shown before the summary, e.g. a thumbnail */
+  media?: ComponentChildren;
   children: ComponentChildren;
 }) => {
   const handle = useRef<HTMLButtonElement>(null);
@@ -73,6 +76,7 @@ export const ReorderItem = ({
           aria-controls={bodyId}
           onClick={onToggle}
         >
+          {media}
           <span className="item-summary">
             <span className="item-title" data-empty={!title.trim()}>
               {label}

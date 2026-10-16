@@ -1,11 +1,29 @@
 ---
-import Card from '../card/card.astro';
 import Loading from '../loading/loading.astro';
 import Days from './days.astro';
 ---
 
-<Card title="Zeiten" id="opening-hours">
+<div id="zeiten" class="column">
+  <div class="heading">
+    <p class="eyebrow">05 — Zeiten</p>
+    <h2 class="heading-column">Öffnungszeiten</h2>
+  </div>
+
   <Days server:defer>
-    <Loading slot="fallback" minHeight="11rem" />
+    <Loading slot="fallback" minHeight="30rem" />
   </Days>
-</Card>
+</div>
+
+<style>
+  .column {
+    display: flex;
+    flex-direction: column;
+    row-gap: 32px;
+  }
+
+  .heading {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+  }
+</style>

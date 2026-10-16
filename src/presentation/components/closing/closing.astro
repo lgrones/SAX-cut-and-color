@@ -1,0 +1,79 @@
+---
+import { contact } from '@domain/contact';
+import Icon from '../icon/icon.astro';
+---
+
+<section class="closing">
+  <div class="section content">
+    <div class="ornament" aria-hidden="true">
+      <span class="line"></span>
+      <span class="diamond"></span>
+      <span class="line"></span>
+    </div>
+    <h2 class="serif">
+      Zeit für einen <em class="accent">neuen Look?</em>
+    </h2>
+    <p class="text">
+      Termine vereinbaren Sie am einfachsten telefonisch oder per E-Mail.
+    </p>
+    <div class="button-row">
+      <a class="btn btn-gold" href={contact.phone.href}>
+        <Icon name="phone" size={16} strokeWidth={1.6} />
+        Jetzt anrufen
+      </a>
+      <a class="btn btn-ghost" href={contact.email.href}>
+        E-Mail schreiben
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .closing {
+    border-block: 1px solid var(--gold-soft);
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    row-gap: 28px;
+    align-items: center;
+    padding-block: clamp(64px, 8vw, 112px);
+    text-align: center;
+  }
+
+  .ornament {
+    display: flex;
+    align-items: center;
+    column-gap: 16px;
+    width: 160px;
+  }
+
+  .line {
+    flex: 1;
+    height: 1px;
+    background-color: var(--gold);
+  }
+
+  .diamond {
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--gold);
+    rotate: 45deg;
+  }
+
+  h2 {
+    font-size: clamp(40px, 5.4vw, 76px);
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  .text {
+    color: var(--text-muted);
+    text-wrap: balance;
+  }
+
+  .button-row {
+    justify-content: center;
+  }
+</style>

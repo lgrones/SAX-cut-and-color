@@ -2,28 +2,38 @@
 import { getOpeningHours } from '@business/openingHours/getOpeningHours';
 import { OpeningHours } from '@domain/openingHours';
 
-const openingHours = await getOpeningHours();
+const week = await getOpeningHours();
+const todayIndex = OpeningHours.todayIndex(new Date());
 
-const days = openingHours
-  .filter(x => !x.closed)
-  .map(x => ({ day: x.day, ranges: OpeningHours.ranges(x) }))
-  .filter(x => x.ranges.length > 0);
+const days = week.map(day => ({
+  day: day.day,
+  ranges: OpeningHours.ranges(day),
+  today: day.index === todayIndex,
+}));
 
-// Always fetch fresh data so admin edits show up on the next page view
+// Always fetch fresh data so admin edits and the day change show up on the
+// next page view
 Astro.response.headers.set('Cache-Control', 'no-store');
 ---
 
 <div class="days">
-  {days.map(({ day, ranges }) => (
-    <div class="day">
-      <div class="name">{day}</div>
-      <div>
-        {ranges.map(([start, end]) => (
-          <div>
-            {start} - {end} Uhr
-          </div>
-        ))}
-      </div>
+  {days.map(({ day, ranges, today }) => (
+    <div class:list={['row', { closed: ranges.length === 0, today }]}>
+      <span class="day">
+        <span class="name">{day}</span>
+        {today && <span class="today-tag serif accent">heute</span>}
+      </span>
+      <span class="slots">
+        {ranges.length > 0 ? (
+          ranges.map(([start, end]) => (
+            <span>
+              {start}–{end}
+            </span>
+          ))
+        ) : (
+          <span>geschlossen</span>
+        )}
+      </span>
     </div>
   ))}
 </div>
@@ -32,22 +42,40 @@ Astro.response.headers.set('Cache-Control', 'no-store');
   .days {
     display: flex;
     flex-direction: column;
-    row-gap: 1rem;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px 24px;
+    padding-block: 16px;
+    border-bottom: 1px solid var(--divider);
+
+    &.closed {
+      color: var(--text-closed);
+    }
+
+    &.today .name {
+      font-weight: 600;
+    }
   }
 
   .day {
     display: flex;
-    justify-content: space-between;
-    column-gap: 3.5rem;
-    text-wrap: nowrap;
-
-    @media (min-width: 640px) {
-      column-gap: 6rem;
-    }
+    align-items: baseline;
+    column-gap: 12px;
   }
 
-  .name {
-    font-weight: 500;
-    letter-spacing: 0.025em;
+  .today-tag {
+    font-size: 17px;
+  }
+
+  .slots {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    row-gap: 2px;
   }
 </style>
