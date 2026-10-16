@@ -28,6 +28,19 @@ const emailHref = (contact: Contact) => 'mailto:' + contact.email;
 /** On one line, e.g. "Landstraße 46, 6911 Lochau" */
 const address = (contact: Contact) => `${contact.street}, ${contact.town}`;
 
+/**
+ * The town split into postal code and name, e.g. "6911" and "Lochau". A town
+ * without a leading code is all name.
+ */
+const locality = (contact: Contact) => {
+  const town = contact.town.trim();
+  const match = /^(\d{4,5})\s+(.+)$/.exec(town);
+
+  return match
+    ? { postalCode: match[1], name: match[2] }
+    : { postalCode: undefined, name: town };
+};
+
 // Searching for the name with the address finds the salon's own map entry,
 // and still does after a move
 const mapHref = (contact: Contact) =>
@@ -55,6 +68,7 @@ export const Contact = {
   whatsappHref,
   emailHref,
   address,
+  locality,
   mapHref,
   problems,
 };

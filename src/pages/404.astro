@@ -1,0 +1,57 @@
+---
+export const prerender = false;
+
+import { getContact } from '@business/contact/getContact';
+import { getStartPage } from '@business/startPage/getStartPage';
+import Layout from '@presentation/layouts/Layout.astro';
+import { Contact } from '@domain/contact';
+import Icon from '@presentation/components/icon/icon.astro';
+
+// Rendered on request like the other pages, so the navigation links only the
+// sections the start page shows
+const [startPage, contact] = await Promise.all([getStartPage(), getContact()]);
+---
+
+<Layout
+  title="Seite nicht gefunden – SAX Cut + Colour"
+  description="Diese Seite gibt es nicht (mehr)."
+  startPage={startPage}
+  contact={contact}
+>
+  <meta name="robots" content="noindex" slot="head" />
+
+  <section class="section not-found">
+    <p class="eyebrow">Fehler 404</p>
+    <h1 class="heading-section">
+      Diese Seite <em class="accent">gibt es nicht.</em>
+    </h1>
+    <p class="text">
+      Vielleicht hat sich die Adresse geändert oder ein Link ist veraltet. Auf
+      der Startseite finden Sie Preise, Öffnungszeiten und Kontakt.
+    </p>
+    <div class="button-row">
+      <a class="btn btn-gold" href="/">
+        Zur Startseite
+      </a>
+      <a class="btn btn-ghost" href={Contact.phoneHref(contact)}>
+        <Icon name="phone" size={16} strokeWidth={1.6} />
+        Anrufen
+      </a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    row-gap: 28px;
+    align-items: flex-start;
+    max-width: calc(70ch + 2 * var(--gutter));
+  }
+
+  .text {
+    color: var(--text-muted);
+    text-wrap: pretty;
+  }
+</style>

@@ -57,4 +57,20 @@ const problem = (
   return undefined;
 };
 
-export const Price = { problem };
+/**
+ * The lowest to the highest fixed price of all categories, e.g. "9,50–120 €".
+ * None if every service is priced at the salon.
+ */
+const rangeLabel = (categories: Price[]): string | undefined => {
+  const amounts = categories
+    .flatMap(x => x.prices)
+    .flatMap(x =>
+      x.salon || !x.priceMin ? [] : [x.priceMin, x.priceMax ?? x.priceMin],
+    );
+
+  return amounts.length > 0
+    ? formatRange(Math.min(...amounts), Math.max(...amounts))
+    : undefined;
+};
+
+export const Price = { problem, rangeLabel };

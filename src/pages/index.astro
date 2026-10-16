@@ -12,6 +12,7 @@ import Offers from '@presentation/components/offers/offers.astro';
 import OpeningHours from '@presentation/components/openingHours/openingHours.astro';
 import Prices from '@presentation/components/prices/prices.astro';
 import Salon from '@presentation/components/salon/salon.astro';
+import StructuredData from '@presentation/components/structuredData/structuredData.astro';
 import Welcome from '@presentation/components/welcome/welcome.astro';
 import Layout from '@presentation/layouts/Layout.astro';
 
@@ -26,6 +27,12 @@ Astro.response.headers.set(
     ? CACHE_CONTROL.signedIn
     : CACHE_CONTROL.startPage,
 );
+
+// The hero is the largest paint, so the connection to its storage host opens
+// while the browser still reads the head. No crossorigin: the image is fetched
+// without CORS, and a CORS preconnect would be a second connection.
+const imageOrigin = hero && new URL(hero.src, Astro.site).origin;
+const preconnect = imageOrigin !== Astro.site?.origin ? imageOrigin : undefined;
 ---
 
 <Layout
@@ -33,6 +40,11 @@ Astro.response.headers.set(
   startPage={startPage}
   contact={contact}
 >
+  <Fragment slot="head">
+    {preconnect && <link rel="preconnect" href={preconnect} />}
+    <StructuredData startPage={startPage} contact={contact} />
+  </Fragment>
+
   <Hero
     photo={hero}
     week={hours}
