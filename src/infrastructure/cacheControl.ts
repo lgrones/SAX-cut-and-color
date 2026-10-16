@@ -8,6 +8,10 @@ export const CACHE_CONTROL = {
   startPage: 'public, max-age=0, s-maxage=60',
   // Only the contact details on it are edited, and rarely
   legalNotice: 'public, max-age=0, s-maxage=600',
+  // Hosting would cache a 404 without a header for 10 minutes anyway; said
+  // here, so the signed in admin can be exempted. A URL only starts to exist
+  // with a deploy, which clears the cache.
+  notFound: 'public, max-age=0, s-maxage=600',
   // For requests with the session cookie, so the admin sees an edit on the
   // next page view. Anyone can send one, which only skips the cache for them
   signedIn: 'private, no-cache',
