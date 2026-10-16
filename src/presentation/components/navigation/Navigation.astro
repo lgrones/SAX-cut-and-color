@@ -394,7 +394,19 @@ const links = startPage
       );
 
       menu.addEventListener('click', e => {
-        if ((e.target as Element).closest('a')) setOpen(false);
+        const link = (e.target as Element).closest('a');
+        if (!link) return;
+
+        setOpen(false);
+
+        // Safari on iPhone scrolls to the top first when the menu collapses
+        // during its own jump, so the page jumps once the menu is gone
+        const section = document.getElementById(link.hash.slice(1));
+        if (!section) return;
+
+        e.preventDefault();
+        history.pushState(null, '', link.hash);
+        section.scrollIntoView();
       });
 
       document.addEventListener('keydown', e => {
