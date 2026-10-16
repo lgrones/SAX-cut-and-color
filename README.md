@@ -2,7 +2,11 @@
   <img src="docs/assets/wordmark.svg" alt="SAX Cut + Colour" width="492">
   <p><em>Website of SAX Cut + Colour, a hair salon in Lochau, Austria.</em></p>
   <p>
-    <a href="https://www.sax-cut-and-colour.at"><b>www.sax-cut-and-colour.at</b></a>
+    <img alt="Astro" src="https://img.shields.io/badge/Astro-BC52EE?logo=astro&logoColor=white">
+    <img alt="Cloud Run" src="https://img.shields.io/badge/Cloud_Run-4285F4?logo=googlecloud&logoColor=white">
+  </p>
+  <p>
+    <a href="https://www.sax-cut-and-colour.at"><b>www.sax-cut-and-colour.at</b></a> · <a href="#development">Development</a> · <a href="#deploys">Deploys</a>
   </p>
 </div>
 
@@ -10,14 +14,17 @@
 
 A one-page website for a small hair salon. Visitors find everything they need to book an appointment on a single scroll:
 
-- Opening hours and contact details, with a map link to the salon
+- Today's opening hours up top, the full week further down
 - Prices for cuts, colour and care
 - Current offers and promotions
-- A photo gallery of the salon
+- Photos of the salon
+- Contact details, a map and a link to directions
+
+An Impressum and a privacy policy sit behind the footer, written for Austrian law.
 
 ## Admin
 
-The salon owner keeps prices, offers and opening hours up to date in a password-protected admin page. Changes show without a redeploy: right away while signed in, for visitors within a minute (the Impressum within ten).
+The salon owner keeps prices, offers, opening hours, photos and contact details up to date in a password-protected admin area. Prices, offers and opening hours can also be taken off the page. Changes show without a redeploy: right away while signed in, for visitors within a minute. The legal pages follow within ten.
 
 ## Development
 
@@ -26,6 +33,9 @@ The salon owner keeps prices, offers and opening hours up to date in a password-
 # (add an admin user at http://localhost:4000/auth; data is kept on exit)
 pnpm firebase:emulators
 pnpm dev
+
+# to try the site on a phone in the same network (opens the firewall port)
+pnpm dev:mobile
 
 # before pushing: lint, format and type check
 pnpm validate
