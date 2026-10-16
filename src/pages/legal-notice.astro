@@ -6,11 +6,18 @@ import { getStartPage } from '@business/startPage/getStartPage';
 import Layout from '@presentation/layouts/Layout.astro';
 import { Contact } from '@domain/contact';
 import Icon from '@presentation/components/icon/icon.astro';
+import { CACHE_CONTROL } from '@infrastructure/cacheControl';
+import { SESSION_COOKIE } from '@infrastructure/sessionCookie';
 
 // Rendered on request for the contact details, which the admin edits; the
 // navigation also links only the sections the start page shows
 const [startPage, contact] = await Promise.all([getStartPage(), getContact()]);
-Astro.response.headers.set('Cache-Control', 'no-cache');
+Astro.response.headers.set(
+  'Cache-Control',
+  Astro.cookies.has(SESSION_COOKIE)
+    ? CACHE_CONTROL.signedIn
+    : CACHE_CONTROL.legalNotice,
+);
 ---
 
 <Layout

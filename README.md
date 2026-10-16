@@ -17,7 +17,7 @@ A one-page website for a small hair salon. Visitors find everything they need to
 
 ## Admin
 
-The salon owner keeps prices, offers and opening hours up to date in a password-protected admin page. Changes show on the live site right away, without a redeploy.
+The salon owner keeps prices, offers and opening hours up to date in a password-protected admin page. Changes show without a redeploy: right away while signed in, for visitors within a minute (the Impressum within ten).
 
 ## Development
 
@@ -33,7 +33,7 @@ pnpm validate
 
 ## Deploys
 
-A merge to main deploys; `pnpm release` does the same by hand. Assets go to Firebase Hosting. Everything else is rewritten to the Astro server on Cloud Run, which renders every page on request, so admin edits show up on the next page view. Both halves come from the same build.
+A merge to main deploys; `pnpm release` does the same by hand. Assets go to Firebase Hosting. Everything else is rewritten to the Astro server on Cloud Run, which renders every page on request. The Hosting CDN keeps the public pages for a short while, set in [cacheControl.ts](src/infrastructure/cacheControl.ts). Both halves come from the same build.
 
 | Topic                    | Where                                  |
 | ------------------------ | -------------------------------------- |

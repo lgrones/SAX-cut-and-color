@@ -3,6 +3,8 @@ export const prerender = false;
 
 import { getContact } from '@business/contact/getContact';
 import { getStartPage } from '@business/startPage/getStartPage';
+import { CACHE_CONTROL } from '@infrastructure/cacheControl';
+import { SESSION_COOKIE } from '@infrastructure/sessionCookie';
 import Closing from '@presentation/components/closing/closing.astro';
 import Contact from '@presentation/components/contact/contact.astro';
 import Hero from '@presentation/components/hero/hero.astro';
@@ -13,11 +15,17 @@ import Salon from '@presentation/components/salon/salon.astro';
 import Welcome from '@presentation/components/welcome/welcome.astro';
 import Layout from '@presentation/layouts/Layout.astro';
 
-// Rendered on every request, so admin edits and the day change show up on the
-// next page view
+// Rendered on request and kept briefly by the CDN, so admin edits and the day
+// change show up within a minute (for the signed in admin on the next view). A
+// failed load throws before the header is set, so the error page is never cached
 const [startPage, contact] = await Promise.all([getStartPage(), getContact()]);
 const { prices, offers, gallery, hours, hero, portrait, map } = startPage;
-Astro.response.headers.set('Cache-Control', 'no-cache');
+Astro.response.headers.set(
+  'Cache-Control',
+  Astro.cookies.has(SESSION_COOKIE)
+    ? CACHE_CONTROL.signedIn
+    : CACHE_CONTROL.startPage,
+);
 ---
 
 <Layout
