@@ -10,6 +10,9 @@ export default defineConfig({
   // One URL per page: canonical, sitemap and links all go without the slash,
   // and the server redirects the other form (dev answers it with a 404)
   trailingSlash: 'never',
+  // The CSS is small, so it comes with the HTML instead of blocking the first
+  // paint with requests of its own
+  build: { inlineStylesheets: 'always' },
   integrations: [
     // the back office has nothing to index
     sitemap({
