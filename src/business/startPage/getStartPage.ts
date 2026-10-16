@@ -20,7 +20,9 @@ export interface StartPage {
   gallery: ImageSource[];
   /** Monday first, or empty */
   hours: OpeningHours[];
-  /** The contact's map, unless the admin has none */
+  /** The slot images, each left out while the admin has stored none */
+  hero: ImageSource | undefined;
+  portrait: ImageSource | undefined;
   map: ImageSource | undefined;
 }
 
@@ -37,6 +39,8 @@ export const getStartPage = async (): Promise<StartPage> => {
     prices: hidden.includes('prices') ? [] : prices,
     offers: hidden.includes('offers') ? [] : offers,
     gallery: mapGallery(images.gallery),
+    hero: images.hero && getSlotImage('hero'),
+    portrait: images.portrait && getSlotImage('portrait'),
     map: images.map && getSlotImage('map'),
     hours: hidden.includes('hours') || !OpeningHours.anyOpen(week) ? [] : week,
   };

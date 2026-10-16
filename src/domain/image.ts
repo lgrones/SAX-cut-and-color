@@ -29,8 +29,8 @@ export type SiteImages = Partial<Record<ImageSlot, SiteImage>> & {
 
 /**
  * The fixed slots as the page design shows them: aspect is width / height. The
- * page leaves an optional slot out while it has no image, a required one it
- * always shows.
+ * page leaves out any slot without an image. Only an optional slot's image can
+ * be taken off again; a required one, once set, can only be replaced.
  */
 const slots: Record<
   ImageSlot,

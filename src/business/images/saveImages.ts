@@ -146,7 +146,7 @@ export const saveImages = async (input: unknown): Promise<SaveImagesResult> => {
 
   const previous = await getImages();
 
-  // a required slot can be replaced, but the page always links it
+  // a required slot can be replaced, but not taken off the page again
   const removesRequired = SiteImage.slotNames.some(
     slot =>
       !SiteImage.slots[slot].optional && previous[slot] && !parsed.data[slot],

@@ -1,11 +1,16 @@
 ---
-import { getSlotImage } from '@business/images/getSlotImage';
+import type { ImageSource } from '@business/images/imageSource';
 
-const photo = getSlotImage('portrait');
+interface Props {
+  /** Left out while the admin has no portrait */
+  photo: ImageSource | undefined;
+}
+
+const { photo } = Astro.props;
 ---
 
 <section class="band">
-  <div class="section welcome">
+  <div class:list={['section', 'welcome', !photo && 'text-only']}>
     <div class="text">
       <p class="eyebrow">
         <span class="eyebrow-numbered">Willkommen</span>
@@ -25,19 +30,21 @@ const photo = getSlotImage('portrait');
       </div>
     </div>
 
-    <div class="frame">
-      <img
-        src={photo.src}
-        srcset={photo.srcset}
-        sizes="(min-width: 540px) 460px, 100vw"
-        width={photo.width}
-        height={photo.height}
-        alt={photo.alt}
-        loading="lazy"
-        decoding="async"
-        class="photo"
-      />
-    </div>
+    {photo && (
+      <div class="frame">
+        <img
+          src={photo.src}
+          srcset={photo.srcset}
+          sizes="(min-width: 540px) 460px, 100vw"
+          width={photo.width}
+          height={photo.height}
+          alt={photo.alt}
+          loading="lazy"
+          decoding="async"
+          class="photo"
+        />
+      </div>
+    )}
   </div>
 </section>
 
@@ -55,6 +62,12 @@ const photo = getSlotImage('portrait');
       grid-template-areas: 'photo text';
       grid-template-columns: 1fr 1fr;
     }
+  }
+
+  /* without a portrait the text takes one readable column */
+  .welcome.text-only {
+    grid-template-areas: 'text';
+    grid-template-columns: minmax(0, 760px);
   }
 
   /* offset gold frame behind the photo, mirrored to the hero's */

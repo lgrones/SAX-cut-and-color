@@ -1,22 +1,23 @@
 ---
-import { getSlotImage } from '@business/images/getSlotImage';
+import type { ImageSource } from '@business/images/imageSource';
 import { Contact } from '@domain/contact';
 import type { OpeningHours } from '@domain/openingHours';
 import Icon from '../icon/icon.astro';
 import Today from '../openingHours/today.astro';
 
 interface Props {
+  /** Left out while the admin has no hero image */
+  photo: ImageSource | undefined;
   week: OpeningHours[];
   /** Whether the page has a price list to jump to */
   hasPrices: boolean;
   contact: Contact;
 }
 
-const { week, hasPrices, contact } = Astro.props;
-const photo = getSlotImage('hero');
+const { photo, week, hasPrices, contact } = Astro.props;
 ---
 
-<section class="hero">
+<section class:list={['hero', !photo && 'text-only']}>
   <div class="text">
     <p class="eyebrow">Friseursalon in Lochau</p>
     <h1 class="serif">
@@ -47,18 +48,20 @@ const photo = getSlotImage('hero');
     </div>
   </div>
 
-  <div class="frame">
-    <img
-      src={photo.src}
-      srcset={photo.srcset}
-      sizes="(min-width: 1000px) 560px, 100vw"
-      width={photo.width}
-      height={photo.height}
-      alt={photo.alt}
-      fetchpriority="high"
-      class="photo"
-    />
-  </div>
+  {photo && (
+    <div class="frame">
+      <img
+        src={photo.src}
+        srcset={photo.srcset}
+        sizes="(min-width: 1000px) 560px, 100vw"
+        width={photo.width}
+        height={photo.height}
+        alt={photo.alt}
+        fetchpriority="high"
+        class="photo"
+      />
+    </div>
+  )}
 </section>
 
 <style>
@@ -70,6 +73,11 @@ const photo = getSlotImage('hero');
     max-width: 1240px;
     margin-inline: auto;
     padding: clamp(56px, 8vw, 120px) var(--gutter);
+  }
+
+  /* without a photo the text keeps a readable measure instead of stretching */
+  .text-only {
+    grid-template-columns: minmax(0, 760px);
   }
 
   .text {

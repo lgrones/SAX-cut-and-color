@@ -16,7 +16,7 @@ import Layout from '@presentation/layouts/Layout.astro';
 // Rendered on every request, so admin edits and the day change show up on the
 // next page view
 const [startPage, contact] = await Promise.all([getStartPage(), getContact()]);
-const { prices, offers, gallery, hours, map } = startPage;
+const { prices, offers, gallery, hours, hero, portrait, map } = startPage;
 Astro.response.headers.set('Cache-Control', 'no-cache');
 ---
 
@@ -25,8 +25,13 @@ Astro.response.headers.set('Cache-Control', 'no-cache');
   startPage={startPage}
   contact={contact}
 >
-  <Hero week={hours} hasPrices={prices.length > 0} contact={contact} />
-  <Welcome />
+  <Hero
+    photo={hero}
+    week={hours}
+    hasPrices={prices.length > 0}
+    contact={contact}
+  />
+  <Welcome photo={portrait} />
 
   <!-- A section the admin switched off or that has no content is left out -->
   {prices.length > 0 && <Prices categories={prices} />}
