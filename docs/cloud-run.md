@@ -7,7 +7,7 @@ One-time setup for the `web` service that renders the pages, admin and
 ```sh
 PROJECT=sax-cut-and-color
 REGION=europe-west1
-RUNTIME_SA=807779129066-compute@developer.gserviceaccount.com
+RUNTIME_SA=web-runtime@$PROJECT.iam.gserviceaccount.com
 CI_SA=<client_email of the FIREBASE_SERVICE_ACCOUNT_SAX_CUT_AND_COLOR GitHub secret>
 ```
 
@@ -15,23 +15,23 @@ CI_SA=<client_email of the FIREBASE_SERVICE_ACCOUNT_SAX_CUT_AND_COLOR GitHub sec
 
 ```sh
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com \
-  artifactregistry.googleapis.com secretmanager.googleapis.com --project $PROJECT
+  artifactregistry.googleapis.com --project $PROJECT
 ```
 
-## 2. Store the Firebase credentials
+## 2. Create the runtime service account
 
-The server reads them at runtime through `astro:env`. Take the values from `.env`.
+The server runs as its own service account, and the Admin SDK uses it
+directly, so there is no key to store. It may only touch Firestore, the
+image bucket and Firebase Auth (sessions and revoking them).
 
 ```sh
-for name in PROJECT_ID CLIENT_EMAIL PRIVATE_KEY; do
-  printf '%s' "<value of $name>" | gcloud secrets create $name --data-file=- --project $PROJECT
-  gcloud secrets add-iam-policy-binding $name --project $PROJECT \
-    --member serviceAccount:$RUNTIME_SA --role roles/secretmanager.secretAccessor
+gcloud iam service-accounts create web-runtime --project $PROJECT
+for role in roles/datastore.user roles/firebaseauth.admin; do
+  gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:$RUNTIME_SA --role $role
 done
+gcloud storage buckets add-iam-policy-binding gs://$PROJECT.appspot.com \
+  --member serviceAccount:$RUNTIME_SA --role roles/storage.objectAdmin
 ```
-
-To rotate one later, add a new version: `gcloud secrets versions add <name> --data-file=-`,
-then redeploy so Cloud Run picks up `latest`.
 
 ## 3. Let CI deploy
 
@@ -43,6 +43,7 @@ done
 ```
 
 `storage.admin` covers the bucket `gcloud run deploy --source` uploads the source to.
+`iam.serviceAccountUser` lets CI deploy the service to run as `$RUNTIME_SA`.
 
 CI also deploys `firestore.rules` and `storage.rules` (`pnpm release:rules`),
 which needs three more roles:
@@ -94,4 +95,18 @@ works through Cloud Run, delete it:
 ```sh
 gcloud functions list --project $PROJECT
 gcloud functions delete <name> --region $REGION --project $PROJECT
+```
+
+## 7. Restrict the browser API key
+
+The key in `src/services/firebaseClient/app.ts` is public by design. The
+browser only uses it to sign in to the admin, so limit it to Firebase Auth and
+the site's domains (dev signs in against the emulator, which ignores the key):
+
+```sh
+gcloud services api-keys list --project $PROJECT
+gcloud services api-keys update <name> --project $PROJECT \
+  --api-target service=identitytoolkit.googleapis.com \
+  --api-target service=securetoken.googleapis.com \
+  --allowed-referrers 'https://www.sax-cut-and-colour.at/*,https://sax-cut-and-color.web.app/*,https://sax-cut-and-color.firebaseapp.com/*'
 ```

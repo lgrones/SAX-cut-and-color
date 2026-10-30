@@ -77,9 +77,11 @@ export default defineConfig({
   ],
   env: {
     schema: {
-      PROJECT_ID: envField.string({ context: 'server', access: 'secret' }),
-      CLIENT_EMAIL: envField.string({ context: 'server', access: 'secret' }),
-      PRIVATE_KEY: envField.string({ context: 'server', access: 'secret' }),
+      PROJECT_ID: envField.string({
+        context: 'server',
+        access: 'public',
+        default: 'sax-cut-and-color',
+      }),
       // Public, it only lets the browser send reports. Without it Sentry is off
       SENTRY_DSN: envField.string({
         context: 'client',

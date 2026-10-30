@@ -4,6 +4,7 @@ import '@infrastructure/sentryServer';
 
 import { SENTRY_TUNNEL } from '@infrastructure/sentryOptions';
 import { SESSION_COOKIE } from '@infrastructure/sessionCookie';
+import { Firebase } from '@services/firebase';
 import { defineMiddleware } from 'astro:middleware';
 
 // Matched against the resolved route instead of the raw URL, so variants like
@@ -33,11 +34,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const sessionCookie = context.cookies.get(SESSION_COOKIE)?.value;
 
   if (sessionCookie) {
-    // Loaded here, not on import: astro:env/server checks the Firebase
-    // secrets as soon as it loads, and the build runs this module to
-    // prerender the 404, so CI would need the secrets just to build
-    const { Firebase } = await import('@services/firebase');
-
     try {
       context.locals.user = await Firebase.verifySessionCookie(sessionCookie);
     } catch {
