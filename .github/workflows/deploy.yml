@@ -33,7 +33,7 @@ jobs:
       # Server before Hosting: its pages link the new hashed assets, which the
       # server also ships, so they load from it until Hosting has them
       - run: pnpm release:server
-      - uses: FirebaseExtended/action-hosting-deploy@v0.11
+      - uses: FirebaseExtended/action-hosting-deploy@v0.11.0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SAX_CUT_AND_COLOR }}'
