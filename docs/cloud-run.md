@@ -7,7 +7,7 @@ One-time setup for the `web` service that renders the pages, admin and
 ```sh
 PROJECT=sax-cut-and-color
 REGION=europe-west1
-RUNTIME_SA=web@$PROJECT.iam.gserviceaccount.com
+RUNTIME_SA=web-runtime@$PROJECT.iam.gserviceaccount.com
 CI_SA=<client_email of the FIREBASE_SERVICE_ACCOUNT_SAX_CUT_AND_COLOR GitHub secret>
 ```
 
@@ -25,7 +25,7 @@ directly, so there is no key to store. It may only touch Firestore, the
 image bucket and Firebase Auth (sessions and revoking them).
 
 ```sh
-gcloud iam service-accounts create web --project $PROJECT
+gcloud iam service-accounts create web-runtime --project $PROJECT
 for role in roles/datastore.user roles/firebaseauth.admin; do
   gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:$RUNTIME_SA --role $role
 done

@@ -18,7 +18,7 @@
     "astro": "astro",
     "release": "pnpm build && pnpm release:rules && pnpm release:server && pnpm release:hosting",
     "release:rules": "firebase deploy --only firestore:rules,storage",
-    "release:server": "gcloud run deploy web --source . --project sax-cut-and-color --region europe-west1 --allow-unauthenticated --service-account web@sax-cut-and-color.iam.gserviceaccount.com --clear-secrets",
+    "release:server": "gcloud run deploy web --source . --project sax-cut-and-color --region europe-west1 --allow-unauthenticated --service-account web-runtime@sax-cut-and-color.iam.gserviceaccount.com --clear-secrets",
     "release:hosting": "firebase deploy --only hosting"
   },
   "dependencies": {
