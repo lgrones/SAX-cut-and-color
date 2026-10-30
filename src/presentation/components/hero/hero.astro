@@ -11,10 +11,16 @@ interface Props {
   week: OpeningHours[];
   /** Whether the page has a price list to jump to */
   hasPrices: boolean;
+  /** Whether the page has opening hours to jump to */
+  hasHours: boolean;
   contact: Contact;
 }
 
-const { photo, week, hasPrices, contact } = Astro.props;
+const { photo, week, hasPrices, hasHours, contact } = Astro.props;
+
+// the header always offers the call, so the hero only repeats it when it has
+// no price list or opening hours to point to
+const showCall = !hasPrices || !hasHours;
 
 // The photo is its frame, at most 534px, less the frame's 22px. Two columns from
 // 1024px, where 2 × 440px and the 6vw gap fit beside the 4vw gutters, reaching
@@ -39,13 +45,23 @@ const sizes = [
       betreut von Petra Otti.
     </p>
     <div class="button-row">
-      <a class="btn btn-gold" href={Contact.phoneHref(contact)}>
-        <Icon name="phone" size={16} strokeWidth={1.6} />
-        Termin vereinbaren
-      </a>
+      {showCall && (
+        <a class="btn btn-gold" href={Contact.phoneHref(contact)}>
+          <Icon name="phone" size={16} strokeWidth={1.6} />
+          Termin vereinbaren
+        </a>
+      )}
       {hasPrices && (
-        <a class="btn btn-ghost" href="#preise">
+        <a
+          class:list={['btn', showCall ? 'btn-ghost' : 'btn-gold']}
+          href="#preise"
+        >
           Preise ansehen
+        </a>
+      )}
+      {hasHours && (
+        <a class="btn btn-ghost" href="#zeiten">
+          Öffnungszeiten
         </a>
       )}
     </div>

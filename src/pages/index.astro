@@ -48,6 +48,7 @@ const preconnect = imageOrigin !== Astro.site?.origin ? imageOrigin : undefined;
     photo={hero}
     week={hours}
     hasPrices={prices.length > 0}
+    hasHours={hours.length > 0}
     contact={contact}
   />
   <Welcome photo={portrait} />
