@@ -24,18 +24,13 @@ Astro.response.headers.set(
   contact={contact}
 >
   <LegalPage title="Impressum">
-    <p>Angaben gemäß § 5 ECG, § 14 UGB und § 25 MedienG</p>
+    <p>Angaben gemäß § 5 ECG und § 25 MedienG</p>
 
+    <!-- A sole trader, not entered in the Firmenbuch, so there is no company
+         name, legal form or FN to state -->
     <h2>Unternehmen</h2>
     <OwnerAddress contact={contact} />
     <p>UID-Nr.: ATU 63588237</p>
-
-    <h2>Firmenbuch</h2>
-    <p>
-      FN 62067a, Landesgericht Feldkirch
-      <br />
-      Sitz: Lochau [TODO Inhaberin: Sitz laut Firmenbuch bestätigen]
-    </p>
 
     <h2>Gewerbe und Aufsicht</h2>
     <p>
@@ -44,8 +39,7 @@ Astro.response.headers.set(
       <br />
       Gewerbebehörde: Bezirkshauptmannschaft Bregenz
       <br />
-      Kammer: Wirtschaftskammer Vorarlberg, Landesinnung der Friseure [TODO
-      Inhaberin: Kammer und Innung bestätigen]
+      Kammer: Wirtschaftskammer Vorarlberg, Landesinnung der Friseure
       <br />
       Berufsrechtliche Vorschriften: Gewerbeordnung 1994 (GewO), abrufbar im
       Rechtsinformationssystem des Bundes unter{' '}
