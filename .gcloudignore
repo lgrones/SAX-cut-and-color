@@ -1,2 +1,4 @@
 # Without this file gcloud falls back to .gitignore, which drops dist/
 #!include:.dockerignore
+# Cloud Build needs the Dockerfile in the upload, Docker itself does not
+!Dockerfile
