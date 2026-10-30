@@ -1,0 +1,17 @@
+---
+import { getContact } from '@business/contact/getContact';
+import AdminLayout from '@presentation/layouts/AdminLayout.astro';
+import { AdminSection } from '@presentation/layouts/adminSection';
+import { ContactEditor } from '@presentation/components/admin/contact/contactEditor';
+
+// Access is checked by the auth middleware
+const contact = await getContact();
+---
+
+<AdminLayout
+  section={AdminSection.contact}
+  title="Kontakt"
+  description="Erscheint auf der Startseite unter „Kontakt“ und im Impressum."
+>
+  <ContactEditor contact={contact} client:load />
+</AdminLayout>

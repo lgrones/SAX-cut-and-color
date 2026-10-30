@@ -1,0 +1,80 @@
+---
+import { OpeningHours } from '@domain/openingHours';
+
+interface Props {
+  week: OpeningHours[];
+}
+
+const { week } = Astro.props;
+const todayIndex = OpeningHours.todayIndex(new Date());
+
+const days = week.map(day => ({
+  day: day.day,
+  ranges: OpeningHours.ranges(day),
+  today: day.index === todayIndex,
+}));
+---
+
+<div class="days">
+  {days.map(({ day, ranges, today }) => (
+    <div class:list={['row', { closed: ranges.length === 0, today }]}>
+      <span class="day">
+        <span class="name">{day}</span>
+        {today && <span class="today-tag serif accent">heute</span>}
+      </span>
+      <span class="slots">
+        {ranges.length > 0 ? (
+          ranges.map(([start, end]) => (
+            <span>
+              {start}–{end}
+            </span>
+          ))
+        ) : (
+          <span>geschlossen</span>
+        )}
+      </span>
+    </div>
+  ))}
+</div>
+
+<style>
+  .days {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px 24px;
+    padding-block: 16px;
+    border-bottom: 1px solid var(--divider);
+
+    &.closed {
+      color: var(--text-closed);
+    }
+
+    &.today .name {
+      font-weight: 600;
+    }
+  }
+
+  .day {
+    display: flex;
+    align-items: baseline;
+    column-gap: 12px;
+  }
+
+  .today-tag {
+    font-size: 17px;
+  }
+
+  .slots {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    row-gap: 2px;
+  }
+</style>

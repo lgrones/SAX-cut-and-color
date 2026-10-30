@@ -1,0 +1,67 @@
+---
+import type { ImageSource } from '@business/images/imageSource';
+import { gallerySizes, type TileShape } from './gallerySizes';
+
+interface Props {
+  images: ImageSource[];
+}
+
+const { images } = Astro.props;
+
+// From 760px every four images fill the 4-column grid as wide (2×2), tall
+// (1×2) and two regular tiles stacked beside them
+const shapes: TileShape[] = ['wide', 'tall', 'regular', 'regular'];
+---
+
+<div class="gallery">
+  {images.map((image, i) => {
+    const shape = shapes[i % shapes.length]!;
+
+    return (
+      <img
+        src={image.src}
+        srcset={image.srcset}
+        sizes={gallerySizes(shape, image.width / image.height)}
+        width={image.width}
+        height={image.height}
+        alt={image.alt}
+        loading="lazy"
+        decoding="async"
+        class:list={['photo', shape !== 'regular' && shape]}
+        style={{ objectPosition: image.objectPosition }}
+      />
+    );
+  })}
+</div>
+
+<style>
+  .gallery {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: 240px;
+    gap: 16px;
+
+    @media (min-width: 760px) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-auto-rows: 260px;
+      grid-auto-flow: dense;
+    }
+  }
+
+  .photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (min-width: 760px) {
+    .wide {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+
+    .tall {
+      grid-row: span 2;
+    }
+  }
+</style>

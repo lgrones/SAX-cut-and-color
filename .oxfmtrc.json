@@ -1,0 +1,30 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 80,
+  "singleQuote": true,
+  "arrowParens": "avoid",
+  "objectWrap": "collapse",
+  "jsdoc": { "separateReturnsFromParam": true },
+  "sortImports": {
+    "groups": [
+      ["side_effect"],
+      "builtin",
+      "external",
+      ["internal", "subpath"],
+      ["parent", "sibling", "index"],
+      "style",
+      "unknown"
+    ]
+  },
+  "ignorePatterns": [
+    ".vscode",
+    ".astro",
+    ".claude",
+    "build",
+    "dist",
+    "node_modules",
+    "public",
+    ".firebase",
+    "backups"
+  ]
+}

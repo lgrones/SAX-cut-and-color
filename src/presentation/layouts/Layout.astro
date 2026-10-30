@@ -1,0 +1,134 @@
+---
+import type { StartPage } from '@business/startPage/getStartPage';
+import { Contact } from '@domain/contact';
+import { Font, Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+import Navigation from '../components/navigation/Navigation.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  /** For the header's links and call button; a static page has neither */
+  startPage?: StartPage;
+  contact?: Contact;
+  description?: string;
+  /** Keeps the page out of search results, e.g. the 404 */
+  noindex?: boolean;
+  disableScrollSmooth?: boolean;
+}
+
+const SITE_NAME = 'SAX Cut + Colour';
+
+const {
+  title,
+  startPage,
+  contact,
+  description = 'Friseursalon SAX Cut + Colour by Petra Otti: Schnitt, Farbe und Pflege' +
+    (contact ? `. ${Contact.address(contact)}.` : ' in Lochau.'),
+  noindex,
+  disableScrollSmooth,
+} = Astro.props;
+
+// Rendered on Cloud Run behind Hosting, where the request URL carries the
+// service's own host instead of the site's
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+// A fixed salon photo in the 1200×630 social networks expect, served by
+// Hosting: an admin photo would need its own crop and fresh URLs, as shares
+// cache the image for weeks
+const socialImage = new URL('/og-image.jpg', Astro.site).toString();
+---
+
+<!doctype html>
+<html lang="de" class:list={{ 'scroll-smooth': !disableScrollSmooth }}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? (
+      <meta name="robots" content="noindex" />
+    ) : (
+      <link rel="canonical" href={canonicalUrl} />
+    )}
+    <link rel="icon" href="/favicon.png" />
+    <meta name="author" content="Petra Otti" />
+    <meta name="apple-mobile-web-app-title" content={SITE_NAME} />
+
+    <!-- Link previews. X reads the og: tags too, it only needs its card type -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content="de_AT" />
+    {!noindex && <meta property="og:url" content={canonicalUrl} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta
+      property="og:image:alt"
+      content="Zwei Frisierplätze im Salon SAX Cut + Colour mit Spiegeln und Pop-Art-Bildern"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <Font cssVariable="--font-serif" preload />
+    <Font cssVariable="--font-sans" preload />
+    <slot name="head" />
+  </head>
+  <body>
+    <Navigation startPage={startPage} contact={contact} />
+
+    <main>
+      <slot />
+    </main>
+
+    <footer>
+      <a href="/" aria-label="SAX Cut + Colour by Petra Otti – zur Startseite">
+        <Image src={logo} alt="SAX Cut + Colour by Petra Otti" class="logo" />
+      </a>
+      <nav aria-label="Rechtliches">
+        <a href="/legal-notice">Impressum</a>
+        <a href="/datenschutz">Datenschutz</a>
+        <a href="/admin">Admin</a>
+        <span>© {new Date().getFullYear()}</span>
+      </nav>
+    </footer>
+
+    <style>
+      body {
+        font-size: 17px;
+        color: var(--text);
+        background-color: var(--bg);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      footer {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px 40px;
+        max-width: 1240px;
+        margin-inline: auto;
+        padding: 40px var(--gutter) 48px;
+        font-size: 14px;
+        color: var(--text-subtle);
+      }
+
+      .logo {
+        width: auto;
+        height: 56px;
+      }
+
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 28px;
+
+        & a:hover {
+          color: var(--gold-light);
+        }
+      }
+    </style>
+  </body>
+</html>

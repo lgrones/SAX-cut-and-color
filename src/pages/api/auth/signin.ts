@@ -1,39 +1,27 @@
-import type { APIRoute } from "astro";
-import { app } from "../../../firebase/server";
-import { getAuth } from "firebase-admin/auth";
+import { startSession } from '@business/auth/startSession';
+import { SESSION_COOKIE } from '@infrastructure/sessionCookie';
+import type { APIRoute } from 'astro';
 
-export const GET: APIRoute = async ({ request, cookies, redirect }) => {
-  const auth = getAuth(app);
-
-  /* Get token from request headers */
-  const idToken = request.headers.get("Authorization")?.split("Bearer ")[1];
+export const POST: APIRoute = async ({ request, cookies }) => {
+  const idToken = request.headers.get('Authorization')?.split('Bearer ')[1];
   if (!idToken) {
-    return new Response("No token found", { status: 401 });
+    return new Response('No token found', { status: 401 });
   }
 
-  /* Verify id token */
-  try {
-    await auth.verifyIdToken(idToken);
-  } catch (error) {
-    return new Response("Invalid token", { status: 401 });
+  const session = await startSession(idToken);
+  if (!session.ok) {
+    return new Response(session.reason, { status: 401 });
   }
 
-  /* Create and set session cookie */
-  const fiveDays = 60 * 60 * 24 * 5 * 1000;
-  const sessionCookie = await auth.createSessionCookie(idToken, {
-    expiresIn: fiveDays,
+  cookies.set(SESSION_COOKIE, session.sessionCookie, {
+    path: '/',
+    maxAge: session.maxAge,
+    httpOnly: true,
+    // A phone reaches the dev server over plain http, where browsers drop a
+    // secure cookie and the sign-in would end back on /signin
+    secure: import.meta.env.PROD,
+    sameSite: 'strict',
   });
 
-  cookies.set(
-    "__session",
-    sessionCookie,
-    // @ts-ignore
-    {
-      path: "/",
-      httpOnly: true,
-      secure: true,
-    }
-  );
-
-  return redirect("/admin");
+  return new Response(null, { status: 204 });
 };

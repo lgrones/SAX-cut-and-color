@@ -1,0 +1,70 @@
+---
+import type { Price } from '@domain/price';
+import PriceList from './priceList.astro';
+
+interface Props {
+  categories: Price[];
+}
+
+const { categories } = Astro.props;
+---
+
+<section id="preise" class="section prices">
+  <div class="heading">
+    <p class="eyebrow">
+      <span class="eyebrow-numbered">Preise</span>
+    </p>
+    <h2 class="heading-section">Preisliste</h2>
+  </div>
+
+  <PriceList categories={categories} />
+
+  <div class="note">
+    <span class="line" aria-hidden="true"></span>
+    <div class="note-text">
+      <p class="serif accent">Bezahlung in bar oder mit Karte</p>
+      <p class="serif accent">Alle Preise in Euro inkl. USt.</p>
+    </div>
+    <span class="line" aria-hidden="true"></span>
+  </div>
+</section>
+
+<style>
+  .prices {
+    display: flex;
+    flex-direction: column;
+    row-gap: 56px;
+  }
+
+  .heading {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+  }
+
+  .note {
+    display: flex;
+    align-items: center;
+    column-gap: 24px;
+  }
+
+  .note-text {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+
+    & p {
+      font-size: 20px;
+      line-height: 1.3;
+      text-align: center;
+      text-wrap: balance;
+    }
+  }
+
+  .line {
+    flex: 1 1 24px;
+    min-width: 24px;
+    height: 1px;
+    background-color: rgb(201 164 92 / 40%);
+  }
+</style>

@@ -1,0 +1,28 @@
+---
+import { getOpeningHours } from '@business/openingHours/getOpeningHours';
+import { getHiddenSections } from '@business/pageSections/getHiddenSections';
+import { PageSection } from '@domain/pageSection';
+import AdminLayout from '@presentation/layouts/AdminLayout.astro';
+import { AdminSection } from '@presentation/layouts/adminSection';
+import { SectionToggle } from '@presentation/components/admin/pageSections/sectionToggle';
+import { OpeningHoursEditor } from '@presentation/components/admin/openingHours/openingHoursEditor';
+
+// Access is checked by the auth middleware
+const [openingHours, hidden] = await Promise.all([
+  getOpeningHours(),
+  getHiddenSections(),
+]);
+---
+
+<AdminLayout
+  section={AdminSection.hours}
+  title="Öffnungszeiten"
+  description="Erscheinen auf der Startseite unter „Zeiten“."
+>
+  <SectionToggle
+    section={PageSection.hours}
+    shown={!hidden.includes(PageSection.hours)}
+    client:load
+  />
+  <OpeningHoursEditor openingHours={openingHours} client:load />
+</AdminLayout>

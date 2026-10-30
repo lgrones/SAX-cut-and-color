@@ -1,76 +1,62 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import { getContact } from '@business/contact/getContact';
+import { getStartPage } from '@business/startPage/getStartPage';
+import { CACHE_CONTROL } from '@infrastructure/cacheControl';
+import { SESSION_COOKIE } from '@infrastructure/sessionCookie';
+import LegalPage from '@presentation/components/legal/legalPage.astro';
+import OwnerAddress from '@presentation/components/legal/ownerAddress.astro';
+import Layout from '@presentation/layouts/Layout.astro';
+
+// Rendered on request for the contact details, which the admin edits; the
+// navigation also links only the sections the start page shows
+const [startPage, contact] = await Promise.all([getStartPage(), getContact()]);
+Astro.response.headers.set(
+  'Cache-Control',
+  Astro.cookies.has(SESSION_COOKIE)
+    ? CACHE_CONTROL.signedIn
+    : CACHE_CONTROL.legalPages,
+);
 ---
 
-<Layout title="SAX Cut + Colour Impressum">
-  <div class="pt-[103px] md:pt-[120px] text-sax-tan">
-    <div class="font-cormorant text-2xl mb-2">
-      Name & Kontaktdaten des Anbieters
-    </div>
-    Sax Cut + Colour by Petra Zangerl<br />Landstraße 46<br />6911 Lochau<br
-    />Austria<br /><a
-      href="tel:+436644213849"
-      class="underline underline-offset-4 decoration-1">+43 664 421 384 9</a
-    ><br /><a
-      href="mailto:petra.zangerl@chello.at"
-      class="underline underline-offset-4 decoration-1"
-      >petra.zangerl@chello.at</a
-    ><br />ATU 63588237
-    <div class="font-cormorant text-2xl mb-2 mt-6">
-      Firmenbuchnummer und Firmenbuchgericht
-    </div>
-    FN 62067a, Landesgericht Feldkirch
-    <div class="font-cormorant text-2xl mb-2 mt-6">
-      Gewerbeberechtigung
-    </div>Friseurin und Perückenmacherin (Stylistin) (Handwerk) gemäß § 94 Z 22
-    GewO 1994
-    <div class="font-cormorant text-2xl mb-2 mt-6">Nutzungsbedingungen</div>Die
-    Inhalte dieser Website sind frei nutzbar und dienen ausschließlich der
-    Information. Es kommen durch die Nutzung der Auswahlmöglichkeiten der
-    Website keinerlei Rechtsgeschäfte zwischen der Eigentümerin und den Nutzern
-    zustande. Die weitere Vorgangsweise zwischen Anbietern und Nutzern und der
-    mögliche spätere Abschluss von Aufträgen zwischen Anbietern und Nutzern
-    liegen im ausschließlichen Ermessen der Nutzer.
-    <div class="font-cormorant text-2xl mb-2 mt-6">
-      Copyright und Haftungsausschluss
-    </div>Im Hinblick auf die technischen Eigenschaften des Internets kann keine
-    Gewähr für die Authentizität, Richtigkeit und Vollständigkeit der im
-    Internet zur Verfügung gestellten Informationen übernommen werden. Es wird
-    auch keine Gewähr für die Verfügbarkeit oder den Betrieb der
-    gegenständlichen Homepage und ihrer Inhalte übernommen. Jede Haftung für
-    unmittelbare, mittelbare oder sonstige Schäden, unabhängig von deren
-    Ursachen, die aus der Benutzung oder Nichtverfügbarkeit der Daten und
-    Informationen dieser Homepage erwachsen, wird, soweit rechtlich zulässig,
-    ausgeschlossen. Der Inhalt dieser Homepage ist urheberrechtlich geschützt.
-    Die Informationen sind nur für die persönliche Verwendung bestimmt. Jede
-    weitergehende Nutzung, insbesondere die Speicherung in Datenbanken,
-    Vervielfältigung und jede Form von gewerblicher Nutzung sowie die Weitergabe
-    an Dritte - auch in Teilen oder in überarbeiteter Form - ohne Zustimmung des
-    Website-Inhabers ist untersagt. Hyperlinks auf dieses Weblog sind
-    willkommen. Jede Einbindung einzelner Seiten unseres Angebotes in fremde
-    Frames ist zu unterlassen, ebenso das zur Verfügung stellen unseres
-    RSS-Feeds auf fremden Seiten.
-    <div class="font-cormorant text-2xl mb-2 mt-6">Datenschutz</div>Soweit auf
-    unseren Seiten personenbezogene Daten (beispielsweise Name, Anschrift oder
-    E-Mail-Adressen) erhoben werden, erfolgt dies soweit möglich stets auf
-    freiwilliger Basis. Die Nutzung der Angebote und Dienste ist, soweit
-    möglich, stets ohne Angabe personenbezogener Daten möglich. Der Nutzung von
-    im Rahmen der Impressumspflicht veröffentlichten Kontaktdaten durch Dritte
-    zur Übersendung von nicht ausdrücklich angeforderter Werbung und
-    Informationsmaterialien wird hiermit ausdrücklich widersprochen. Die
-    Betreiber der Seiten behalten sich ausdrücklich rechtliche Schritte im Falle
-    der unverlangten Zusendung von Werbeinformationen, etwa durch Spam-Mails,
-    vor.<div class="font-cormorant text-2xl mb-2 mt-6">
-      Haftung für Links
-    </div>Dieses Weblog enthält Links zu externen Webseiten Dritter, auf deren
-    Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden
-    Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten
-    ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.
-    Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche
-    Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der
-    Verlinkung nicht erkennbar. Eine permanente inhaltliche Kontrolle der
-    verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer
-    Rechtsverletzung nicht zumutbar. Bei bekannt werden von Rechtsverletzungen
-    werden wir derartige Links umgehend entfernen.
-  </div>
+<Layout
+  title="SAX Cut + Colour Impressum"
+  startPage={startPage}
+  contact={contact}
+>
+  <LegalPage title="Impressum">
+    <p>Angaben gemäß § 5 ECG und § 25 MedienG</p>
+
+    <!-- A sole trader, not entered in the Firmenbuch, so there is no company
+         name, legal form or FN to state -->
+    <h2>Unternehmen</h2>
+    <OwnerAddress contact={contact} />
+    <p>UID-Nr.: ATU 63588237</p>
+
+    <h2>Gewerbe und Aufsicht</h2>
+    <p>
+      Gewerbe: Friseurin und Perückenmacherin (Stylistin) (Handwerk) gemäß § 94
+      Z 22 GewO 1994
+      <br />
+      Gewerbebehörde: Bezirkshauptmannschaft Bregenz
+      <br />
+      Kammer: Wirtschaftskammer Vorarlberg, Landesinnung der Friseure
+      <br />
+      Berufsrechtliche Vorschriften: Gewerbeordnung 1994 (GewO), abrufbar im
+      Rechtsinformationssystem des Bundes unter{' '}
+      <a href="https://www.ris.bka.gv.at" class="text-link">
+        www.ris.bka.gv.at
+      </a>
+    </p>
+
+    <h2>Offenlegung gemäß § 25 MedienG</h2>
+    <p>
+      Medieninhaberin: Petra Otti, Inhaberin von SAX Cut + Colour by Petra Otti,
+      Sitz in Lochau
+      <br />
+      Unternehmensgegenstand: Friseursalon
+      <br />
+      Grundlegende Richtung: Information über den Friseursalon, seine
+      Leistungen, Preise und Öffnungszeiten
+    </p>
+  </LegalPage>
 </Layout>

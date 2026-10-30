@@ -1,0 +1,46 @@
+---
+export const prerender = true;
+
+import Layout from '@presentation/layouts/Layout.astro';
+
+// Static, so a request for a missing page (often a bot probing for
+// /wp-admin and the like) never reads the database. Without the start page's
+// data the header shows only the logo; the page links home instead.
+---
+
+<Layout
+  title="Seite nicht gefunden – SAX Cut + Colour"
+  description="Diese Seite gibt es nicht (mehr)."
+  noindex
+>
+  <section class="section not-found">
+    <p class="eyebrow">Fehler 404</p>
+    <h1 class="heading-section">
+      Diese Seite <em class="accent">gibt es nicht.</em>
+    </h1>
+    <p class="text">
+      Vielleicht hat sich die Adresse geändert oder ein Link ist veraltet. Auf
+      der Startseite finden Sie Preise, Öffnungszeiten und Kontakt.
+    </p>
+    <div class="button-row">
+      <a class="btn btn-gold" href="/">
+        Zur Startseite
+      </a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    row-gap: 28px;
+    align-items: flex-start;
+    max-width: calc(70ch + 2 * var(--gutter));
+  }
+
+  .text {
+    color: var(--text-muted);
+    text-wrap: pretty;
+  }
+</style>
